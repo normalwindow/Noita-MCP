@@ -852,6 +852,17 @@ end
 handlers.set_panel = function(params)
   params = params or {}
   if not panel then return { ok = false, error = "panel module not loaded" } end
+
+  -- The panel owns the key mapping, so it applies the patch. Writing store.set(k, v)
+  -- directly here was a real bug: the UI reads store.get("panel_open") while this wrote
+  -- "open", so the setting reported success and changed nothing. Only the names that
+  -- happened to match (ai_enabled, read_only) worked, which hid it.
+  if type(panel.apply_settings) == "function" then
+    local applied, rejected = panel.apply_settings(params)
+    return { ok = true, applied = applied, rejected = rejected, panel = panel.state() }
+  end
+
+  -- Older builds: keep working, but say the mapping is missing rather than pretend.
   local applied = {}
   for k, v in pairs(params) do
     if k ~= "operations" then
@@ -1249,6 +1260,20 @@ function rpc.update()
   -- Draw the control panel. It is an overlay, so the update phase does not
   -- matter; post-update simply keeps it off the pre-update control path.
   if panel and type(panel.update) == "function" then
+    -- The extension's state is gathered here rather than inside the panel so the UI
+    -- stays a pure view and never calls into the DLL-loading path itself. `last_load`
+    -- is what turns "not loaded" into "these paths were tried, and this is why each
+    -- failed" -- the reason the panel previously could not explain a load failure.
+    local ext, last_load = nil, nil
+    if xinput then
+      local ok_s, s = pcall(xinput.status)
+      if ok_s then ext = s end
+      if type(xinput.last_load) == "function" then
+        local ok_l, l = pcall(xinput.last_load)
+        if ok_l then last_load = l end
+      end
+    end
+
     pcall(panel.update, {
       base_dir = base_dir,
       frame = GameGetFrameNum(),
@@ -1256,6 +1281,8 @@ function rpc.update()
       has_player = player_entity ~= nil,
       socket = (type(rpc.socket_stats) == "function") and rpc.socket_stats() or nil,
       latency = latency_report(),
+      extension = ext,
+      last_load = last_load,
     })
   end
 

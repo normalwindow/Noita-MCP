@@ -307,6 +307,41 @@ end
 --
 -- `path` should be an ABSOLUTE Windows path to the built DLL. It is taken from
 -- the argument, then NOITA_XINPUT_DLL, then the extension's build folder.
+-- The last load attempt, kept so the in-game panel can explain a failure.
+--
+-- xinput.load already returns a detailed `attempts` list (every candidate path and
+-- whether LoadLibraryA accepted it), but a return value only reaches whoever made the
+-- call. When the call comes from an AI client, the human at the keyboard sees nothing
+-- -- the panel could only ever say "not loaded" with no reason. Retaining the last
+-- attempt turns that into "tried these 5 paths, all refused", which is the difference
+-- between a dead end and a fixable one.
+local last_load = nil
+
+function xinput.last_load()
+  return last_load
+end
+
+-- Records one attempt and returns it, so it can also be returned to the caller.
+local function remember_load(result)
+  last_load = result
+  if result and result.attempts then
+    -- keep only the parts the panel shows; the record outlives the call
+    local compact = {}
+    for i = 1, #result.attempts do
+      local a = result.attempts[i]
+      compact[i] = {
+        path = a.path,
+        call_ok = a.call_ok,
+        handle = a.handle,
+        loaded = a.loaded,
+      }
+    end
+    last_load.attempts = compact
+  end
+  if last_load then last_load.at_frame = GameGetFrameNum and GameGetFrameNum() or nil end
+  return last_load
+end
+
 function xinput.load(params)
   params = params or {}
   if not ffi_ok then return { ok = false, error = "ffi unavailable" } end
@@ -360,27 +395,29 @@ function xinput.load(params)
       resolve_error = nil
       local st = xinput.status()
       attempts[#attempts].loaded = st.loaded
-      return {
+      return remember_load({
         ok = true,
         path = p,
         handle = attempts[#attempts].handle,
         loaded = st.loaded,
         hooks_installed = st.hooks_installed,
         status = st,
+        attempts = attempts,
         next_step = st.hooks_installed
           and "hooks are installed; input forging is ready"
           or "the DLL is loaded but inert; call noita_input_install to install the hooks",
-      }
+      })
     end
   end
 
-  return {
+  return remember_load({
     ok = false,
     error = "the DLL could not be loaded from any candidate path",
+    dll = DLL_NAME,
     attempts = attempts,
     hint = "build it first: pwsh -File extensions/input-hook/build.ps1, then pass " ..
            "the absolute path of build/xinput_hook.dll",
-  }
+  })
 end
 
 -- Unloading is deliberately NOT offered: a hook that is removed while the game

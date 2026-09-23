@@ -76,6 +76,40 @@ bridge (`state.json`, `request.json`, `response.json` in the same folder) automa
 socket problem, so a firewall or blocked `os` API degrades the bridge instead of killing it.
 `noita_transport` reports which channel is in use; socket wins only for batched calls.
 
+## The in-game panel
+
+Click the **`[ + ] noita_agent`** label in the top-left corner of the game to expand the panel.
+Collapsed, it stays in that corner as a small strip; expanded, it is centred, because it is then
+a dialog being read and the corners are where the game draws its own HUD.
+
+Four tabs, switched by clicking:
+
+| Tab | Contents |
+| --- | --- |
+| **Status** | Active transport and port, request count, watchdog state, frame number, whether the player was found, RPC timings, the settings backend, latency knobs, and the **transport switch** |
+| **Permissions** | Master switch (`ai_enabled`), read-only mode, the four operation categories (spawn / player / wands / world), verbose logging, and a line spelling out the **effective** state |
+| **Extension** | The input DLL: loaded, armed, and if either failed, **every path that was tried and why each failed**, with load / arm / disarm buttons |
+| **Log** | Recent messages, coloured by level (dbg / inf / WRN / ERR), with a level filter (all / info+ / warn+ / errors) and a "newest M of N" readout |
+
+### Switching transport from the panel
+
+The Status tab has two buttons:
+
+- The left one switches the **current** channel between SOCKET and the FILE bridge.
+- The right one sets which transport a **new session** starts with (`startup: SOCKET` or
+  `startup: FILE`).
+
+The file bridge always runs, so switching cannot strand a client — at worst a request waits one
+frame longer. Both can also be set from the MCP side with `noita_set_panel`.
+
+### What persists and what does not
+
+`ai_enabled`, `read_only` and whether the panel is open **reset to their defaults every run**.
+That is deliberate: a "pause right now" safety switch that persisted would start the next session
+paused, and on a stricter build the operator could be locked out of the very panel that turns it
+back on. The operation category switches (spawn / player / wands / world) **do** persist, because
+they express policy rather than a moment.
+
 ## Tool groups
 
 55 tools in the base tier, grouped by what they do:
