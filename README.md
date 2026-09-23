@@ -239,4 +239,30 @@ Noita-MCP/
 
 ## 许可与致谢
 
-这是一个非商业的粉丝作品。Noita 及其全部内容归 Nolla Games 所有；本仓库与 Nolla Games 没有隶属关系，也未获其背书。
+**本仓库的代码采用 [Apache License 2.0](LICENSE) 授权。**
+
+```
+Copyright 2026 normalwindow
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+```
+
+### 关于 Noita
+
+这是一个**非商业的粉丝作品**。Noita 及其全部内容归 **Nolla Games Oy** 所有；本仓库与 Nolla Games 没有隶属关系，也未获其背书。
+
+Apache 2.0 **只覆盖本仓库的代码**，不授予 Noita 本身的任何权利，也不覆盖或改变 Noita 模组协议（`tools_modding/Noita-ModdingAgreement-v100.rtf`）的条款。使用本模组即表示你也受该协议约束。
+
+正因为该协议禁止"分发游戏受版权保护的代码、内容或资产的实质部分"，**本仓库不含任何解包后的游戏数据**——只含从**你自己拥有**的副本中抽取的**事实**（标识符、数值、关系）。参见 `tools/build_db.py` 与 `tools/unpack-data.ps1`。
+
+完整的第三方声明见 [NOTICE](NOTICE)。变更记录见 [CHANGELOG.md](CHANGELOG.md)。

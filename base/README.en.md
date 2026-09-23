@@ -1,4 +1,4 @@
-# Noita MCP 鈥?base version (pure Lua)
+# Noita MCP —base version (pure Lua)
 
 The base tier is the mod plus the MCP server, with **no DLL and no external dependency**. It
 lets an AI read a running Noita game and change its state: the player, inventory, wands, spell
@@ -129,7 +129,7 @@ they express policy rather than a moment.
 | Batching and escape hatch | 2 | `noita_batch`, `noita_raw_rpc` |
 
 The nine `noita_input_*` tools belong to the full tier. They refuse in base mode with a message
-saying the extension is missing and how to load it 鈥?they are not a hidden way to press keys.
+saying the extension is missing and how to load it —they are not a hidden way to press keys.
 
 ## What the base version cannot do
 
@@ -177,3 +177,9 @@ per-operation switches persist.
 
 The game's own files are never modified. `base\install.ps1 -Uninstall` performs the folder
 removal and disables the mod in `mod_config.xml`.
+
+## License
+
+The code in this repository is licensed under the [Apache License 2.0](../LICENSE). The full text is in [LICENSE](../LICENSE) at the repository root; third-party notices are in [NOTICE](../NOTICE).
+
+This is an unofficial, non-commercial fan work. Noita and all of its content belong to Nolla Games Oy, and this project is not affiliated with them. The Apache license covers this repository's code only; it grants no rights to Noita itself and does not alter the Noita Modding Agreement.

@@ -108,7 +108,7 @@ function runWandSim(args, switches) {
 function parseSimWarnings(stderr) {
   const unknown = [];
   for (const line of String(stderr).split('\n')) {
-    const m = line.match(/闁哄牜浜濋弫纭呫亹閺囩姵鐣辨繛澶嬫礃濠€鐮泂*'([^']+)'/);
+    const m = line.match(/\[警告\] 未收录的法术 '([^']+)'/);
     if (m) unknown.push(m[1]);
   }
   return unknown;

@@ -1,0 +1,32 @@
+Noita MCP
+Copyright 2026 normalwindow
+
+This product includes software developed as part of Noita MCP
+(https://github.com/normalwindow/Noita-MCP).
+
+--------------------------------------------------------------------------------
+Third-party notices
+--------------------------------------------------------------------------------
+
+Noita
+  This project is an unofficial, non-commercial fan work. It is not affiliated
+  with, endorsed by, or sponsored by Nolla Games Oy. "Noita" and all related
+  assets are the property of Nolla Games Oy, and this project redistributes none
+  of them.
+
+  Use of the Noita modding interface is governed by the Noita Modding Agreement
+  (tools_modding/Noita-ModdingAgreement-v100.rtf in the game install). That
+  agreement permits non-commercial mods and prohibits distributing a substantial
+  part of the game's copyrightable code, content or assets -- which is why this
+  repository ships no unpacked game data. tools/build_db.py extracts facts
+  (identifiers, numbers, relationships) from a copy the user owns; see
+  tools/unpack-data.ps1.
+
+  The Apache License 2.0 below covers the code in this repository only. It grants
+  no rights to Noita itself, and nothing here overrides the Modding Agreement.
+
+--------------------------------------------------------------------------------
+Apache License 2.0
+--------------------------------------------------------------------------------
+
+The full license text is in the LICENSE file in this directory.

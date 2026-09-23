@@ -1,10 +1,10 @@
-# Noita MCP 鈥?full version (base + input extension)
+# Noita MCP —full version (base + input extension)
 
 The full tier is everything in the [base version](../base/README.en.md) plus
 `xinput_hook.dll`, a 32-bit Windows DLL that is loaded into the game process by the mod itself
 and synthesises SDL keyboard and mouse events. It brings the tool count to **64**: the base
 tier's 55 tools plus 9 `noita_input_*` tools. With it, the AI can move, jump, press interact,
-and fire the held wand; without it, none of those are possible 鈥?see the base readme for why.
+and fire the held wand; without it, none of those are possible —see the base readme for why.
 
 Chinese documentation: [README.md](README.md). Main readme: [../README.en.md](../README.en.md).
 
@@ -148,3 +148,9 @@ nothing survives the process. To remove the whole bridge, follow the uninstall s
 - The DLL is unsigned, so antivirus software may flag it. It is built locally from `xinput_hook.c` in this folder; read the source rather than trusting the binary.
 - A game update could move the thunk layout. Target resolution is signature-based (it follows the `mov eax, [imm32]; jmp eax` form) and should survive, but re-verify with the counters if input stops working.
 - Input only affects a live run. The bridge and the extension both do nothing in the main menu.
+
+## License
+
+The code in this repository is licensed under the [Apache License 2.0](../LICENSE). The full text is in [LICENSE](../LICENSE) at the repository root; third-party notices are in [NOTICE](../NOTICE).
+
+This is an unofficial, non-commercial fan work. Noita and all of its content belong to Nolla Games Oy, and this project is not affiliated with them. The Apache license covers this repository's code only; it grants no rights to Noita itself and does not alter the Noita Modding Agreement.

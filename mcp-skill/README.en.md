@@ -68,3 +68,9 @@ above always works.
   panel off, the same calls are refused with the skill installed.
 - The skill is written for an agent, not for a person. For setup and limits, read
   [../base/README.en.md](../base/README.en.md) and [../full/README.en.md](../full/README.en.md).
+
+## License
+
+The code in this repository is licensed under the [Apache License 2.0](../LICENSE). The full text is in [LICENSE](../LICENSE) at the repository root; third-party notices are in [NOTICE](../NOTICE).
+
+This is an unofficial, non-commercial fan work. Noita and all of its content belong to Nolla Games Oy, and this project is not affiliated with them. The Apache license covers this repository's code only; it grants no rights to Noita itself and does not alter the Noita Modding Agreement.

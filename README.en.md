@@ -13,8 +13,8 @@ listens on `127.0.0.1` only.
 
 Two pieces, always installed together:
 
-- **The mod** (`noita_agent`, "Noita AI Agent Bridge") 鈥?runs inside Noita, is the only thing that can touch the game, and exposes a small local RPC surface: player, inventory, wands, spell decks, entities, world/map data, and the permission switches.
-- **The MCP server** (`mcp_server/server.js`) 鈥?a stdio MCP server that translates `noita_*` tool calls into bridge RPCs and returns structured JSON. It also has a CLI for humans (`--status`, `--list`, `--call`).
+- **The mod** (`noita_agent`, "Noita AI Agent Bridge") —runs inside Noita, is the only thing that can touch the game, and exposes a small local RPC surface: player, inventory, wands, spell decks, entities, world/map data, and the permission switches.
+- **The MCP server** (`mcp_server/server.js`) —a stdio MCP server that translates `noita_*` tool calls into bridge RPCs and returns structured JSON. It also has a CLI for humans (`--status`, `--list`, `--call`).
 
 Because the game only updates while a run is active, the bridge only answers inside a run.
 Nothing works from the main menu.
@@ -28,20 +28,20 @@ Nothing works from the main menu.
 | External dependencies | None | Built DLL (x86) |
 | Observe the game | Yes | Yes |
 | Modify player, items, wands, world | Yes | Yes |
-| Forge input (move, jump, fire) | **No** 鈥?impossible from Lua | Yes |
+| Forge input (move, jump, fire) | **No** —impossible from Lua | Yes |
 | Build toolchain needed | None | 32-bit MSVC (for the DLL only) |
 
 **Base** uses the mod's own LuaJIT FFI to open a socket on `127.0.0.1`, with a file-based bridge
 as a fallback when sockets are unavailable. It needs nothing but Node.js and the game. **Full**
 adds `xinput_hook.dll`, a 32-bit Windows DLL the mod loads into the game process through that
-same FFI 鈥?no external injector is needed 鈥?and which synthesises SDL keyboard and mouse events
+same FFI —no external injector is needed —and which synthesises SDL keyboard and mouse events
 so the AI can move, jump, and fire.
 
 ## Which tier to use
 
 - Start with **base** to see and change state: read the run, inspect wands and spells, spawn items, edit decks, teleport, heal, read the map.
 - Add **full** when the AI must actually *play*: hold a movement key, jump, press interact, fire the held wand.
-- Base cannot forge input at all 鈥?Noita's C++ cannot be modded from Lua, which is exactly why the extension DLL exists.
+- Base cannot forge input at all —Noita's C++ cannot be modded from Lua, which is exactly why the extension DLL exists.
 - Base can still write the player's velocity directly (`noita_lever_*`); that is a physics lever, not input. See [base/README.en.md](base/README.en.md).
 
 ## Requirements
@@ -55,7 +55,7 @@ so the AI can move, jump, and fire.
 | 32-bit MSVC toolchain | **Full tier only**, to build the DLL; `build.ps1` calls `vcvars32` itself |
 | Unpacked game data | **Optional**, only for `noita_entity_blueprint` and index rebuilding |
 
-## Install 鈥?base tier
+## Install —base tier
 
 1. Copy the mod into the game's mod folder:
 
@@ -88,7 +88,7 @@ so the AI can move, jump, and fire.
 `base\install.ps1` is a helper that performs the copy and enables the mod in
 `mod_config.xml`. The manual steps above are the authoritative path and always work.
 
-## Install 鈥?full tier
+## Install —full tier
 
 Do everything above, then build and arm the extension.
 
@@ -160,7 +160,7 @@ button because that is what Noita fires on; `SPACE` is the fly key, not the fire
 About 3030 entity definitions, searchable by name, tag and kind: 651 enemy, 452 projectile, 212
 item, 169 building, 27 wand, 5 chest (the remainder are other kinds). `noita_find_entity`
 searches the index; `noita_entity_blueprint` reads one entity's components and their values from
-the unpacked game data 鈥?that is where enemy stats live.
+the unpacked game data —that is where enemy stats live.
 
 ### Spell charges
 
@@ -242,7 +242,47 @@ use it: the mod loads the DLL itself through FFI.
 
 ## Documentation
 
-- [base/README.en.md](base/README.en.md) 鈥?base tier: install, tool groups, limits, troubleshooting
-- [full/README.en.md](full/README.en.md) 鈥?full tier: building and arming the DLL, safety design, uninstall
-- [mcp-skill/README.en.md](mcp-skill/README.en.md) 鈥?the agent Skill and how to install it
-- [README.md](README.md) 鈥?Chinese main readme
+- [base/README.en.md](base/README.en.md) — base tier: install, tool groups, limits, troubleshooting
+- [full/README.en.md](full/README.en.md) — full tier: building and arming the DLL, safety design, uninstall
+- [mcp-skill/README.en.md](mcp-skill/README.en.md) — the agent Skill and how to install it
+- [README.md](README.md) — Chinese main readme
+- [CHANGELOG.md](CHANGELOG.md) — what changed in each release
+- [LICENSE](LICENSE) — Apache License 2.0
+- [NOTICE](NOTICE) — third-party notices
+
+## License
+
+**The code in this repository is licensed under the [Apache License 2.0](LICENSE).**
+
+```
+Copyright 2026 normalwindow
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+```
+
+### About Noita
+
+This is an **unofficial, non-commercial fan work**. Noita and all of its content belong to
+**Nolla Games Oy**. This project is not affiliated with, endorsed by, or sponsored by Nolla Games.
+
+The Apache license covers **this repository's code only**. It grants no rights to Noita itself and
+does not override or replace the Noita Modding Agreement
+(`tools_modding/Noita-ModdingAgreement-v100.rtf` in the game install), which also applies to anyone
+using this mod.
+
+That agreement forbids distributing "a substantial part of our copyrightable code, content, assets",
+which is why **this repository contains no unpacked game data** — only facts (identifiers, numbers,
+relationships) extracted from a copy the user owns. See `tools/build_db.py` and
+`tools/unpack-data.ps1`.
+
+Full third-party notices are in [NOTICE](NOTICE).

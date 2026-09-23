@@ -62,3 +62,9 @@ Copy-Item .\mcp-skill\SKILL.md "$project\.dsh\skills\noita-mcp\SKILL.md"
 - 安装 Skill 不会带来任何权限。如果人类把模组的面板开关关掉了，装了 Skill 的调用一样会被拒绝。
 - Skill 是写给智能体的，不是写给人看的。安装和限制请看 [../base/README.md](../base/README.md) 与
   [../full/README.md](../full/README.md)。
+
+## 许可
+
+本仓库代码采用 [Apache License 2.0](../LICENSE) 授权。完整文本见仓库根目录的 [LICENSE](../LICENSE)，第三方声明见 [NOTICE](../NOTICE)。
+
+这是一个非商业的粉丝作品。Noita 及其全部内容归 Nolla Games Oy 所有，本项目与 Nolla Games 无隶属关系。Apache 2.0 只覆盖本仓库的代码，不授予 Noita 本身的任何权利，也不改变 Noita 模组协议的条款。

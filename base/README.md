@@ -145,3 +145,9 @@
 2. 从 MCP 客户端配置里删掉服务器条目。
 
 游戏自身的文件从不被修改。`base\install.ps1 -Uninstall` 可以代劳删除目录并在 `mod_config.xml` 里禁用模组。
+
+## 许可
+
+本仓库代码采用 [Apache License 2.0](../LICENSE) 授权。完整文本见仓库根目录的 [LICENSE](../LICENSE)，第三方声明见 [NOTICE](../NOTICE)。
+
+这是一个非商业的粉丝作品。Noita 及其全部内容归 Nolla Games Oy 所有，本项目与 Nolla Games 无隶属关系。Apache 2.0 只覆盖本仓库的代码，不授予 Noita 本身的任何权利，也不改变 Noita 模组协议的条款。

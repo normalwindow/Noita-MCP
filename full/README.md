@@ -141,3 +141,9 @@ SDL2 导出的输入函数是 7 字节的导入 thunk（`mov eax, [imm32]; jmp e
 - 游戏更新可能改变 thunk 布局。目标解析是基于特征的（跟随 `mov eax, [imm32]; jmp eax` 形式），
   理论上能存活，但输入失效时请用计数器重新验证。
 - 输入只对局内生效。桥接和扩展在主菜单里都不做任何事。
+
+## 许可
+
+本仓库代码采用 [Apache License 2.0](../LICENSE) 授权。完整文本见仓库根目录的 [LICENSE](../LICENSE)，第三方声明见 [NOTICE](../NOTICE)。
+
+这是一个非商业的粉丝作品。Noita 及其全部内容归 Nolla Games Oy 所有，本项目与 Nolla Games 无隶属关系。Apache 2.0 只覆盖本仓库的代码，不授予 Noita 本身的任何权利，也不改变 Noita 模组协议的条款。
