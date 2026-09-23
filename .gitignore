@@ -1,0 +1,29 @@
+# build output
+*.obj
+*.exp
+*.lib
+*.pdb
+*.ilk
+*.idb
+build/
+
+# runtime state written next to the mod while the game runs
+run/
+xh_*.txt
+*.log
+
+# OS noise
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# editor
+.vscode/
+.idea/
+*.swp
+
+# python (the db builder needs nothing beyond the stdlib, but a stray venv happens)
+__pycache__/
+*.pyc
+.venv/
+venv/

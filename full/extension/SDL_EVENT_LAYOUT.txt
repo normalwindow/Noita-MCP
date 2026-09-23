@@ -1,0 +1,25 @@
+SDL_Event (32-bit) layout:
+  Uint32 type            @0     SDL_KEYDOWN=0x300, SDL_KEYUP=0x301, SDL_MOUSEMOTION=0x400
+  padding                @4..7
+  SDL_KeyboardEvent      @8
+     Uint32 type         @8      (duplicate of the outer type)
+     Uint32 timestamp    @12
+     Uint32 windowID     @16
+     Uint8  state        @20
+     Uint8  repeat       @21
+     Uint8  padding2     @22
+     Uint8  padding3     @23
+     SDL_Keysym keysym   @24
+        SDL_Scancode scancode  @24   <-- what to forge
+        SDL_Keycode  sym       @28
+        Uint16       mod       @32
+        Uint32       unused    @36
+     total 40 bytes
+  SDL_MouseMotionEvent   @8
+     Uint32 type         @8
+     Uint32 timestamp    @12
+     Uint32 windowID     @16
+     Uint32 which        @20
+     Uint32 state        @24
+     Sint32 x            @28   <-- forge to aim
+     Sint32 y            @32
