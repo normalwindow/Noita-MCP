@@ -1889,6 +1889,30 @@ const TOOLS = [
     handler: (args) => rpc('stream_action', args || {}),
   },
   {
+    name: 'noita_framerate',
+    description: 'Measure the engine\'s frame acceptance rate against wall-clock time. Two ' +
+      'uses: (1) tell "the bridge stopped answering" from "the engine stopped advancing" — ' +
+      '0 game frames per real second means the game is paused or not in a run, and retrying ' +
+      'a call will not help; (2) acceptance-test anything that changes how fast the game ' +
+      'runs, because a change to the effective frame delta shows up as a divergence between ' +
+      'real frames per second and game frames per second. Call with `finish` omitted to ' +
+      'start, then again with `finish: true` after a second or two.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        finish: { type: 'boolean', description: 'true = stop and return the measurement' },
+        label: { type: 'string', description: 'what this window is, e.g. "before" / "after"' },
+        status: { type: 'boolean', description: 'true = just report whether one is running' },
+      },
+    },
+    handler: async (args) => {
+      const a = args || {};
+      if (a.status) return rpc('framerate_state');
+      if (a.finish) return rpc('framerate_finish');
+      return rpc('framerate_start', { label: a.label });
+    },
+  },
+  {
     name: 'noita_raw_rpc',
     description: 'Escape hatch: call a game-side bridge method directly with raw params. Methods: ' +
       'ping, status, get_state, get_player, get_nearby, get_inventory, get_wands, get_held_wand, raycast, ' +

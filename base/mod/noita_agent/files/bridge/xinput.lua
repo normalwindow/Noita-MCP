@@ -48,6 +48,10 @@ local resolve_error = nil
 -- SCANCODES (a nil value)" -- which looked like the forge being rejected when it
 -- had not run at all.
 local SCANCODES = {
+  -- SDL scancodes (SDL_SCANCODE_*). The number is the HID usage code, not an ASCII value:
+  -- A is 4, not 65, and ESC is 41. Taken from SDL's own table rather than derived from the
+  -- characters, because deriving them is how a wrong one ships unnoticed.
+  ESC = 41, ESCAPE = 41,
   W = 26, A = 4, S = 22, D = 7, SPACE = 44, SHIFT = 225, CTRL = 224,
   E = 8, Q = 20, R = 21, F = 9,
   UP = 82, DOWN = 81, LEFT = 80, RIGHT = 79,

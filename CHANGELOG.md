@@ -13,6 +13,70 @@ copy of the folder is always accepted by the game.
 
 ---
 
+## [1.4.0] — 2026-09-24
+
+Adds the instrument needed before any time-scale work, plus the static analysis behind it.
+No behaviour changed. 77 tools.
+
+### Added — `noita_framerate`
+
+Measures the engine's frame acceptance rate against wall-clock time. Two uses:
+
+- **Diagnosis.** "The bridge stopped answering" and "the engine stopped advancing" look
+  identical from outside — and measurably are: pressing ESC to open the menu stops the engine,
+  and because the bridge runs inside the engine's frame loop it stops too, so `ping` times out
+  and no measurement can be read. This tool is the only way to tell the two apart from outside.
+- **Acceptance testing for anything that changes how fast the game runs.** The engine keeps
+  time with `QueryPerformanceCounter`, so a frame's dt comes from real elapsed time, and a
+  change to the effective dt shows up as a divergence between real frames per second and game
+  frames per second. Under normal play the two are equal.
+
+Calibrated in a live run: **60 game frames per real second, mean 16.66 ms between frames,
+worst 18 ms** over 192 samples. That is the reference any candidate change has to be compared
+against, and it is a number rather than an impression — "does the game feel slower" cannot
+distinguish a correct write from one that merely stutters, and a wrong write is the failure
+mode here.
+
+It samples from the bridge's per-frame update. Its first version used a wait loop, which
+cannot work: Lua runs on the game's main thread, so a loop waiting for the frame counter to
+advance stops the engine from advancing it.
+
+### Added — `tools/find_timescale.py`
+
+Static analysis, run before any memory write. What it found:
+
+- The engine keeps time with `QueryPerformanceCounter` / `QueryPerformanceFrequency`. There is
+  no `timeGetTime`, and SDL is not the clock.
+- **No string anywhere names the concept** — no `timescale`, `time_scale`, `slowmo`,
+  `game_speed`, `timestep` or `fixed_dt`. That absence is itself the finding: the engine has no
+  notion of a time scale, so "scale time" would mean editing whichever dt values are used
+  across the frame, not flipping a switch.
+- `1/60` appears as a real constant in only **9** places in `.rdata`. The 151 hits in `.text`
+  are instruction encodings that happen to match the byte pattern, which is why the script
+  reports sections separately instead of dumping one list.
+
+It deliberately produces no candidate address. An xref to a float constant is where a value is
+read, not where an authoritative clock lives, and treating one as the other is how a wrong
+write gets made.
+
+### Fixed
+
+`ESCAPE` and `ESC` were missing from the scancode table, so any call pressing escape failed
+with "unknown key name". SDL scancodes are HID usage codes, not ASCII — A is 4 and ESC is 41 —
+and deriving them from the characters is how a wrong one ships unnoticed. The table now says so.
+
+### Verified at this release
+
+| Suite | Result |
+| --- | --- |
+| Lua syntax | 21/21 files compile |
+| Mock game | 75/76 checks |
+| MCP end to end | 15/15 checks |
+| Frame rate calibration | 60 fps, mean 16.66 ms, worst 18 ms |
+| Encoding | no BOMs, no mojibake |
+
+---
+
 ## [1.3.0] — 2026-09-24
 
 Documentation for whoever changes this next, including a future version of the author. No

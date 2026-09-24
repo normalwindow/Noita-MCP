@@ -807,6 +807,14 @@ handlers.stream_action = function(params)
   params = params or {}
   return { ok = true, recorded = stream.action(params.name or "unspecified", params.detail) }
 end
+
+-- ---------------------------------------------------------------- framerate
+
+-- Reading the engine's rate is observation, so none of these are gated. The measurement
+-- itself only records; it changes nothing.
+handlers.framerate_start = function(params) return framerate.start(params) end
+handlers.framerate_finish = function() return framerate.finish() end
+handlers.framerate_state = function() return framerate.state() end
 handlers.po_world        = function(params) return player_ops.world(params) end
 handlers.po_biome_at     = function(params) return player_ops.biome_at(params) end
 handlers.po_inventory    = function(params) return player_ops.inventory(params) end
@@ -1170,6 +1178,10 @@ function rpc.pre_update()
   if macro and type(macro.tick) == "function" then pcall(macro.tick) end
   -- Publish a decision-stream observation if one is due. Does nothing when off.
   if stream and type(stream.tick) == "function" then pcall(stream.tick) end
+  -- Feed the frame-rate measurement, if one is running. It samples from here rather than
+  -- from a loop because Lua runs on the main thread: a loop waiting for the frame counter
+  -- to advance would stop the engine from advancing it.
+  if framerate and type(framerate.sample) == "function" then pcall(framerate.sample) end
   -- service the socket from the pre-update phase so a request that arrives while
   -- the game is idle is answered before the engine's own update for that frame
   pcall(sock.poll)
