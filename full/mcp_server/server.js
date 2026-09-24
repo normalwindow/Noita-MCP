@@ -1992,38 +1992,45 @@ const TOOLS = [
     handler: () => rpc('controls_snapshot'),
   },
   // ---- world seed ---------------------------------------------------------
-  // The seed is shown on the pause screen but cannot be asked for: the API has SetWorldSeed and
-  // no getter, no session-number key holds it, and the world state component carries only
-  // day_count and time. It IS in memory, and a value the player can read is a value that can be
-  // searched for -- so that is what these do.
+  // Read DIRECTLY from noita.exe's static data. The caller supplies nothing.
   //
-  // No DLL needed: the scan uses LuaJIT's FFI, which is part of the base mod. Verified with the
-  // input extension NOT loaded: 2 hits, 1.2 s, game unaffected.
+  // The first version of this took the seed as an argument and searched memory for it, which is
+  // not a reader -- it is a search that needs the answer to find the answer. That was the right
+  // criticism to receive.
+  //
+  // The addresses were not guessed either. Two independent globals were observed holding the same
+  // large value, and the decisive test was a new game: the value changed with the run while the
+  // addresses stayed put.
+  //
+  //   run A 1912643501   run B 899735160   run C 333162438
+  //
+  // Requiring the two to agree is a self-check that needs no external answer.
   {
-    name: 'noita_seed_find',
-    description: 'Locate the run\'s world seed in process memory. You must pass the seed the ' +
-      'player reads off the PAUSE SCREEN — the whole method depends on having a known value to ' +
-      'search for, because the API cannot supply one (it has SetWorldSeed and no getter). ' +
-      'Reports every address holding it and which region each is in. Addresses move between ' +
-      'runs, so they are found fresh each time rather than cached. Takes 1-2 seconds and freezes ' +
-      'nothing; the game keeps running.',
+    name: 'noita_seed',
+    description: 'The run\'s world seed, read from the game\'s own memory. Takes no arguments — ' +
+      'nothing needs to be supplied. Read from two independent globals in noita.exe and reported ' +
+      'only when they agree, so a wrong read surfaces as a disagreement rather than as a ' +
+      'plausible-looking number. Verified against real runs: the value changes with a new game ' +
+      '(1912643501, then 899735160, then 333162438) while the addresses stay the same, which is ' +
+      'what makes it a read rather than a coincidence.',
+    inputSchema: { type: 'object', properties: {} },
+    handler: () => rpc('seed_read'),
+  },
+  {
+    name: 'noita_seed_scan',
+    description: 'FALLBACK, only needed if noita_seed reports a disagreement — which would mean a ' +
+      'game build moved the seed globals. Searches memory for a seed value the player can read off ' +
+      'the pause screen, and reports which hits are in noita.exe\'s static data, since those are ' +
+      'the stable kind and the heap ones move.',
     inputSchema: {
       type: 'object',
       properties: {
-        value: { type: 'integer', description: 'the seed as shown on the pause screen' },
+        value: { type: 'integer', description: 'a seed read off the pause screen' },
         max_hits: { type: 'integer', description: 'stop after this many hits, default 64' },
       },
       required: ['value'],
     },
-    handler: (args) => rpc('seed_find', args || {}),
-  },
-  {
-    name: 'noita_seed_verify',
-    description: 'Re-read the addresses from the last seed search and report which still hold the ' +
-      'seed. Cheap, because it reads a handful of addresses rather than rescanning memory — use ' +
-      'it to check the answer is still good before relying on one of them.',
-    inputSchema: { type: 'object', properties: {} },
-    handler: () => rpc('seed_verify'),
+    handler: (args) => rpc('seed_scan', args || {}),
   },
   // ---- perception ---------------------------------------------------------
   // Chunked, not pixel-level. An agent needs to know roughly what the terrain around it is made
@@ -2075,6 +2082,54 @@ const TOOLS = [
       'class up in the material catalogue.',
     inputSchema: { type: 'object', properties: {} },
     handler: () => rpc('percept_vocabulary'),
+  },
+  {
+    name: 'noita_percept_sweep',
+    description: 'PENETRATING terrain profile in every direction: what is out there, and what is ' +
+      'BEHIND it. Each direction returns a compact string, near to far, one character per slice — ' +
+      '"#" standable, "%" solid, "~" liquid, "^" gas or fire, "." open. A wall does not hide what ' +
+      'is behind it, because the profile comes from where four raytrace variants stop rather than ' +
+      'from a single hit. Also reports `first_contact` per direction: how far the nearest ' +
+      'non-open slice is. Defaults to 16 directions (minimum 8) and costs 4 raycasts per ' +
+      'direction, so the whole default sweep is 64 raycasts.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        directions: { type: 'integer', description: '8-64, default 16' },
+        reach: { type: 'integer', description: 'how far out to look, 32-4000px, default 600' },
+        samples: { type: 'integer', description: 'slices per direction, 2-32, default 8' },
+        offset_degrees: { type: 'number', description: 'rotate the ring' },
+        force: { type: 'boolean', description: 'run even when perception is switched off' },
+      },
+    },
+    handler: (args) => rpc('percept_sweep', args || {}),
+  },
+  {
+    name: 'noita_percept_enabled',
+    description: 'Whether perception is switched on, and its raycast budget. A full sweep is not ' +
+      'free, so it can be turned off; when it is off, noita_percept_sweep refuses unless forced.',
+    inputSchema: { type: 'object', properties: {} },
+    handler: () => rpc('percept_enabled'),
+  },
+  {
+    name: 'noita_percept_disable',
+    description: 'Switch perception on or off, or change its raycast budget. Use it to stop ' +
+      'perception costing anything during play when nothing needs it.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        enabled: { type: 'boolean', description: 'omit to leave the switch alone' },
+        raycasts: { type: 'integer', description: 'per-call budget, 64-20000' },
+      },
+    },
+    handler: async (args) => {
+      const a = args || {};
+      const out = {};
+      if (a.enabled !== undefined) out.switch = await rpc('percept_set_enabled', { enabled: a.enabled });
+      if (a.raycasts !== undefined) out.budget = await rpc('percept_set_budget', { raycasts: a.raycasts });
+      if (a.enabled === undefined && a.raycasts === undefined) return rpc('percept_enabled');
+      return out;
+    },
   },
   {
     name: 'noita_raw_rpc',

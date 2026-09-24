@@ -27,10 +27,11 @@ function walk(d) {
   });
 }
 
-// Names that look like tool calls but are not tools. Keeping this list explicit
-// stops the check from drowning in false positives, which is how a check like this
-// gets ignored: noita_agent is the MOD's name, noita_db is a file, and the other two
-// are tools that were deliberately removed and are only mentioned as such.
+// Names that look like tool calls but are not tools. Keeping this list explicit stops the check
+// from drowning in false positives, which is how a check like this gets ignored: noita_agent is the
+// MOD's name, noita_db is a file, and the others were deliberately removed or renamed and are only
+// mentioned as such -- in the CHANGELOG entry that recorded the change, which must keep naming
+// them or the history stops making sense.
 const NOT_TOOLS = new Set([
   'noita_agent',            // the mod's name
   'noita_db',               // noita_db.json, the fact database file
@@ -38,18 +39,43 @@ const NOT_TOOLS = new Set([
   'noita_input_clear',      // removed: use noita_input_release
   'noita_input_move',       // replaced below only if the server disagrees
   'noita_entity_blueprint', // superseded by noita_db_query
+  'noita_seed_find',        // replaced by noita_seed, which needs no arguments
+  'noita_seed_verify',      // replaced by the agreement check inside noita_seed
 ]);
 
-// Tool names are only counted when they appear in a code span or a table cell, which
-// is where a real tool reference lives. Prose like "noita-wand-editing" or a bare
-// mention of the mod is not a call.
+// A CHANGELOG is a record of what the tool set WAS, so its older sections necessarily name tools
+// that no longer exist. Only the newest version's section is treated as describing the present.
+// Without this the check reports every rename twice -- once when it happens and forever after, in
+// the entry that explains it -- and a check that always complains is one nobody reads.
+function currentChangelogSection(text) {
+  const lines = text.split(/\r?\n/);
+  const out = [];
+  let inCurrent = false;
+  for (const line of lines) {
+    const version = /^##\s*\[(\d+\.\d+\.\d+)\]/.exec(line);
+    if (version) {
+      if (inCurrent) break;    // reached the next version: stop
+      inCurrent = true;        // the first version heading is the newest
+      continue;
+    }
+    if (inCurrent) out.push(line);
+  }
+  return out.join('\n');
+}
+
+// Tool names are only counted when they appear in a code span or a table cell, which is where a
+// real tool reference lives. Prose like "noita-wand-editing" or a bare mention of the mod is not a
+// call.
 const TOOL_REF = /`(noita_[a-z0-9_]+)`|^\|\s*`?(noita_[a-z0-9_]+)`?/gm;
 
 let total = 0;
 const bad = [];
 const seen = new Set();
 for (const f of walk(root).filter((f) => f.endsWith('.md'))) {
-  const text = fs.readFileSync(f, 'utf8');
+  const raw = fs.readFileSync(f, 'utf8');
+  // The CHANGELOG's older sections describe what the tool set USED to be, so they are not checked.
+  // Only the newest section is, because that is the one describing the present.
+  const text = path.basename(f) === 'CHANGELOG.md' ? currentChangelogSection(raw) : raw;
   for (const m of text.matchAll(TOOL_REF)) {
     const name = m[1] || m[2];
     if (!name) continue;

@@ -304,16 +304,20 @@ first, and `mButtonDownAction`/`mButtonFrameAction` do not exist on this compone
 
 ## Operating on someone's run
 
-### Set invincibility before teleporting
+### Invincibility before teleporting is a DEBUGGING procedure, not shipped behaviour
 
 Moving the player is not a read-only act. Teleporting into an unexplored area drops them among
 enemies with no protection, and a run ended that way during terrain reconnaissance.
 
-**Do:** `noita_set_player` with `hp`, `max_hp` and `invincibility_frames` **first**, then move.
-The three together; large `hp` alone still lets a hit land, and `invincibility_frames` without
-health still shows a death if the frames lapse.
+**When debugging — meaning when you are the one moving the player to look at something —** call
+`noita_set_player` with `hp`, `max_hp` and `invincibility_frames` **first**, then move. All three:
+large `hp` alone still lets a hit land, and `invincibility_frames` without health still ends in a
+death if the frames lapse.
 
-This is cheap and reversible, and the alternative is losing the run the user was playing.
+**This must not become automatic.** The mod ships the capability and never the behaviour: verified
+by searching the released tree, every reference to `invincibility_frames` and every
+`EntitySetTransform` sits behind an explicit API call, and nothing invokes them on load, on spawn or
+on a timer. A player's run is theirs; the bridge does not quietly make them immortal.
 
 ## Raycasting: what a return value means
 

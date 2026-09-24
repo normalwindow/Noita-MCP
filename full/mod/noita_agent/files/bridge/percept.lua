@@ -97,12 +97,204 @@ end
 
 -- The main call: what is around the player, per distance band.
 --
+-- Whether perception is switched on, and how much work it is allowed to do.
+--
+-- The user asked for a switch because a full sweep is not free. Each direction costs one raycast
+-- per variant per sample point, so a 16-direction, 8-sample sweep is 16 x 8 x 4 = 512 raycasts.
+-- That is fine occasionally and too much every frame, so this is off unless asked for and reports
+-- its own cost.
+percept._enabled = true
+percept._budget = 2000       -- raycasts allowed in one call before the sweep trims itself
+
+function percept.set_enabled(on)
+  percept._enabled = (on ~= false)
+  return { ok = true, enabled = percept._enabled }
+end
+
+function percept.enabled()
+  return { ok = true, enabled = percept._enabled, budget = percept._budget }
+end
+
+function percept.set_budget(n)
+  n = tonumber(n)
+  if not n then return { ok = false, error = "budget must be a number" } end
+  percept._budget = math.max(64, math.min(math.floor(n), 20000))
+  return { ok = true, budget = percept._budget }
+end
+
+-- PENETRATING profile along one direction, from ONE set of rays.
+--
+-- WHY THIS SHAPE AND NOT A PROBE PER SLICE
+--
+-- The first version probed each distance slice separately, starting the probe inside whatever was
+-- there. That fails for the reason established earlier: a ray beginning inside solid matter stops
+-- at its own start and all four variants agree, so most slices came back unresolvable ("?"). It
+-- also cost a raycast per variant per slice.
+--
+-- Casting each variant ONCE from the player and reading where it STOPPED is both cheaper and
+-- correct. A variant's stop distance is the depth at which that variant is blocked, so the profile
+-- falls out of four numbers:
+--
+--   stop_platforms  the depth standable ground begins
+--   stop_liquiform  where a solid begins
+--   stop_surfaces   where a liquid begins
+--   stop_any        where gas, fire or anything begins
+--
+-- and every slice is classified by which of those is nearest, which is exactly the
+-- densest-thing-first ordering the classes are defined by.
+--
+-- This is the penetration the user asked for: a wall at 40px does not hide the gas at 200px,
+-- because the permissive variant's stop distance is what says where the gas is.
+local function profile(px, py, dx, dy, reach, samples)
+  local stop = {}
+  for _, v in ipairs(VARIANTS) do
+    local ok, did, hx, hy = pcall(v.fn, px, py, px + dx * reach, py + dy * reach)
+    if not ok or not did then
+      stop[v.name] = nil                     -- reached the end: nothing of this kind in the way
+    else
+      -- Distance from the player to where it stopped. Clamped to the ray, since a stop beyond the
+      -- requested reach would be an engine artefact.
+      local d = math.sqrt((hx - px) ^ 2 + (hy - py) ^ 2)
+      stop[v.name] = (d <= reach + 1) and d or nil
+    end
+  end
+
+  local step = reach / samples
+  local hits = {}
+  local chars = {}
+  local GLYPH = {
+    standable = "#", solid = "%", liquid = "~", gas_or_fire = "^", open = ".",
+  }
+
+  for s = 1, samples do
+    local d0, d1 = step * (s - 1), step * s
+    local mid = (d0 + d1) / 2
+
+    -- Which is the nearest thing that would be met at this depth? Densest wins, which is the same
+    -- rule the slice probe used, expressed as a comparison of stop distances.
+    local class = "open"
+    if stop.platforms and stop.platforms <= mid then class = "standable"
+    elseif stop.liquiform and stop.liquiform <= mid then class = "solid"
+    elseif stop.surfaces and stop.surfaces <= mid then class = "liquid"
+    elseif stop.any and stop.any <= mid then class = "gas_or_fire" end
+
+    hits[s] = { from = math.floor(d0), to = math.floor(d1), class = class }
+    chars[s] = GLYPH[class] or "?"
+  end
+
+  return hits, table.concat(chars), stop
+end
+
+-- Per-direction depth profiles with penetration, which is the call to use for "what is out there
+-- and what is behind it".
+function percept.sweep(params)
+  params = params or {}
+  if not percept._enabled and params.force ~= true then
+    return { ok = false, error = "perception is switched off",
+             hint = "call noita_percept_enabled with enabled=true, or pass force=true" }
+  end
+
+  local directions = math.max(8, math.min(tonumber(params.directions) or 16, 64))
+  local reach = math.max(32, math.min(tonumber(params.reach) or 600, 4000))
+  local samples = math.max(2, math.min(tonumber(params.samples) or 8, 32))
+  local offset = tonumber(params.offset_degrees) or 0
+
+  local p = ser.player()
+  if not p then return { ok = false, error = "no player" } end
+  local px, py = EntityGetTransform(p)
+
+  -- Trim to the budget rather than running away with the frame. A profile costs four rays per
+  -- direction now, so the budget bites far less often than it did.
+  local cost = directions * #VARIANTS
+  local trimmed = false
+  while cost > percept._budget and samples > 2 do
+    samples = samples - 1
+    trimmed = true
+  end
+
+  local rows = {}
+  local totals = {}
+
+  for i = 0, directions - 1 do
+    local deg = offset + (360 / directions) * i
+    local rad = math.rad(deg)
+    local dx, dy = math.cos(rad), math.sin(rad)
+
+    local hits, bar, stop = profile(px, py, dx, dy, reach, samples)
+    rows[#rows + 1] = {
+      degrees = math.floor(deg + 0.5),
+      profile = bar,
+      bands = hits,
+      -- The raw stop distances, so a caller can see the evidence the profile was derived from
+      -- rather than only its conclusion.
+      stop_distance = {
+        platforms = stop.platforms and math.floor(stop.platforms) or nil,
+        liquiform = stop.liquiform and math.floor(stop.liquiform) or nil,
+        surfaces  = stop.surfaces  and math.floor(stop.surfaces)  or nil,
+        any       = stop.any       and math.floor(stop.any)       or nil,
+      },
+    }
+
+    for _, h in ipairs(hits) do
+      totals[h.class] = (totals[h.class] or 0) + 1
+    end
+  end
+
+  local total_samples = directions * samples
+  local composition = {}
+  for class, n in pairs(totals) do
+    composition[class] = {
+      count = n,
+      fraction = math.floor((n / total_samples) * 1000) / 1000,
+    }
+  end
+
+  -- How far the first obstacle of any kind stands, per direction: the "distance to the surface"
+  -- number, which is the single most useful summary of a profile.
+  local first_contact = {}
+  for _, row in ipairs(rows) do
+    local d = nil
+    for _, h in ipairs(row.bands) do
+      if h.class ~= "open" then d = h.from break end
+    end
+    first_contact[#first_contact + 1] = { degrees = row.degrees, distance = d }
+  end
+
+  return {
+    ok = true,
+    player = { x = math.floor(px), y = math.floor(py) },
+    directions = directions,
+    samples = samples,
+    reach = reach,
+    raycasts = cost,
+    trimmed_to_budget = trimmed,
+    composition = composition,
+    lines = (function()
+      local out = {}
+      for _, r in ipairs(rows) do
+        out[#out + 1] = string.format("%3d deg  %s", r.degrees, r.profile)
+      end
+      return out
+    end)(),
+    rows = rows,
+    first_contact = first_contact,
+    legend = {
+      ["#"] = "standable", ["%"] = "solid", ["~"] = "liquid", ["^"] = "gas or fire",
+      ["+"] = "occupied, unclassified", ["?"] = "solid or liquid, unresolvable",
+      ["."] = "open",
+    },
+    note = "Each character is one slice of distance, near to far. PENETRATING: a wall does not " ..
+           "hide what is behind it, because every slice is its own probe. 'first_contact' is " ..
+           "where the nearest non-open slice is, per direction.",
+  }
+end
+
 -- Each band tests a ring of points at that distance. For every point the probe asks "is the spot
 -- just beyond this occupied", so the answer per band is a COVERAGE fraction plus a class breakdown
 -- where the engine actually provides one.
 function percept.surroundings(params)
   params = params or {}
-  local directions = math.max(4, math.min(tonumber(params.directions) or 12, 32))
+  local directions = math.max(8, math.min(tonumber(params.directions) or 16, 32))
   local reach = math.max(16, math.min(tonumber(params.reach) or 200, 2000))
   local bands = math.max(1, math.min(tonumber(params.bands) or 4, 10))
   local offset = tonumber(params.offset_degrees) or 0

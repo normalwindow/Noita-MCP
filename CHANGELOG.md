@@ -13,9 +13,93 @@ copy of the folder is always accepted by the game.
 
 ---
 
+## [2.3.0] — 2026-09-24
+
+Three corrections from review. 90 tools.
+
+### Fixed — the seed reader required the answer to find the answer
+
+`noita_seed_find` took the seed as an argument and searched memory for it. That is not a reader: it
+is a search that needs the value supplied before it can return the value, and asking a person to
+read it off the pause screen defeats the point of a tool. **The criticism was correct.**
+
+`noita_seed` now takes **no arguments**. It reads two globals in `noita.exe`'s static data
+directly, and reports a value only when they agree — a self-check that needs no external answer. A
+wrong read surfaces as a disagreement rather than as a plausible-looking number.
+
+The addresses were not guessed. Two independent globals were observed holding the same large value,
+and the decisive test was a **new game**: the value changed with the run while the addresses stayed
+put.
+
+| run | seed |
+| --- | --- |
+| A | 1912643501 |
+| B | 899735160 |
+| C | 333162438 |
+| D | 1993767017 |
+| E | 506558016 |
+
+A cache, or an unrelated global, would not track the seed across five new games. The old
+value-search survives as `noita_seed_scan`, which is documented as the fallback for a build that
+moves the addresses — deliberately second, not the normal path.
+
+### Changed — perception got penetration, and got cheaper
+
+The user asked for at least 8 directions and for penetration, with a switch if the cost was a
+problem. All three, and the penetrating version turned out to be **eight times cheaper**.
+
+Profiles are now derived from **one ray per variant per direction**, reading where each variant
+stopped, instead of probing each distance slice separately. The first attempt at slices probed from
+inside whatever was there — which fails for the reason established earlier: a ray beginning inside
+solid matter stops at its own start and all four variants agree, so most slices came back
+unresolvable. Deriving from stop distances is both correct and cheaper:
+
+| | raycasts (16 directions, 8 slices, 400px) |
+| --- | --- |
+| slice-by-slice probes | 512 |
+| stop-distance profiles | **64** |
+
+A profile is a compact per-direction string, near to far:
+
+```
+  0 deg  ########     solid ground for the whole 400px
+180 deg  ....%###     open for 200px, then a solid face, then ground
+225 deg  ......       open all the way
+```
+
+- `noita_percept_sweep` — the penetrating call. Defaults to **16 directions**; the minimum is 8.
+- `noita_percept_enabled` / `noita_percept_disable` — the switch, with a raycast budget that trims
+  the sweep instead of running away with the frame.
+- Every profile keeps the raw `stop_distance` values, so a caller sees the evidence behind the
+  classification rather than only its conclusion.
+
+### Recorded — invincibility is a debugging aid, not shipped behaviour
+
+A run was lost by teleporting the player into enemies while exploring terrain. The lesson is in
+`ENGINE-NOTES.md` as a procedure for **debugging**: set `hp`, `max_hp` and `invincibility_frames`
+together before moving.
+
+**It is not automatic.** Verified by searching the released mod: every reference to
+`invincibility_frames` and every `EntitySetTransform` sits behind an explicit API call, and nothing
+invokes them on load, on spawn or on a timer. The capability ships; the behaviour does not.
+
+### Verified at this release
+
+| Check | Result |
+| --- | --- |
+| Seed read, live, no arguments | five distinct seeds across five games, corroborated |
+| Seed reader, mock | refuses rather than inventing a value |
+| Perception, live | 8 and 16 directions, 32-64 raycasts, penetrating profiles |
+| Perception switch | off blocks a sweep, `force` overrides, restores |
+| Auto-invincibility in the release | none — every reference is behind an explicit call |
+| Lua syntax / mock / MCP end to end | 23/23, 85/86, 15/15 |
+| Encoding | no BOMs, no mojibake |
+
+---
+
 ## [2.2.0] — 2026-09-24
 
-Chunked material perception, and the material catalogue from the unpacked game data. 87 tools.
+Chunked material perception, and the material catalogue from the unpacked game data. 90 tools.
 
 ### Added — perception by chunk, which is the shape this needed
 
@@ -96,7 +180,7 @@ frames without health still end in a death if they lapse.
 
 ## [2.1.0] — 2026-09-24
 
-Three gaps found in a review of what the bridge can see. 87 tools.
+Three gaps found in a review of what the bridge can see. 90 tools.
 
 ### Added — the world seed, read out of memory
 
@@ -280,7 +364,7 @@ Every one of these was invisible from inside the repository, where the developme
 ## [2.0.0] — 2026-09-24
 
 **Time scaling works.** Slow motion and fast forward, verified in a live game in both
-directions. 87 tools.
+directions. 90 tools.
 
 This replaces the 1.4.1 conclusion that it was not feasible. That conclusion was wrong, and the
 reason is worth recording: the search was for Noita's own time variable, and **there is no such

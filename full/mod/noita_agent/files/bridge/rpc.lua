@@ -833,20 +833,33 @@ handlers.time_measure_finish = function() return xinput.time_measure_finish() en
 
 -- ---------------------------------------------------------------- world seed
 
--- Reading the seed is observation. The scan only reads, so none of these are gated.
-handlers.seed_find = function(params)
+-- Reading the seed is observation. The read needs no arguments -- it reads the game's static data
+-- directly. `seed_scan` is the fallback for a build that moved the addresses, and needs a value
+-- supplied from outside.
+handlers.seed_read = function() return seedreader.read() end
+handlers.seed_scan = function(params)
   params = params or {}
-  return seedreader.find(params.value, params.max_hits)
+  return seedreader.scan(params.value, params.max_hits)
 end
-handlers.seed_verify = function() return seedreader.verify() end
+handlers.seed_addresses = function() return seedreader.addresses() end
 handlers.seed_status = function() return seedreader.status() end
 
 -- ---------------------------------------------------------------- perception
 
 -- Reading the surroundings is observation, so none of these are gated.
 handlers.percept_surroundings = function(params) return percept.surroundings(params) end
+handlers.percept_sweep = function(params) return percept.sweep(params) end
 handlers.percept_chunk = function(params) return percept.chunk(params) end
 handlers.percept_vocabulary = function() return percept.vocabulary() end
+handlers.percept_enabled = function() return percept.enabled() end
+handlers.percept_set_enabled = function(params)
+  params = params or {}
+  return percept.set_enabled(params.enabled)
+end
+handlers.percept_set_budget = function(params)
+  params = params or {}
+  return percept.set_budget(params.raycasts)
+end
 
 -- ---------------------------------------------------------------- framerate
 

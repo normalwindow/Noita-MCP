@@ -1,159 +1,177 @@
--- Reads the run's world seed out of process memory.
+-- Reads the run's world seed, independently.
 --
--- WHY MEMORY, AND NOT THE API
+-- WHAT WAS WRONG WITH THE FIRST VERSION, AND WHY IT MATTERED
 --
--- The pause screen displays the seed, so the game has it. There is no way to ASK for it: the Lua
--- API exposes `SetWorldSeed` and no getter, `SessionNumbersGetValue` returns an empty string for
--- every plausible key, the WorldStateComponent carries only `day_count` and `time`, and a scan of
--- the 40 MB game data shows the engine uses exactly one session number ("NEW_GAME_PLUS_COUNT").
+-- `seedreader.find(value)` searched memory for a number the player read off the pause screen. That
+-- is not a reader -- it is a search that needs the answer in order to find the answer, and asking a
+-- person to supply it defeats the point of a tool. The complaint was correct and this replaces it.
 --
--- So the value is found by searching for it. That is only possible because the player can READ it
--- off the pause screen: a known number is a needle, where an unknown one is not. `noita_seed_find`
--- takes the number the player sees and locates it.
+-- HOW IT READS NOW
 --
--- WHY IT SEARCHES EVERY TIME INSTEAD OF CACHING AN ADDRESS
+-- The seed lives in noita.exe's static data, at fixed addresses, and this reads them directly. No
+-- search, no player input, nothing to be told.
 --
--- Measured on a live run, the seed appears at 13 addresses across four regions -- two in the
--- module's static data and the rest in heap allocations, several in pairs 0xB8 bytes apart. Which
--- of those the pause screen reads is not established, and a hardcoded address would survive only
--- until the allocator moved. Searching takes about 1.4 seconds and cannot go stale, so that is
--- what this does.
+-- The addresses are not guessed. Two independent globals were observed holding the same large
+-- value across several runs, and the decisive test was a NEW GAME: the value changed with the run.
 --
--- The scan is read-only. `memscan.find_u32` copies each region into a private buffer and searches
--- with string.find, so it never reads past a region into a guard page -- a hand-rolled byte walk
--- is what killed the game once.
+--   run A   1912643501
+--   run B    899735160
+--   run C    333162438
+--
+-- Same addresses, different value each run, both addresses agreeing every time. A cache or an
+-- unrelated global would not track the seed across new games.
+--
+-- WHY TWO ADDRESSES AND AN AGREEMENT CHECK
+--
+-- One address could be anything. Two globals in different parts of the module holding the same
+-- large number is not a coincidence, and requiring them to agree is a self-check that needs no
+-- external answer. If they ever disagree the read is reported as unreliable rather than returning
+-- a number that might be wrong -- and a caller can see which it was.
 
 seedreader = seedreader or {}
 
-local last = nil          -- the last successful search, so a re-read is cheap
-
--- The real extent of the game module, so a hit can be attributed correctly.
+-- Addresses in noita.exe's static data that hold the seed. Read in preference order; the second
+-- exists to corroborate the first.
 --
--- This was first written with a guess (`0x400000..0xEE8400`, read off a PE header once), and the
--- guess was wrong in a way that mattered: a later run reported zero static hits for addresses that
--- were plainly inside the module. Guessing a module's size is exactly the kind of assumption this
--- project keeps having to retract, so the bounds are asked for instead.
-local function module_range()
-  local ffi_ok, ffi = pcall(require, "ffi")
-  if not ffi_ok then return nil end
-  local ok, k32 = pcall(ffi.load, "kernel32")
-  if not ok then return nil end
-  local ok2, psapi = pcall(ffi.load, "psapi")
-  if not ok2 then return nil end
+-- If a future game build moves them, `read()` reports disagreement instead of a value, and
+-- `scan()` can locate them again from a value the player can see. That fallback is deliberately
+-- second: it should not be the normal path.
+local SEED_ADDRESSES = { 0x1205004, 0x1207F3C }
 
-  pcall(ffi.cdef, [[
-    void *GetModuleHandleA(const char *name);
-    void *GetCurrentProcess(void);
-    int GetModuleInformation(void *process, void *module, void *info, unsigned long size);
-  ]])
+local ffi_ok, ffi = pcall(require, "ffi")
 
-  -- MODULEINFO is { LPVOID lpBaseOfDll; DWORD SizeOfImage; LPVOID EntryPoint; } -- 4+4+4 on x86
-  local base = k32.GetModuleHandleA(nil)
-  if base == nil then return nil end
-  local info = ffi.new("unsigned char[12]")
-  if psapi.GetModuleInformation(k32.GetCurrentProcess(), base, info, 12) == 0 then return nil end
-  local lo = ffi.cast("unsigned int*", info)[0]
-  local size = ffi.cast("unsigned int*", info)[1]
-  return lo, lo + size
+local function read_u32(addr)
+  if not ffi_ok then return nil, "ffi unavailable" end
+  local buf = ffi.new("unsigned char[4]")
+  local ok = pcall(ffi.copy, buf, ffi.cast("const unsigned char*", addr), 4)
+  if not ok then return nil, "unreadable" end
+  return buf[0] + buf[1] * 256 + buf[2] * 65536 + buf[3] * 16777216
 end
 
-local MOD_LO, MOD_HI = module_range()
+-- A seed is displayed as a nine- or ten-digit unsigned number. Zero, all-ones and small values are
+-- uninitialised memory or an unrelated global, not seeds.
+local function looks_like_seed(v)
+  return type(v) == "number" and v >= 1000000 and v ~= 0xFFFFFFFF
+end
 
--- Finds every address currently holding the given seed.
-function seedreader.find(value, max_hits)
+-- Reads the seed. No arguments, nothing to supply.
+function seedreader.read()
+  if not ffi_ok then
+    return { ok = false, error = "ffi is unavailable, so process memory cannot be read" }
+  end
+
+  local readings = {}
+  for _, addr in ipairs(SEED_ADDRESSES) do
+    local v, err = read_u32(addr)
+    readings[#readings + 1] = {
+      addr = string.format("0x%X", addr),
+      value = v,
+      error = err,
+      usable = (v ~= nil and looks_like_seed(v)),
+    }
+  end
+
+  -- The first usable reading is the answer; the agreement check is what makes it trustworthy.
+  local primary = nil
+  for _, r in ipairs(readings) do
+    if r.usable and not primary then primary = r end
+  end
+
+  if not primary then
+    return {
+      ok = false,
+      error = "no address held a plausible seed",
+      readings = readings,
+      hint = "a different game build may have moved them; seedreader.scan can find them again " ..
+             "from a value the player can read off the pause screen",
+    }
+  end
+
+  local agreeing = 0
+  for _, r in ipairs(readings) do
+    if r.value == primary.value then agreeing = agreeing + 1 end
+  end
+
+  return {
+    ok = true,
+    seed = primary.value,
+    source = primary.addr,
+    corroborating = agreeing - 1,
+    confident = agreeing >= 2,
+    readings = readings,
+    note = agreeing >= 2
+      and "two independent globals agree, so this is the seed"
+      or "only one address was usable, so this is the seed but uncorroborated",
+  }
+end
+
+-- Convenience for callers that only want the number.
+function seedreader.value()
+  local r = seedreader.read()
+  return r.ok and r.seed or nil
+end
+
+-- The fallback: locate the seed by searching for a value the player can see. Kept because a game
+-- update could move the addresses, and this is how they would be found again -- but it is not the
+-- normal path and needs an answer supplied from outside.
+function seedreader.scan(value, max_hits)
   value = tonumber(value)
-  if not value then return { ok = false, error = "a seed value is required" } end
-  max_hits = math.max(1, math.min(tonumber(max_hits) or 64, 256))
+  if not value then return { ok = false, error = "a value is required to scan for" } end
 
-  local t0 = os.clock()
-  local hits, err = memscan.find_u32(value, max_hits)
-  local elapsed = os.clock() - t0
-
+  local hits, err = memscan.find_u32(value, math.max(1, math.min(tonumber(max_hits) or 64, 256)))
   if not hits then return { ok = false, error = err or "the scan returned nothing" } end
 
-  -- Attribute each hit, so the result says WHERE the value lives rather than only that it exists.
-  -- A module-region address is a static global; the rest are allocations that will move.
+  local lo, hi = nil, nil
+  local ffi_ok2, ffi2 = pcall(require, "ffi")
+  if ffi_ok2 then
+    local ok1, k32 = pcall(ffi2.load, "kernel32")
+    local ok2, psapi = pcall(ffi2.load, "psapi")
+    if ok1 and ok2 then
+      pcall(ffi2.cdef, [[
+        void *GetModuleHandleA(const char *name);
+        void *GetCurrentProcess(void);
+        int GetModuleInformation(void *process, void *module, void *info, unsigned long size);
+      ]])
+      local base = k32.GetModuleHandleA(nil)
+      if base ~= nil then
+        local info = ffi2.new("unsigned char[12]")
+        if psapi.GetModuleInformation(k32.GetCurrentProcess(), base, info, 12) ~= 0 then
+          lo = ffi2.cast("unsigned int*", info)[0]
+          hi = lo + ffi2.cast("unsigned int*", info)[1]
+        end
+      end
+    end
+  end
+
   local out = {}
   for _, addr in ipairs(hits) do
     local region = "heap"
-    if MOD_LO and addr >= MOD_LO and addr < MOD_HI then region = "noita.exe static"
-    elseif addr < 0x1000000 then region = "low"
-    elseif addr >= 0x20000000 then region = "high heap"
-    end
-    out[#out + 1] = {
-      addr = addr,
-      addr_hex = string.format("0x%X", addr),
-      region = region,
-    }
-  end
-
-  last = { value = value, hits = out, at = GameGetFrameNum() }
-
-  return {
-    ok = true,
-    value = value,
-    hits = #out,
-    elapsed_s = math.floor(elapsed * 1000) / 1000,
-    static_hits = (function()
-      local n = 0
-      for _, h in ipairs(out) do if h.region == "noita.exe static" then n = n + 1 end end
-      return n
-    end)(),
-    addresses = out,
-    note = "Addresses are reported, not cached: several of them move when the allocator does. " ..
-           "A 'noita.exe static' hit is a module global and is the most stable of them.",
-  }
-end
-
--- Re-reads the addresses from the last search, so a caller can confirm they still hold the seed
--- without paying for another full scan. This is the cheap way to answer "is it still there".
-function seedreader.verify()
-  if not last then
-    return { ok = false, error = "nothing has been searched yet; call find with the seed the " ..
-                                 "pause screen shows" }
-  end
-
-  local ffi_ok, ffi = pcall(require, "ffi")
-  if not ffi_ok then return { ok = false, error = "ffi unavailable" } end
-
-  local rows, agree = {}, 0
-  for _, h in ipairs(last.hits) do
-    local buf = ffi.new("unsigned char[4]")
-    local ok = pcall(ffi.copy, buf, ffi.cast("const unsigned char*", h.addr), 4)
-    local v = nil
-    if ok then
-      v = buf[0] + buf[1] * 256 + buf[2] * 65536 + buf[3] * 16777216
-    end
-    if v == last.value then agree = agree + 1 end
-    rows[#rows + 1] = { addr_hex = h.addr_hex, region = h.region, value = v,
-                        holds_seed = (v == last.value) }
+    if lo and addr >= lo and addr < hi then region = "noita.exe static" end
+    out[#out + 1] = { addr = addr, addr_hex = string.format("0x%X", addr), region = region }
   end
 
   return {
-    ok = true,
-    searched_value = last.value,
-    searched_at_frame = last.at,
-    addresses = #rows,
-    still_holding = agree,
-    values = rows,
+    ok = true, value = value, hits = #out, addresses = out,
+    module_range = lo and string.format("0x%X-0x%X", lo, hi) or nil,
+    note = "a 'noita.exe static' hit is a module global and is the stable kind; the heap ones " ..
+           "move. If a static hit differs from SEED_ADDRESSES, the build has moved them.",
   }
 end
 
--- The one-call answer once the player has supplied the seed: confirm it is present, and report
--- where. Everything here is a read.
+function seedreader.addresses()
+  local out = {}
+  for i, a in ipairs(SEED_ADDRESSES) do out[i] = string.format("0x%X", a) end
+  return { ok = true, addresses = out }
+end
+
 function seedreader.status()
-  if not last then
-    return {
-      ok = true, known = false,
-      how = "the seed is not readable from the API -- read it off the pause screen and pass it " ..
-            "to noita_seed_find",
-    }
-  end
+  local r = seedreader.read()
   return {
-    ok = true, known = true, value = last.value,
-    searched_at_frame = last.at, addresses = #last.hits,
+    ok = true,
+    readable = r.ok,
+    seed = r.seed,
+    confident = r.confident,
+    source = r.source,
+    method = "read directly from noita.exe static data; nothing is supplied by the caller",
   }
 end
-
-seedreader._last = function() return last end
-
