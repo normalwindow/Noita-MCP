@@ -257,6 +257,10 @@ local OP_METHODS = {
   -- The decision stream writes a log file and records actions. Both sit behind the player
   -- switch rather than being freely available to a paused session.
   stream_start = "op_player", stream_stop = "op_player", stream_action = "op_player",
+  -- Changing the game's speed changes how it runs, so it is a player action. Its reads
+  -- (status, measurement start/finish) are ungated, matching the rest of the bridge.
+  time_install = "op_player", time_remove = "op_player", time_set = "op_player",
+  time_clear = "op_player",
   patchlib_restore = "op_world", patchlib_selftest = "op_world",
   socket_control = "op_world",
 }

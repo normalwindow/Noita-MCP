@@ -808,6 +808,29 @@ handlers.stream_action = function(params)
   return { ok = true, recorded = stream.action(params.name or "unspecified", params.detail) }
 end
 
+-- ---------------------------------------------------------------- time scale
+
+-- Slowing or speeding the game changes how fast it runs, so it is a player action and sits
+-- behind the player switch. The two reads are not gated.
+handlers.time_install = function() return xinput.time_install() end
+handlers.time_remove = function() return xinput.time_remove() end
+handlers.time_set = function(params)
+  params = params or {}
+  local r = xinput.time_set(params.scale)
+  -- Record it on the decision stream: a replay that does not know the game was running at a
+  -- different speed cannot make sense of its own timings.
+  if r and r.ok and stream and type(stream.action) == "function" then
+    stream.action("time_scale", { scale = params.scale })
+  end
+  return r
+end
+handlers.time_clear = function() return xinput.time_clear() end
+handlers.time_status = function() return xinput.time_status() end
+handlers.time_check = function() return xinput.time_check() end
+handlers.time_measure_start = function() return xinput.time_measure_start() end
+handlers.time_measure_sample = function() return xinput.time_measure_sample() end
+handlers.time_measure_finish = function() return xinput.time_measure_finish() end
+
 -- ---------------------------------------------------------------- framerate
 
 -- Reading the engine's rate is observation, so none of these are gated. The measurement
@@ -1182,6 +1205,10 @@ function rpc.pre_update()
   -- from a loop because Lua runs on the main thread: a loop waiting for the frame counter
   -- to advance would stop the engine from advancing it.
   if framerate and type(framerate.sample) == "function" then pcall(framerate.sample) end
+  -- The time measurement works the same way and for the same reason.
+  if xinput and type(xinput.time_measure_sample) == "function" then
+    pcall(xinput.time_measure_sample)
+  end
   -- service the socket from the pre-update phase so a request that arrives while
   -- the game is idle is answered before the engine's own update for that frame
   pcall(sock.poll)

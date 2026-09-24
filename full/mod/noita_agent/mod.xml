@@ -1,5 +1,5 @@
 <Mod
-	name="Noita AI Agent Bridge"
+	name="Noita MCP Agent Bridge"
 	description="Exposes the game to an external AI agent over a local command/state bridge.\nReads player state, inventory, wands and spell decks; can modify the player, spawn wands/spells/potions and rewrite wand decks.\nLocal single-player helper. Requires a running MCP server on the same machine."
 	request_no_api_restrictions="1"
 >

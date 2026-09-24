@@ -13,6 +13,95 @@ copy of the folder is always accepted by the game.
 
 ---
 
+## [2.0.0] — 2026-09-24
+
+**Time scaling works.** Slow motion and fast forward, verified in a live game in both
+directions. 81 tools.
+
+This replaces the 1.4.1 conclusion that it was not feasible. That conclusion was wrong, and the
+reason is worth recording: the search was for Noita's own time variable, and **there is no such
+variable**. The engine does not keep a time scale. It asks Windows what time it is, every frame,
+and integrates the answer — so what you change is the ANSWER, not a variable. That is Cheat
+Engine's technique, and it was the user who pointed at it.
+
+### Added — `noita_time_scale`, `noita_time_measure`, `noita_time_status`
+
+The clock is intercepted in the DLL. `noita.exe` imports `QueryPerformanceCounter` and
+`QueryPerformanceFrequency` **directly from KERNEL32**, not through SDL — confirmed from the
+import tables — so hooking kernel32's function covers every caller in the process, including
+SDL, where hooking an SDL export would have missed the engine entirely.
+
+Measured in a live run:
+
+| requested | measured ratio | frames/sec | mean frame |
+| --- | --- | --- | --- |
+| 1.0 | — | 59.98 | 16.67 ms |
+| 0.5 | **0.514** | — | — |
+| 2.0 | **2.0** | 107.89 | 9.26 ms |
+| 4.0 | **4.0** | **122.24** | 8.18 ms |
+
+### The frame ceiling, now with numbers
+
+The user reported that acceleration has a frame-rate ceiling, so it cannot be measured by frame
+rate. That is exactly right, and the table shows why: at 4x the engine is still only at 122 fps,
+up from 108 at 2x. **The size of an acceleration cannot be read from the frame rate at all.**
+
+So the measurement is independent of it: `noita_time_measure` compares elapsed game time against
+elapsed real time, reading both in-process through `xh_qpc_raw` (a copy of the real function the
+hook does not intercept) and `xh_qpc_scaled`. It reported 2.0 and 4.0 exactly. It samples across
+frames rather than waiting in a loop, because Lua runs on the game's main thread and a wait loop
+would stall the engine it is measuring.
+
+### Fixed — a freeze, and the two bugs behind it
+
+The first version **wedged the game**. Setting a scale left the anchor at zero, so the counter
+the engine saw jumped backwards by roughly 10^13 ticks. The engine paces its frames off that
+counter, so it waited for a deadline it had already passed.
+
+Two fixes, and the second was found by the first one's own diagnostic:
+
+1. **Anchor on the raw value, and store raw and scaled together.** The mapping is
+   `scaled = scaled_anchor + (raw - raw_anchor) * scale`, which is continuous at the moment the
+   scale changes — at `raw == raw_anchor` it yields exactly `scaled_anchor`. Re-anchoring happens
+   where the scale changes, which is the only place the invariant can break.
+2. **No clamp in the hot path.** The first fix added a high-water-mark clamp to guarantee
+   monotonicity. It was both unnecessary — with a constant scale a strictly increasing input
+   gives a strictly increasing output, by construction — and wrong: the engine reads this clock
+   from several threads, so the last writer to the marker is not the reader with the largest raw
+   value, and the clamp fired **2,858 times** while the mapping was in fact monotonic. The scaled
+   value is now a pure function of the raw one, and continuity across scale changes is handled
+   solely in `xh_time_scale_set`.
+
+A fast path skips the lock entirely when scaling is off or the scale is exactly 1.0, because the
+engine reads this clock around 800 times per frame — measured at **3,012,117 calls** a few
+seconds into a run. Locking every one of those would have turned a timing change into a stutter.
+
+### Added — `noita_time_check`, the pre-flight safety check
+
+Runs with the scale untouched and reports whether the mapping is sound: the raw counter
+advances, the mapped value never steps backwards, the mapping is the identity at 1.0, and at
+other scales the measured ratio matches the request. **Run it before setting a scale.**
+
+Its first version was misleading and had to be fixed: it compared anchor fields, and
+`last_scaled` cannot change while scaling is off, so a healthy disabled hook reported a stale
+zero and the check declared the mapping unsound. A check that measures the wrong thing is worse
+than no check, because it teaches you to ignore it. It now reads the raw and mapped values
+together through `xh_qpc_both`.
+
+### Verified at this release
+
+| Suite | Result |
+| --- | --- |
+| Lua syntax | 21/21 files compile |
+| Mock game | 80/81 checks |
+| MCP end to end | 15/15 checks |
+| Time scaling, live | 0.514 / 2.0 / 4.0 measured against 0.5 / 2 / 4 requested |
+| Frame ceiling, live | 108 fps at 2x, 122 fps at 4x |
+| Restoration | scale 1.0 restores the true clock; removal leaves the game running |
+| Encoding | no BOMs, no mojibake |
+
+---
+
 ## [1.4.1] — 2026-09-24
 
 Time-scale investigation: recorded as **not feasible**, with the attempts and their results, so
@@ -334,7 +423,7 @@ produced a readable map, `jump_right` moved the player, and the stream wrote a 1
 
 First release. Two tiers that install together but stand alone:
 
-- **base** — pure Lua, no external dependency, 67 tools.
+- **base** — pure Lua, no external dependency, 71 tools.
 - **full** — base plus an optional 32-bit DLL that synthesises SDL events,
   adding 9 input tools (64 total).
 

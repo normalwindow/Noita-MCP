@@ -1912,6 +1912,73 @@ const TOOLS = [
       return rpc('framerate_start', { label: a.label });
     },
   },
+  // ---- time scaling -------------------------------------------------------
+  // Slow down or speed up the game by scaling the clock it reads. This is Cheat Engine's
+  // technique, and the reason it works is that the engine has no time-scale of its own: it
+  // asks Windows what time it is every frame and integrates the answer. See the tool
+  // description for what that means for measuring an acceleration.
+  {
+    name: 'noita_time_scale',
+    description: 'Slow down or speed up the game. `scale` 1.0 is normal, below is slow motion, ' +
+      'above is fast forward. Requires the input extension. IMPORTANT: a SLOWDOWN shows up in ' +
+      'the frame rate, but a SPEED-UP does not — past the engine\'s frame-rate ceiling, frames ' +
+      'per second stops rising, so the size of an acceleration cannot be read from it. Use ' +
+      'noita_time_measure for the real number. Call with scale omitted to read the current ' +
+      'setting.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        scale: { type: 'number', description: '0.01 to 20; 1.0 restores normal speed exactly' },
+        clear: { type: 'boolean', description: 'true = back to 1.0' },
+      },
+    },
+    handler: (args) => {
+      const a = args || {};
+      if (a.clear) return rpc('time_clear', {});
+      if (a.scale === undefined) return rpc('time_status', {});
+      return rpc('time_set', { scale: a.scale });
+    },
+  },
+  {
+    name: 'noita_time_measure',
+    description: 'Measure how fast the game is actually running, as elapsed game time divided ' +
+      'by elapsed real time. This is the only honest way to read a speed-up, because the frame ' +
+      'rate has a ceiling. Call with no arguments to start, wait a second, then call again with ' +
+      '`finish: true`. It samples across frames rather than waiting in a loop, so it does not ' +
+      'stall the engine it is measuring.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        finish: { type: 'boolean', description: 'true = stop and return the ratio' },
+        status: { type: 'boolean', description: 'true = report whether one is running' },
+      },
+    },
+    handler: async (args) => {
+      const a = args || {};
+      if (a.finish) return rpc('time_measure_finish', {});
+      if (a.status) return rpc('time_status', {});
+      return rpc('time_measure_start', {});
+    },
+  },
+  {
+    name: 'noita_time_status',
+    description: 'Whether the clock hook is installed, what scale is applied, and how many ' +
+      'clock reads it has scaled. `installed` means the hook is in place; `active` means a ' +
+      'scale other than 1.0 is being applied.',
+    inputSchema: { type: 'object', properties: {} },
+    handler: () => rpc('time_status'),
+  },
+  {
+    name: 'noita_time_check',
+    description: 'Safety check for time scaling, and worth running BEFORE setting a scale. ' +
+      'Verifies the clock mapping is sound: the true counter advances, the value the game sees ' +
+      'never steps backwards (a backwards step wedges the engine, which paces frames off this ' +
+      'counter), the mapping is the identity at scale 1.0, and at other scales the measured ' +
+      'ratio matches the request. Runs with the scale untouched, so it cannot cause the problem ' +
+      'it detects.',
+    inputSchema: { type: 'object', properties: {} },
+    handler: () => rpc('time_check'),
+  },
   {
     name: 'noita_raw_rpc',
     description: 'Escape hatch: call a game-side bridge method directly with raw params. Methods: ' +

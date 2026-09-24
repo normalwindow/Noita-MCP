@@ -1132,6 +1132,386 @@ static BYTE *XhResolveRealTarget(BYTE *target)
 }
 
 
+/* ---------------------------------------------------------- time scaling */
+
+/* Slows down or speeds up the game by scaling the clock it reads.
+ *
+ * THE APPROACH IS NOT MY INVENTION, IT IS CHEAT ENGINE'S -- and that is the point. An earlier
+ * search for Noita's own time variable was looking for the wrong thing. The engine does not
+ * keep a "time scale"; it asks Windows what time it is, every frame, and integrates whatever
+ * it gets. There is no variable to find. What you change is the ANSWER.
+ *
+ * Confirmed from the import tables rather than assumed:
+ *
+ *   noita.exe  -> KERNEL32.dll: QueryPerformanceCounter, QueryPerformanceFrequency,
+ *                              GetSystemTimeAsFileTime, GetSystemTime, GetLocalTime
+ *   SDL2.dll   -> KERNEL32.dll: QueryPerformanceCounter, QueryPerformanceFrequency,
+ *                              GetSystemTimeAsFileTime, GetTickCount
+ *              -> WINMM.dll:    timeGetTime
+ *
+ * The engine imports the timing functions DIRECTLY, not through SDL. That decides where to
+ * hook: patching the prologue of kernel32!QueryPerformanceCounter covers every caller in the
+ * process, including SDL, so one hook does the job. Hooking an SDL export would miss the
+ * engine's own calls entirely.
+ *
+ * WHY AN ANCHORED SCALE AND NOT A MULTIPLIER ON THE RAW COUNTER
+ *
+ * QueryPerformanceCounter's value counts ticks since boot; on a machine up for hours it is
+ * around 10^13, and the low bits are the resolution that matters. Multiplying that directly
+ * overflows, and doing it in floating point throws away exactly those low bits. So the
+ * counter is ANCHORED: the first value becomes the origin and later values are scaled as
+ * `origin + (now - origin) * scale`. Both deltas stay small, the arithmetic is integer, and
+ * precision is preserved however long the machine has been up.
+ *
+ * WHAT THIS DOES, AND WHAT CANNOT BE READ FROM THE FRAME RATE
+ *
+ *   scale < 1  slows the game. Directly measurable: game time advances slower than wall time
+ *              while the frame rate is unchanged.
+ *   scale > 1  speeds it up, but only until the engine reaches its own frame-rate ceiling.
+ *              Past that, frames per second stops rising because frames are not free. So
+ *              acceleration is real but its SIZE cannot be read from the frame rate; it has to
+ *              be measured as (game ticks elapsed) / (real ticks elapsed). Both numbers are
+ *              exposed for that reason.
+ *
+ * QueryPerformanceFrequency is deliberately left alone: the ratio between the counter and
+ * seconds stays consistent, so anything dividing one by the other still gets a coherent
+ * duration. */
+
+typedef BOOL (WINAPI *PFN_QPC)(LARGE_INTEGER *);
+typedef DWORD (WINAPI *PFN_TGT)(void);
+
+static PFN_QPC  g_real_qpc = NULL;
+static PFN_TGT  g_real_tgt = NULL;
+static XH_HOOKINFO g_hk_qpc;
+static XH_HOOKINFO g_hk_tgt;
+static BYTE g_prologue_qpc[XH_MIN_SCAN];
+static BYTE g_prologue_tgt[XH_MIN_SCAN];
+
+/* Fixed point, 1/65536 of a unit. A float would drift and cannot be combined atomically; an
+ * integer can be, and 16 fractional bits is far more resolution than a clock needs.
+ *
+ * THE ANCHOR IS STORED AS BOTH A RAW AND A SCALED VALUE, and that is not a detail -- getting
+ * it wrong froze the game.
+ *
+ * The first version stored only a scaled origin and set it lazily, so on the first scaled read
+ * after enabling a 0.25x scale the origin was still 0 and the value became
+ * `raw * 0.25` -- the clock jumped BACKWARDS by roughly 10^13 ticks at the moment the scale
+ * was applied. The engine uses this counter to pace its frames, so a clock that jumps back
+ * leaves it waiting for a deadline it has already passed, and the process wedges.
+ *
+ * Keeping the raw anchor alongside the scaled one makes the mapping
+ * `scaled = scaled_anchor + (raw - raw_anchor) * scale`, which is continuous at the moment the
+ * scale changes: at raw == raw_anchor it yields exactly scaled_anchor, whatever the scale.
+ * The counter is also clamped so it can never go backwards, even if a caller changes the scale
+ * at an awkward moment.
+ *
+ * THE LOCK IS REQUIRED. The engine polls the clock from more than one thread; without a
+ * critical section a reader can observe a new scale with an old anchor and see time move
+ * backwards, which is the same wedge by a different route. */
+static volatile LONG   g_time_scale_fp = 65536;   /* 1.0, in 1/65536 units */
+static volatile LONG   g_time_active   = 0;
+static volatile LONG64 g_time_raw_anchor    = 0;
+static volatile LONG64 g_time_scaled_anchor = 0;
+static volatile LONG64 g_time_last_scaled   = 0;
+static volatile LONG   g_time_calls    = 0;
+static volatile LONG   g_time_scaled   = 0;
+static volatile LONG   g_time_backwards = 0;
+
+static CRITICAL_SECTION g_time_lock;
+static volatile LONG    g_time_lock_ready = 0;
+
+/* Created on first use rather than in DllMain: creating a lock inside DllMain risks a loader
+ * deadlock, and this is the documented reason not to do work there. */
+static void XhTimeLockInit(void)
+{
+    if (InterlockedCompareExchange(&g_time_lock_ready, 1, 0) == 0) {
+        InitializeCriticalSection(&g_time_lock);
+        InterlockedExchange(&g_time_lock_ready, 2);
+    }
+}
+
+static void XhTimeLock(void)
+{
+    if (g_time_lock_ready == 2) EnterCriticalSection(&g_time_lock);
+}
+
+static void XhTimeUnlock(void)
+{
+    if (g_time_lock_ready == 2) LeaveCriticalSection(&g_time_lock);
+}
+
+XH_EXPORT int XH_CALL xh_time_calls(void)     { return (int)g_time_calls; }
+XH_EXPORT int XH_CALL xh_time_scaled(void)    { return (int)g_time_scaled; }
+XH_EXPORT int XH_CALL xh_time_active(void)    { return (int)g_time_active; }
+/* Non-zero if a backwards step was ever observed and clamped. Should stay 0; anything else
+ * means the anchor and the scale were momentarily inconsistent. */
+XH_EXPORT int XH_CALL xh_time_backwards(void) { return (int)g_time_backwards; }
+
+XH_EXPORT int XH_CALL xh_qpc_points(LONGLONG *raw_anchor, LONGLONG *scaled_anchor,
+                                    LONGLONG *last_scaled, LONGLONG *current_raw)
+{
+    LARGE_INTEGER now;
+    if (!raw_anchor || !scaled_anchor || !last_scaled || !current_raw) return 0;
+    if (!g_real_qpc || !g_real_qpc(&now)) return 0;
+    *raw_anchor    = g_time_raw_anchor;
+    *scaled_anchor = g_time_scaled_anchor;
+    *last_scaled   = g_time_last_scaled;
+    *current_raw   = now.QuadPart;
+    return 1;
+}
+
+/* The raw counter and the value the engine would see from it, read together.
+ *
+ * This is what makes the pre-flight check meaningful. Reporting the anchors instead was the
+ * first attempt and it was misleading: `last_scaled` cannot change while scaling is off, so a
+ * healthy, disabled hook reported a stale zero and the check declared the mapping unsound.
+ * A check that measures the wrong thing is worse than none, because it teaches you to ignore
+ * it.
+ *
+ * Deliberately does NOT increment the scaled counter: this is a diagnostic read, and counting
+ * it would make the statistics report scaling that the engine never saw. */
+XH_EXPORT int XH_CALL xh_qpc_both(LONGLONG *raw_out, LONGLONG *mapped_out)
+{
+    LARGE_INTEGER now;
+    LONGLONG r;
+
+    if (!raw_out || !mapped_out) return 0;
+    if (!g_real_qpc || !g_real_qpc(&now)) return 0;
+    r = now.QuadPart;
+    *raw_out = r;
+
+    if (!g_time_active || g_time_scale_fp == 65536) {
+        *mapped_out = r;                      /* identity when off */
+        return 1;
+    }
+
+    XhTimeLock();
+    *mapped_out = g_time_scaled_anchor +
+                  (LONGLONG)((r - g_time_raw_anchor) * (LONGLONG)g_time_scale_fp / 65536);
+    XhTimeUnlock();
+    return 1;
+}
+
+/* The current scale as a plain number, for reporting. */
+XH_EXPORT double XH_CALL xh_time_scale_get(void)
+{
+    return (double)g_time_scale_fp / 65536.0;
+}
+
+/* Sets the scale. Returns 1 if accepted.
+ *
+ * Re-anchors at the current true counter, so the value the game sees is CONTINUOUS across the
+ * change: it does not jump forwards or backwards when the scale changes, and setting 1.0
+ * restores the true counter from that moment on. */
+XH_EXPORT int XH_CALL xh_time_scale_set(double scale)
+{
+    LONG fp;
+    LARGE_INTEGER now;
+
+    if (scale < 0.01) scale = 0.01;   /* slower than 1% would look frozen */
+    if (scale > 20.0) scale = 20.0;   /* beyond this only the engine's ceiling is visible */
+
+    fp = (LONG)(scale * 65536.0 + 0.5);
+
+    XhTimeLockInit();
+    XhTimeLock();
+
+    /* Anchor at the raw value the engine would read right now. If a scale is already running,
+     * anchor at the value the game is currently SEEING, so there is no discontinuity. */
+    if (g_real_qpc && g_real_qpc(&now)) {
+        if (g_time_active) {
+            LONGLONG shown = g_time_scaled_anchor +
+                             (LONGLONG)((now.QuadPart - g_time_raw_anchor) *
+                                        (LONGLONG)g_time_scale_fp / 65536);
+            if (shown < g_time_last_scaled) shown = g_time_last_scaled;
+            g_time_scaled_anchor = shown;
+            g_time_last_scaled   = shown;
+        } else {
+            g_time_scaled_anchor = now.QuadPart;
+            g_time_last_scaled   = now.QuadPart;
+        }
+        g_time_raw_anchor = now.QuadPart;
+    }
+
+    InterlockedExchange(&g_time_scale_fp, fp);
+    InterlockedExchange(&g_time_active, 1);
+
+    XhTimeUnlock();
+    return 1;
+}
+
+XH_EXPORT int XH_CALL xh_time_scale_clear(void)
+{
+    LARGE_INTEGER now;
+
+    XhTimeLockInit();
+    XhTimeLock();
+    /* Anchor back to the true counter, so clearing is an exact restore rather than a jump. */
+    if (g_real_qpc && g_real_qpc(&now)) {
+        g_time_raw_anchor    = now.QuadPart;
+        g_time_scaled_anchor = now.QuadPart;
+        g_time_last_scaled   = now.QuadPart;
+    }
+    InterlockedExchange(&g_time_scale_fp, 65536);
+    InterlockedExchange(&g_time_active, 0);
+    XhTimeUnlock();
+    return 1;
+}
+
+/* Shared by both hooks.
+ *
+ * `active` gates the work as well as the stamping, so with scaling off this is one predictable
+ * branch and the engine's timing is untouched. */
+static LONGLONG XhScaleCounter(LONGLONG raw)
+{
+    LONGLONG out;
+
+    /* FAST PATH, and it matters: the engine reads this clock around 800 times per frame --
+     * measured at 3,012,117 calls a few seconds into a run. Taking a lock on every one of
+     * those would turn a timing change into a stutter, so the two cases that need no work
+     * (scaling off, scale exactly 1.0) return before touching it. Reading the scale twice is
+     * deliberate: the first read is outside the lock to skip it, the second is inside, where
+     * it cannot change underneath the arithmetic. */
+    if (!g_time_active) return raw;
+    if (g_time_scale_fp == 65536) return raw;
+
+    XhTimeLock();
+
+    if (!g_time_active || g_time_scale_fp == 65536) {
+        XhTimeUnlock();
+        return raw;
+    }
+
+    /* PURE FUNCTION OF `raw`. No shared mutable state, and that is deliberate.
+     *
+     * The first version clamped the result against a global high-water mark, to guarantee the
+     * clock could not step backwards. That was both unnecessary and wrong. Unnecessary,
+     * because with a constant scale a strictly increasing input produces a strictly increasing
+     * output -- the property comes from the formula. Wrong, because the engine reads this
+     * clock from several threads: the last writer to the high-water mark is not the reader
+     * with the largest raw value, so threads clobbered each other and the clamp fired
+     * constantly -- 2,858 spurious "backwards" steps while the mapping was in fact monotonic.
+     *
+     * Continuity across a scale CHANGE is handled where the change happens, in
+     * xh_time_scale_set, which re-anchors at the currently displayed value. That is the only
+     * place the invariant can actually be broken. */
+    InterlockedIncrement(&g_time_scaled);
+    XhTimeUnlock();
+
+    return g_time_scaled_anchor +
+           (LONGLONG)((raw - g_time_raw_anchor) * (LONGLONG)g_time_scale_fp / 65536);
+}
+
+static BOOL WINAPI XhQueryPerformanceCounter(LARGE_INTEGER *out)
+{
+    BOOL ok;
+
+    InterlockedIncrement(&g_time_calls);
+    ok = g_real_qpc ? g_real_qpc(out) : 0;
+    if (!ok || !out) return ok;
+
+    out->QuadPart = XhScaleCounter(out->QuadPart);
+    return ok;
+}
+
+static DWORD WINAPI XhTimeGetTime(void)
+{
+    DWORD raw;
+
+    InterlockedIncrement(&g_time_calls);
+    raw = g_real_tgt ? g_real_tgt() : 0;
+    if (!g_time_active || g_time_scale_fp == 65536) return raw;
+
+    /* A 32-bit millisecond counter wraps every 49 days; scaling it in place is fine for the
+     * frame-sized deltas that use it, and consistency with QPC matters more than its absolute
+     * value. */
+    return (DWORD)(XhScaleCounter((LONGLONG)raw) & 0xFFFFFFFF);
+}
+
+XH_EXPORT int XH_CALL xh_install_timehooks(void)
+{
+    int ok_qpc, ok_tgt;
+
+    if (g_real_qpc) return 1;
+
+    ok_qpc = XhInstallOne(&g_hk_qpc, "kernel32.dll", "QueryPerformanceCounter",
+                          (void *)XhQueryPerformanceCounter, (void **)&g_real_qpc,
+                          g_prologue_qpc);
+    if (!ok_qpc || !g_real_qpc) {
+        if (ok_qpc) XhRemoveOne(&g_hk_qpc);
+        return 0;
+    }
+
+    /* timeGetTime is best effort: the engine's own timing goes through QPC, and SDL may use
+     * either. A failure here is recorded but does not fail the install, because a scale that
+     * works for the engine and not for SDL's fallback clock is still a working scale. */
+    ok_tgt = XhInstallOne(&g_hk_tgt, "winmm.dll", "timeGetTime",
+                          (void *)XhTimeGetTime, (void **)&g_real_tgt, g_prologue_tgt);
+    if (!ok_tgt) g_real_tgt = NULL;
+
+    return 1;
+}
+
+XH_EXPORT int XH_CALL xh_remove_timehooks(void)
+{
+    xh_time_scale_clear();
+    XhRemoveOne(&g_hk_qpc);
+    if (g_real_tgt) XhRemoveOne(&g_hk_tgt);
+    g_real_tgt = NULL;
+    return 1;
+}
+
+XH_EXPORT int XH_CALL xh_timehooks_installed(void) { return g_real_qpc ? 1 : 0; }
+XH_EXPORT int XH_CALL xh_time_tgt_installed(void)  { return g_real_tgt ? 1 : 0; }
+
+/* The true and the scaled clock, side by side.
+ *
+ * The comparison is the whole measurement: the frame rate shows a slowdown but not the size of
+ * an acceleration, because frames have a ceiling. Elapsed game time over elapsed real time is
+ * the only honest number, and it needs both readings from the same process so the windows
+ * match.
+ *
+ * xh_qpc_raw calls the REAL function directly rather than going through the hooked entry, so
+ * it returns the unscaled value even while scaling is active. Without that there would be
+ * nothing to compare against. */
+XH_EXPORT int XH_CALL xh_qpc_raw(LONGLONG *out)
+{
+    LARGE_INTEGER v;
+    if (!out) return 0;
+    if (!g_real_qpc) return 0;
+    if (!g_real_qpc(&v)) return 0;
+    *out = v.QuadPart;
+    return 1;
+}
+
+/* The counter as the game sees it, i.e. with the scale applied. Falls back to the raw value
+ * when scaling is off, so a caller never has to special-case that. */
+XH_EXPORT int XH_CALL xh_qpc_scaled(LONGLONG *out)
+{
+    LARGE_INTEGER v;
+    if (!out) return 0;
+    if (!g_real_qpc) return 0;
+    if (!g_real_qpc(&v)) return 0;
+    *out = XhScaleCounter(v.QuadPart);
+    return 1;
+}
+
+/* The counter's frequency, so a caller can turn ticks into seconds. Read through the real
+ * function because the frequency is deliberately never scaled. */
+XH_EXPORT int XH_CALL xh_qpc_freq(LONGLONG *out)
+{
+    LARGE_INTEGER f;
+    typedef BOOL (WINAPI *PFN_QPF)(LARGE_INTEGER *);
+    HMODULE k = GetModuleHandleA("kernel32.dll");
+    PFN_QPF fn;
+    if (!out || !k) return 0;
+    fn = (PFN_QPF)GetProcAddress(k, "QueryPerformanceFrequency");
+    if (!fn || !fn(&f)) return 0;
+    *out = f.QuadPart;
+    return 1;
+}
+
+
 /* The correct target, found by parsing noita.exe's IMPORT TABLE rather than by
  * guessing or by string search:
  *

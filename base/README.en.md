@@ -112,7 +112,7 @@ they express policy rather than a moment.
 
 ## Tool groups
 
-67 tools in the base tier, grouped by what they do:
+71 tools in the base tier, grouped by what they do:
 
 | Group | Count | Tools |
 | --- | --- | --- |

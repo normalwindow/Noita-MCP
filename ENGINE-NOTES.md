@@ -283,11 +283,45 @@ tables". If a mock helper receives nothing when you passed a table, check the ha
 - **Reading a cell's material.** There is no `GetMaterial` or `GetCell`; `CellFactory_*` only
   goes id → name. Terrain must be inferred from raytraces, so it reports reachability and never
   material names.
-- **Time scaling.** No setter exists. Every time function is read-only (`GameGetFrameNum`,
-  `GameGetRealWorldTimeSinceStarted`, `GameGetDateAndTimeUTC/Local`). The nearest writable
-  thing, `PhysicsBodyIDSetGravityScale`, affects one body, not the world clock.
+- **Time scaling.** It works, but not by finding a time variable — see below. The Lua API has no
+  setter; the clock has to be intercepted in the DLL.
 - **Firing the wand without the input extension.** Nothing in the physics state is a button
   press. `noita_macro` refuses such a macro rather than appearing to run it.
+
+### Time scaling: how it works, and the two ways the first attempt wedged the game
+
+**The engine has no time-scale variable. It asks Windows what time it is, every frame, and
+integrates the answer.** An earlier attempt to find a variable was searching for something that
+does not exist. What you change is the answer.
+
+`noita.exe` imports `QueryPerformanceCounter` and `QueryPerformanceFrequency` **directly from
+KERNEL32**, not through SDL. That decides where to hook: kernel32's function is called by every
+caller in the process, including SDL. Hooking an SDL export would miss the engine's own calls
+entirely. Both were read from the import tables rather than assumed.
+
+Two mistakes, both of which froze the game, and both worth not repeating:
+
+1. **An anchor of zero makes the clock jump backwards.** The first version stored only a scaled
+   origin and set it lazily, so the first value after enabling a 0.25x scale was
+   `raw * 0.25` — the counter fell by about 10^13 ticks at the moment the scale was applied.
+   The engine paces frames off this counter, so it waited for a deadline it had already passed.
+   Store the **raw** anchor alongside the scaled one and map as
+   `scaled_anchor + (raw - raw_anchor) * scale`; that is continuous at the instant the scale
+   changes, and re-anchoring belongs where the scale changes and nowhere else.
+2. **Do not clamp a clock against a shared high-water mark.** Guaranteeing monotonicity with a
+   global "last value" is wrong when several threads read the clock: the last writer is not the
+   reader with the largest raw value. It fired **2,858 times** on a mapping that was in fact
+   monotonic. With a constant scale the formula is monotonic by construction, so the clamp was
+   never needed.
+
+Also: this clock is read roughly **800 times per frame** (3,012,117 calls a few seconds into a
+run), so a hook that takes a lock on every call turns a timing change into a stutter. Skip the
+lock unless a scale other than 1.0 is actually active.
+
+And a per-frame counter is not how you measure a speed-up: the engine has a **frame-rate
+ceiling**. Measured — 2x gave 108 fps, 4x gave 122 fps, while the true ratio was 2.0 and 4.0.
+Compare elapsed game time against elapsed real time instead, reading both through the hook
+(`xh_qpc_raw` bypasses it).
 
 ### Why time scaling was not pursued further, and what would change that
 

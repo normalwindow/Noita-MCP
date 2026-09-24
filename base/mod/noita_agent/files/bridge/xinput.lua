@@ -41,6 +41,7 @@ local MAGIC = 0x58494E50          -- 'XINP'
 
 local api = nil                   -- resolved exports, or false once we know it is absent
 local resolve_error = nil
+local time_window = nil           -- the in-flight time measurement, or nil
 
 -- SDL scancodes, declared up here because several functions below resolve a key
 -- NAME to a scancode and a `local` declared further down is simply not visible to
@@ -145,6 +146,19 @@ local function resolve()
     int  xh_install_pollevent(void);
     int  xh_remove_pollevent(void);
     int  xh_poll_installed(void);
+    int  xh_install_timehooks(void);
+    int  xh_remove_timehooks(void);
+    int  xh_timehooks_installed(void);
+    int  xh_time_tgt_installed(void);
+    int  xh_time_scale_set(double scale);
+    int  xh_time_scale_clear(void);
+    double xh_time_scale_get(void);
+    int  xh_time_calls(void);
+    int  xh_time_scaled(void);
+    int  xh_time_active(void);
+    int  xh_time_backwards(void);
+    int  xh_qpc_points(long long *raw_anchor, long long *scaled_anchor,
+                       long long *last_scaled, long long *current_raw);
     int  xh_event_calls(void);
     int  xh_event_forged(void);
     int  xh_event_real_seen(void);
@@ -197,6 +211,23 @@ local function resolve()
     push_last = ffi.cast("int (*)(void)", sym("xh_push_last")),
     poll_remove = ffi.cast("int (*)(void)", sym("xh_remove_pollevent")),
     poll_installed = ffi.cast("int (*)(void)", sym("xh_poll_installed")),
+    time_install = ffi.cast("int (*)(void)", sym("xh_install_timehooks")),
+    time_remove = ffi.cast("int (*)(void)", sym("xh_remove_timehooks")),
+    time_installed = ffi.cast("int (*)(void)", sym("xh_timehooks_installed")),
+    time_tgt_installed = ffi.cast("int (*)(void)", sym("xh_time_tgt_installed")),
+    time_set = ffi.cast("int (*)(double)", sym("xh_time_scale_set")),
+    time_clear = ffi.cast("int (*)(void)", sym("xh_time_scale_clear")),
+    time_get = ffi.cast("double (*)(void)", sym("xh_time_scale_get")),
+    time_calls = ffi.cast("int (*)(void)", sym("xh_time_calls")),
+    time_scaled = ffi.cast("int (*)(void)", sym("xh_time_scaled")),
+    time_active = ffi.cast("int (*)(void)", sym("xh_time_active")),
+    time_backwards = ffi.cast("int (*)(void)", sym("xh_time_backwards")),
+    time_points = ffi.cast("int (*)(long long*,long long*,long long*,long long*)",
+                           sym("xh_qpc_points")),
+    time_both = ffi.cast("int (*)(long long*,long long*)", sym("xh_qpc_both")),
+    time_raw = ffi.cast("int (*)(long long*)", sym("xh_qpc_raw")),
+    time_scaled_read = ffi.cast("int (*)(long long*)", sym("xh_qpc_scaled")),
+    time_freq = ffi.cast("int (*)(long long*)", sym("xh_qpc_freq")),
     ev_calls = ffi.cast("int (*)(void)", sym("xh_event_calls")),
     ev_forged = ffi.cast("int (*)(void)", sym("xh_event_forged")),
     ev_real = ffi.cast("int (*)(void)", sym("xh_event_real_seen")),
@@ -774,6 +805,273 @@ function xinput.push_stats()
                                      frames_left = mouse_hold.frames_left } or nil,
     note = "queued counts events SDL accepted; the engine acting on them is what " ..
            "noita_get_player shows",
+  }
+end
+
+-- ---------------------------------------------------------------- time scale
+
+-- Slows down or speeds up the game by scaling the clock it reads.
+--
+-- THE IDEA IS CHEAT ENGINE'S, NOT MINE, and that is the whole insight: an earlier attempt to
+-- find Noita's own "time variable" was looking for something that does not exist. The engine
+-- does not keep a time scale. It asks Windows what time it is, every frame, and integrates
+-- whatever it gets -- so what you change is the ANSWER, not a variable.
+--
+-- Confirmed from the import tables rather than assumed: noita.exe imports
+-- QueryPerformanceCounter and QueryPerformanceFrequency DIRECTLY from KERNEL32, not through
+-- SDL. That is why the hook goes on kernel32's function: it covers every caller in the
+-- process, including SDL, where hooking an SDL export would miss the engine's own calls.
+--
+-- WHAT THE TWO DIRECTIONS ACTUALLY DO
+--
+--   above 1.0  accelerates, but only until the engine hits its frame-rate ceiling. Past that,
+--              frames per second stops rising because frames are not free, so THE SIZE OF THE
+--              ACCELERATION CANNOT BE READ FROM THE FRAME RATE. Use measure() for that: it
+--              compares elapsed game time against elapsed real time.
+--   below 1.0  slows the game down, which the frame rate does show, because there is no floor
+--              stopping the engine from running fewer frames.
+
+function xinput.time_install()
+  local a = resolve()
+  if not a or not a.time_install then
+    return { ok = false, error = "DLL not loaded, or a build without the time hooks" }
+  end
+  local ok, v = pcall(a.time_install)
+  if not ok then return { ok = false, error = tostring(v) } end
+  return {
+    ok = (v == 1), installed = (v == 1),
+    error = (v ~= 1) and "kernel32!QueryPerformanceCounter could not be hooked" or nil,
+    note = "scaling is off until time_set is called",
+  }
+end
+
+function xinput.time_remove()
+  local a = resolve()
+  if not a or not a.time_remove then return { ok = true, note = "nothing to remove" } end
+  local ok, v = pcall(a.time_remove)
+  return { ok = ok and v == 1 }
+end
+
+-- Sets the scale. 1.0 restores normal speed exactly, because the counter is re-anchored at its
+-- true value rather than re-derived.
+function xinput.time_set(scale)
+  -- Arguments are validated BEFORE the environment, deliberately. A bad scale is a mistake in
+  -- the call and is worth reporting as one; checking the DLL first would report "not loaded"
+  -- for a call that would have been rejected anyway, which sends the caller looking in the
+  -- wrong place.
+  scale = tonumber(scale)
+  if not scale then return { ok = false, error = "scale must be a number" } end
+  if scale < 0.01 or scale > 20 then
+    return { ok = false, error = "scale must be between 0.01 and 20", requested = scale }
+  end
+
+  local a = resolve()
+  if not a or not a.time_set then
+    return { ok = false, error = "DLL not loaded, or a build without the time hooks" }
+  end
+
+  if not (a.time_installed and pcall(a.time_installed) and a.time_installed() == 1) then
+    local r = xinput.time_install()
+    if not r.ok then return r end
+  end
+
+  local ok, rc = pcall(a.time_set, scale)
+  if not ok or rc ~= 1 then
+    return { ok = false, error = "the extension refused the scale" }
+  end
+  panel.warn(string.format("time scale set to %.4g", scale), { source = "time" })
+  return { ok = true, scale = scale, effective = xinput.time_get() }
+end
+
+function xinput.time_clear()
+  local a = resolve()
+  if not a or not a.time_clear then return { ok = true, note = "nothing to clear" } end
+  pcall(a.time_clear)
+  panel.info("time scale cleared (back to normal speed)", { source = "time" })
+  return { ok = true, scale = 1.0 }
+end
+
+function xinput.time_get()
+  local a = resolve()
+  if not a or not a.time_get then return nil end
+  local ok, v = pcall(a.time_get)
+  return ok and v or nil
+end
+
+-- Measures the game's actual speed, sampled across frames.
+--
+-- WHY THE FRAME COUNTER CANNOT BE USED FOR THIS
+--
+-- `GameGetFrameNum` counts frames, and frames have a ceiling: accelerating past it stops the
+-- count from rising. So the frame rate shows a slowdown but not the size of a speed-up.
+--
+-- The clock can, because it is exactly what the engine integrates. This compares two values
+-- over the same window:
+--
+--   xh_qpc_raw     the true counter, read through a copy of the original function the hook
+--                  does not intercept
+--   xh_qpc_scaled  the counter as the game sees it, after scaling
+--
+-- Both run in-process, so the two samples share a window by construction.
+--
+-- SAMPLED ACROSS FRAMES, NOT IN A LOOP. Lua runs on the game's main thread, so waiting for
+-- time to pass inside one call stops the engine from advancing -- the measurement would freeze
+-- the thing it is measuring. The first version of this did that. Instead, start() takes the
+-- first sample, sample() takes one per frame from the bridge's update, and finish() reports.
+function xinput.time_measure_start()
+  local a = resolve()
+  if not a or not a.time_raw then
+    return { ok = false, error = "DLL not loaded, or a build without the time hooks" }
+  end
+  local r1, r2 = ffi.new("long long[1]"), ffi.new("long long[1]")
+  local s1, s2 = ffi.new("long long[1]"), ffi.new("long long[1]")
+  if a.time_raw(r1) ~= 1 or a.time_scaled_read(s1) ~= 1 then
+    return { ok = false, error = "the clock could not be read" }
+  end
+  time_window = {
+    raw1 = tonumber(r1[0]), scaled1 = tonumber(s1[0]),
+    raw2 = nil, scaled2 = nil,
+    frames = 0,
+  }
+  return { ok = true, scale = xinput.time_get(), note = "call sample() each frame, then finish()" }
+end
+
+function xinput.time_measure_sample()
+  local a = api
+  if not time_window or not a or not a.time_raw then return end
+  local r, s = ffi.new("long long[1]"), ffi.new("long long[1]")
+  if a.time_raw(r) ~= 1 or a.time_scaled_read(s) ~= 1 then return end
+  time_window.raw2 = tonumber(r[0])
+  time_window.scaled2 = tonumber(s[0])
+  time_window.frames = time_window.frames + 1
+end
+
+function xinput.time_measure_finish()
+  local w = time_window
+  time_window = nil
+  if not w then return { ok = false, error = "no measurement running" } end
+  if not w.raw2 then
+    return { ok = false, error = "no samples were taken", frames = w.frames }
+  end
+
+  local real_ticks = w.raw2 - w.raw1
+  local game_ticks = w.scaled2 - w.scaled1
+  if real_ticks <= 0 then
+    return { ok = false, error = "the true clock did not advance", frames = w.frames }
+  end
+
+  return {
+    ok = true,
+    frames = w.frames,
+    requested_scale = xinput.time_get(),
+    real_ticks = real_ticks,
+    game_ticks = game_ticks,
+    measured_ratio = game_ticks / real_ticks,
+    note = "measured_ratio is the game's actual speed: elapsed game time divided by elapsed " ..
+           "real time. It is the only way to read an acceleration, because the frame rate " ..
+           "has a ceiling.",
+  }
+end
+
+-- Checks the clock mapping WITHOUT scaling anything, and is the safety check to run first.
+--
+-- The freeze this feature caused the first time came from the mapping being discontinuous: the
+-- anchor was still zero when the scale was applied, so the counter the engine saw jumped
+-- backwards by about 10^13 ticks. The engine paces its frames off that counter, so it waited
+-- for a deadline it had already passed and the process wedged.
+--
+-- This makes the invariant explicit rather than hoped for:
+--
+--   * the value must equal the raw counter while the scale is 1.0 (identity when off)
+--   * it must be monotonic, never stepping backwards
+--   * at a given scale it must advance by scale x the raw advance
+--
+-- Runs with the scale untouched, so it cannot wedge anything. Run it before any scale is set.
+function xinput.time_check()
+  local a = resolve()
+  if not a or not a.time_both then
+    return { ok = false, error = "DLL not loaded, or a build without the time hooks" }
+  end
+
+  local raw, mapped = ffi.new("long long[1]"), ffi.new("long long[1]")
+  local rows = {}
+  for i = 1, 5 do
+    if a.time_both(raw, mapped) ~= 1 then
+      return { ok = false, error = "the clock could not be read" }
+    end
+    rows[i] = { raw = tonumber(raw[0]), mapped = tonumber(mapped[0]) }
+  end
+
+  local scale = xinput.time_get()
+  local active = (a.time_active and a.time_active() == 1)
+
+  -- The raw counter must advance, and the mapped value must never step backwards. A backwards
+  -- step is the failure that wedged the engine, so it is checked directly rather than inferred.
+  local raw_advances, monotonic = true, true
+  for i = 2, 5 do
+    if rows[i].raw <= rows[i - 1].raw then raw_advances = false end
+    if rows[i].mapped < rows[i - 1].mapped then monotonic = false end
+  end
+
+  -- With the scale at 1.0 the mapping must be the identity, so anything downstream that divides
+  -- the counter still gets a coherent duration.
+  local identity_ok = nil
+  if not active or scale == 1 then
+    identity_ok = true
+    for i = 1, 5 do
+      if rows[i].mapped ~= rows[i].raw then identity_ok = false end
+    end
+  end
+
+  -- At a scale other than 1, the mapped advance must be the raw advance times that scale. This
+  -- is the number that says the feature works, so it is reported rather than merely asserted.
+  local ratio = nil
+  if active and scale and scale ~= 1 then
+    local dr = rows[5].raw - rows[1].raw
+    local dm = rows[5].mapped - rows[1].mapped
+    if dr > 0 then ratio = dm / dr end
+  end
+
+  -- `backwards_steps` is NOT part of the verdict. It counted clamp firings, and the clamp was
+  -- removed once it turned out to misfire on every multi-threaded read -- it measured the
+  -- diagnostic's own shared state, not the clock. Kept in the output as a historical field so
+  -- an old reading is recognisable, but the soundness of the mapping is judged from the
+  -- samples themselves, which is what a reader can actually verify.
+  local sound = raw_advances and monotonic and (identity_ok ~= false)
+  return {
+    ok = true,
+    scale = scale,
+    active = active,
+    clamp_firings = a.time_backwards and a.time_backwards() or 0,
+    raw_advances = raw_advances,
+    mapping_monotonic = monotonic,
+    identity_when_off = identity_ok,
+    measured_ratio = ratio,
+    verdict = sound and "the clock mapping is sound"
+      or "THE CLOCK MAPPING IS UNSOUND -- do not scale; the engine paces frames off this " ..
+         "counter and a backwards step wedges it",
+  }
+end
+
+function xinput.time_status()
+  local a = resolve()
+  if not a or not a.time_installed then return { available = false } end
+  local function g(f)
+    local ok, v = pcall(f)
+    return ok and v or nil
+  end
+  return {
+    available = true,
+    installed = g(a.time_installed) == 1,
+    tgt_installed = g(a.time_tgt_installed) == 1,
+    scale = g(a.time_get),
+    active = g(a.time_active) == 1,
+    clock_calls = g(a.time_calls),
+    values_scaled = g(a.time_scaled),
+    clamp_firings = g(a.time_backwards),
+    note = "installed means the clock hook is in place; active means a scale other than 1.0 " ..
+           "is being applied. The frame rate shows a slowdown but NOT the size of a speed-up, " ..
+           "because the engine has a frame ceiling -- use time_measure for the real ratio.",
   }
 end
 
