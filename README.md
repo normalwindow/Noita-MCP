@@ -10,7 +10,7 @@ Noita MCP 由一个 MCP（Model Context Protocol）服务器和一个 Noita 模�
 
 两个部分，总是一起安装：
 
-- **模组** `noita_agent`（游戏内名称 Noita AI Agent Bridge）——运行在 Noita 进程里，是唯一能碰到游戏的东西，对外暴露一组本地 RPC：玩家、背包、法杖、法术牌库、实体、世界/地图数据，以及权限开关。
+- **模组** `noita_agent`（游戏内名称 Noita MCP Agent Bridge）——运行在 Noita 进程里，是唯一能碰到游戏的东西，对外暴露一组本地 RPC：玩家、背包、法杖、法术牌库、实体、世界/地图数据，以及权限开关。
 - **MCP 服务器** `server.js`——stdio MCP 服务器，把 `noita_*` 工具调用翻译成桥接 RPC，再以结构化 JSON 返回。它另外带一个给人用的命令行接口（`--status`、`--list`、`--call`）。
 
 游戏只在局内更新，所以桥接也只在局内应答。**主菜单里什么都不能用。**
@@ -57,7 +57,7 @@ Noita MCP 由一个 MCP（Model Context Protocol）服务器和一个 Noita 模�
 
    `<Noita>` 是包含 `noita.exe` 的目录，例如 `D:\Sware\Steam\steamapps\common\Noita`。
 
-2. 启动 Noita，打开 **Mods**，启用 **Noita AI Agent Bridge**。这里会出现游戏的"不安全的模组"警告，见「故障排查」。
+2. 启动 Noita，打开 **Mods**，启用 **Noita MCP Agent Bridge**。这里会出现游戏的"不安全的模组"警告，见「故障排查」。
 
 3. 配置 MCP 客户端。请使用绝对路径，并对 JSON 里的反斜杠转义：
 

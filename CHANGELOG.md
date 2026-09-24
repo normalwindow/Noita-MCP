@@ -13,6 +13,73 @@ copy of the folder is always accepted by the game.
 
 ---
 
+## [2.0.1] — 2026-09-24
+
+Renamed to **Noita MCP Agent Bridge** for consistency with the repository, and the release
+archives are now assembled separately from the repository: they ship the finished product and no
+build inputs. No behaviour changed.
+
+### Changed — the name
+
+`mod.xml` already said "Noita MCP Agent Bridge"; the prose across 15 files still said "Noita AI
+Agent Bridge". All 23 occurrences are unified. The mod's **directory stays `noita_agent`**: that
+is its identity to the game, it appears in every `mods/noita_agent/...` path in the Lua, and
+renaming it would break every installed copy for no benefit the player can see.
+
+### Added — downloadable archives, built from a whitelist
+
+`tools/build_release.js` assembles two zips from an explicit list of files, and
+`tools/verify_release.js` then opens the finished archives and checks what a user will actually
+receive — because a whitelist can be wrong in the same way it can be right.
+
+The archives contain the mod, the MCP server, the fact database, the agent skill, the licence and
+the docs. They do **not** contain `xinput_hook.c`, `build.ps1` or `injector.c`: a player who wants
+the full tier should get a DLL, not a C file and a linker invocation. The repository keeps all of
+it — it is an Apache-2.0 project, the C is the honest record of how the hooks work, and repo size
+and download size are different questions.
+
+The verifier asserts, on the finished files rather than on the builder's intent:
+
+- neither archive contains build inputs (`.c`, `build/`, `build.ps1`, the layout notes, the injector)
+- `base` contains **no** DLL — a DLL there would mean the tier split had been broken
+- `full` contains **exactly one** DLL, at `extension/xinput_hook.dll`, which is the path
+  `install.ps1` probes first
+- that DLL is **byte-identical** to the one in the repository, so the release cannot ship a stale
+  build (sha `7dd868d254d1`, 103,936 bytes)
+
+### Fixed — three bugs in the installers, all found by unpacking an archive and running it
+
+Every one of these was invisible from inside the repository, where the development layout held:
+
+1. **The skill was searched for one level up.** `install.ps1` looked for `..\mcp-skill\SKILL.md`
+   — correct in the development tree, wrong in an archive, where the skill sits beside the
+   script. An unpacked archive reported "skill not found" **while the file was sitting right
+   there**.
+2. **The skill's destination pointed outside the archive.** Joining `..\..` from the archive root
+   resolves to the parent of wherever the user unpacked. The installer wrote the skill twice
+   inside the folder and twice into somebody's Temp directory. Writing outside the folder a user
+   unpacked is not a thing an installer should do. The layout is now **detected once** and only
+   that layout's destinations are used.
+3. **`verify_release.js` compared forward-slash paths against an archive that stores
+   backslashes**, so it reported every required file as missing. The archives were fine and the
+   check was wrong. It now normalises, and prints what it actually found when a check fails —
+   which is what made the mistake obvious instead of mysterious.
+
+### Verified at this release
+
+| Check | Result |
+| --- | --- |
+| Build inputs in either archive | none |
+| DLL in `base` | none, as intended |
+| DLL in `full` | byte-identical to the repository build |
+| `install.ps1` from an unpacked `full` archive | mod copied, DLL installed, skill installed inside the archive, nothing written outside it |
+| `install.ps1` from an unpacked `base` archive | same, with no DLL step |
+| Live run from the archive-installed copy | bridge answered, input extension loaded, clock mapping sound, 0.4x measured as 0.4118, restored to 1.0, game alive |
+| Lua syntax / mock / MCP end to end | 21/21, 80/81, 15/15 |
+| Encoding | no BOMs, no mojibake |
+
+---
+
 ## [2.0.0] — 2026-09-24
 
 **Time scaling works.** Slow motion and fast forward, verified in a live game in both

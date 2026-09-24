@@ -1,6 +1,6 @@
 ---
 name: noita-mcp
-description: Drive a running Noita game through the Noita AI Agent Bridge MCP server - observe the player, nearby entities, inventory, wands and spell decks, and modify the player, wands, spells and potions. Use when the user asks about their Noita run, wants the AI to see or change something in Noita, or mentions noita_* tools.
+description: Drive a running Noita game through the Noita MCP Agent Bridge MCP server - observe the player, nearby entities, inventory, wands and spell decks, and modify the player, wands, spells and potions. Use when the user asks about their Noita run, wants the AI to see or change something in Noita, or mentions noita_* tools.
 whenToUse: The user is playing Noita, asks about their run, their wands or spells, or asks the AI to look at or change something in Noita, and the noita_* tools are available.
 ---
 

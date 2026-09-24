@@ -13,7 +13,7 @@ listens on `127.0.0.1` only.
 
 Two pieces, always installed together:
 
-- **The mod** (`noita_agent`, "Noita AI Agent Bridge") —runs inside Noita, is the only thing that can touch the game, and exposes a small local RPC surface: player, inventory, wands, spell decks, entities, world/map data, and the permission switches.
+- **The mod** (`noita_agent`, "Noita MCP Agent Bridge") —runs inside Noita, is the only thing that can touch the game, and exposes a small local RPC surface: player, inventory, wands, spell decks, entities, world/map data, and the permission switches.
 - **The MCP server** (`mcp_server/server.js`) —a stdio MCP server that translates `noita_*` tool calls into bridge RPCs and returns structured JSON. It also has a CLI for humans (`--status`, `--list`, `--call`).
 
 Because the game only updates while a run is active, the bridge only answers inside a run.
@@ -66,7 +66,7 @@ so the AI can move, jump, and fire.
    `<Noita>` is the folder containing `noita.exe` (for example
    `D:\Sware\Steam\steamapps\common\Noita`).
 
-2. Start Noita, open **Mods**, and enable **Noita AI Agent Bridge**.
+2. Start Noita, open **Mods**, and enable **Noita MCP Agent Bridge**.
 
 3. Point your MCP client at the server. Use absolute paths, and escape backslashes for JSON:
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Noita AI Agent Bridge -- MCP server (stdio).
+ * Noita MCP Agent Bridge -- MCP server (stdio).
  *
  * Zero runtime dependencies: implements the MCP JSON-RPC handshake directly so
  * it works on a machine without npm registry access.
@@ -445,7 +445,7 @@ async function rpcFileRaw(payload, timeoutMs = 8000) {
   }
   if (!fs.existsSync(p.run)) {
     throw new Error(
-      `Bridge run folder missing: ${p.run}. Install the mod and start a run with "Noita AI Agent Bridge" enabled.`
+      `Bridge run folder missing: ${p.run}. Install the mod and start a run with "Noita MCP Agent Bridge" enabled.`
     );
   }
 
@@ -2049,7 +2049,7 @@ async function handleMessage(msg) {
       capabilities: { tools: { listChanged: false } },
       serverInfo: { name: SERVER_NAME, version: SERVER_VERSION },
       instructions:
-        'Controls a running Noita game through the "Noita AI Agent Bridge" mod. ' +
+        'Controls a running Noita game through the "Noita MCP Agent Bridge" mod. ' +
         'Start with noita_bridge_status, then noita_get_state to observe. ' +
         'Spell ids come from noita_list_spells; material ids from noita_list_materials.',
     });

@@ -23,7 +23,12 @@ const EXPECTED_CONTENT_DIFF = new Set([
 ]);
 
 // Files that belong to exactly one package. Anything else appearing on this list is a mistake.
+//
+// The DLL appears twice on purpose: `extension/xinput_hook.dll` is the runtime copy the release
+// archives ship and that install.ps1 finds, and `extension/build/xinput_hook.dll` is the build
+// output beside the source. Both live in full only.
 const EXPECTED_ONLY_IN_FULL = [
+  'extension/xinput_hook.dll',
   'extension/build/xinput_hook.dll',
   'extension/build.ps1',
   'extension/injector.c',

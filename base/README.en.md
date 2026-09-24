@@ -28,7 +28,7 @@ Chinese documentation: [README.md](README.md). Main readme: [../README.en.md](..
    base\mod\noita_agent   ->   <Noita>\mods\noita_agent
    ```
 
-2. Start Noita, open **Mods**, and enable **Noita AI Agent Bridge**. Expect the game's
+2. Start Noita, open **Mods**, and enable **Noita MCP Agent Bridge**. Expect the game's
    "unsafe mod" warning here; see Troubleshooting below.
 
 3. Add the server to your MCP client configuration. Use an absolute path and escape

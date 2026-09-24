@@ -272,7 +272,7 @@ function panel.is_allowed(method)
   if not op then return true end   -- unlisted means read; see the rule above
 
   if not flag("master") then
-    return false, "AI control is disabled in the Noita AI Agent Bridge panel (switch: ai_enabled). " ..
+    return false, "AI control is disabled in the Noita MCP Agent Bridge panel (switch: ai_enabled). " ..
       "Read-only tools and the panel tools still work."
   end
   if flag("read_only") then

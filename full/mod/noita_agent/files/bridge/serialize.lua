@@ -1,4 +1,4 @@
--- Game-side read/write helpers for the Noita AI Agent Bridge.
+-- Game-side read/write helpers for the Noita MCP Agent Bridge.
 --
 -- Everything that touches Noita components lives here so the RPC layer stays
 -- thin. All read paths are defensive: a missing component or entity must never

@@ -23,7 +23,7 @@
    base\mod\noita_agent   ->   <Noita>\mods\noita_agent
    ```
 
-2. 启动 Noita，打开 **Mods**，启用 **Noita AI Agent Bridge**。这里会出现游戏的"不安全的模组"警告，见下文「故障排查」。
+2. 启动 Noita，打开 **Mods**，启用 **Noita MCP Agent Bridge**。这里会出现游戏的"不安全的模组"警告，见下文「故障排查」。
 
 3. 把服务器加进 MCP 客户端配置。请使用绝对路径，并对 JSON 里的反斜杠转义：
 

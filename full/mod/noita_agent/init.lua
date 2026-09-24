@@ -1,4 +1,4 @@
--- Noita AI Agent Bridge - mod entry point.
+-- Noita MCP Agent Bridge - mod entry point.
 --
 -- Noita calls these hooks; the bridge answers RPC requests and republishes the
 -- world snapshot from OnWorldPostUpdate. OnWorldInitialized is the first hook

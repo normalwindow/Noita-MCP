@@ -15,17 +15,32 @@
 | 32 位 MSVC 工具链 | DLL 必须与 32 位的游戏进程匹配。`build.ps1` 自己会调用 `vcvars32`。 |
 | Windows PowerShell 5.1 或 PowerShell 7+ | 两者都支持；构建脚本避开了只有 PS7 才有的语法。 |
 
-只有构建 DLL 才需要工具链。构建完成后，DLL 可以复制到另一台机器使用。
+**从下载包安装不需要任何工具链**——DLL 是编译好的，可以直接复制到另一台机器使用。
 
-## 构建 DLL
+## DLL 已经编译好了，直接用
+
+**下载的压缩包里就是编译好的 DLL，不需要任何工具链，不需要构建。**
+
+```
+extension\xinput_hook.dll      ← 已编译，install.ps1 会自动装到游戏目录
+```
+
+`install.ps1` 会把它复制到 `<Noita>\mods\noita_agent\extensions\`，并**只是放着，不加载**：
+模组只在被要求时才载入 DLL，而且载入后也是惰性的，直到调用 `noita_input_install` 才生效。
+所以装完不会改变游戏的任何行为。
+
+### 想自己编译（可选）
+
+仓库里有源码 `full/extension/xinput_hook.c` 和 `build.ps1`。**只有开发者需要**，所以它们
+**不在下载包里**——下载包里只有成品。
 
 ```powershell
 cd <仓库>\full\extension
 .\build.ps1
 ```
 
-产物是 `full\extension\build\xinput_hook.dll`。脚本会读回产物的 PE COFF 头并断言
-`Machine == 0x014C`（32 位），所以架构错误的构建会直接报错，而不是产出一个游戏载入不了的 DLL。
+脚本会读回产物的 PE COFF 头并断言 `Machine == 0x014C`（32 位），所以架构错误的构建会直接报错，
+而不是产出一个游戏载入不了的 DLL。
 
 | 开关 | 作用 |
 | --- | --- |
@@ -33,8 +48,8 @@ cd <仓库>\full\extension
 | `-DllOnly` | 只构建 DLL，跳过独立注入器 |
 | `-DebugBuild` | 用 `/Od /Zi` 代替 `/O2`（开关名不是 `-Debug`，那个名字已被占用） |
 
-默认还会构建 `injector.c`。它是一个独立的 32 位注入器，**正常安装不使用**：模组通过自己的
-LuaJIT FFI 载入 DLL，不需要外部注入器。
+源码默认还会构建 `injector.c`。它是一个独立的 32 位注入器，**正常安装不使用**：模组通过自己的
+LuaJIT FFI 载入 DLL，不需要外部注入器。它同样不在下载包里。
 
 ## 载入并武装
 

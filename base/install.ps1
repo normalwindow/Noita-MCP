@@ -1,4 +1,4 @@
-# Installs (or removes) the Noita AI Agent Bridge mod.
+# Installs (or removes) the Noita MCP Agent Bridge mod.
 #
 #   pwsh -File install.ps1              # install / update into the detected Noita
 #   pwsh -File install.ps1 -NoitaDir "D:\Games\Noita"
@@ -216,7 +216,7 @@ if (-not $NoEnable) {
   Set-ModEnabled -SaveRoot (Get-SaveRoot) -ModId $modId -Enabled $true
   Write-Host "mod enabled in mod_config.xml (a backup of the previous list is written next to it)"
 } else {
-  Write-Host "mod copied but NOT enabled (-NoEnable). Enable 'Noita AI Agent Bridge' in the in-game Mods menu."
+  Write-Host "mod copied but NOT enabled (-NoEnable). Enable 'Noita MCP Agent Bridge' in the in-game Mods menu."
 }
 
 # Keep the game updating while the window is unfocused, so the bridge does not
@@ -241,18 +241,43 @@ if ($pauseFix) {
 # Copy the MCP usage skill where an agent session can discover it, so the AI knows
 # the bridge's rules (notably what it cannot do) without being told.
 #
-# The skill ships as mcp-skill/SKILL.md in the release layout; the development tree
-# had a separate installer script. Both locations are tried, and a missing skill is a
-# note rather than an error: the mod works without it.
+# WHERE THE SKILL IS, AND WHERE IT GOES -- both depend on which layout this is, and the first
+# version of this block got both wrong for the release archives.
+#
+# The skill sits at the ARCHIVE ROOT (mcp-skill/SKILL.md, beside install.ps1). It was being
+# looked for one level UP, which is where it lives in the development tree -- so an unpacked
+# archive reported "skill not found" while the file was sitting right there. The destinations
+# had the mirror-image problem: joining "..\.." from the archive root points OUTSIDE the
+# unpacked folder, so the installer wrote the skill twice inside the archive and twice into
+# whatever happened to be two levels up. In a temporary extraction that is somebody's Temp
+# directory; run from somewhere else it could be anything. Writing outside the folder the user
+# unpacked is not a thing an installer should do.
+#
+# So the layout is DETECTED once from where the skill actually is, and only that layout's
+# destinations are used. In an archive: both `.dsh` and `.agents` inside the unpacked folder.
+# In the development tree: the project root two levels up, as before.
+#
+# A missing skill stays a note rather than an error: the mod works without it.
 if (-not $NoSkill) {
-  $skillDests = @(
-    (Join-Path $PSScriptRoot "..\..\.dsh\skills\noita-mcp"),
-    (Join-Path $PSScriptRoot "..\..\.agents\skills\noita-mcp")
-  )
-  $skillSrc = @(
-    (Join-Path $PSScriptRoot "..\mcp-skill\SKILL.md"),
-    (Join-Path $PSScriptRoot "..\skills\noita-mcp\SKILL.md")
- ) | Where-Object { Test-Path $_ } | Select-Object -First 1
+  $skillArchive = Join-Path $PSScriptRoot "mcp-skill\SKILL.md"
+  $skillDevTree = Join-Path $PSScriptRoot "..\mcp-skill\SKILL.md"
+
+  if (Test-Path $skillArchive) {
+    $skillSrc = $skillArchive
+    $skillDests = @(
+      (Join-Path $PSScriptRoot ".dsh\skills\noita-mcp"),
+      (Join-Path $PSScriptRoot ".agents\skills\noita-mcp")
+    )
+  } elseif (Test-Path $skillDevTree) {
+    $skillSrc = $skillDevTree
+    $skillDests = @(
+      (Join-Path $PSScriptRoot "..\..\.dsh\skills\noita-mcp"),
+      (Join-Path $PSScriptRoot "..\..\.agents\skills\noita-mcp")
+    )
+  } else {
+    $skillSrc = $null
+    $skillDests = @()
+  }
 
   if ($skillSrc) {
     foreach ($dest in $skillDests) {
