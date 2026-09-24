@@ -13,6 +13,55 @@ copy of the folder is always accepted by the game.
 
 ---
 
+## [1.4.1] — 2026-09-24
+
+Time-scale investigation: recorded as **not feasible**, with the attempts and their results, so
+it does not get retried from scratch.
+
+### What was tried
+
+**Static analysis first** (`tools/find_timescale.py`, `tools/find_frame_counter.py`):
+
+- The engine keeps time with `QueryPerformanceCounter` / `QueryPerformanceFrequency`. There is
+  no `timeGetTime`, and SDL is not the clock.
+- **No string in either binary names the concept** — no `timescale`, `time_scale`, `slowmo`,
+  `game_speed`, `timestep`, `fixed_dt`. This is the decisive finding: there is no time-scale
+  *variable* to find, because the engine has no time-scale concept. "Scaling time" would mean
+  editing whichever dt values are used across the frame, wherever they happen to be.
+- `1/60` appears as a real constant in 9 places in `.rdata`. The 151 hits in `.text` are
+  instruction bytes matching the pattern.
+- `GameGetFrameNum`'s name appears twice; the candidate implementations found by following the
+  registration pushes and by scanning for `mov reg, [absolute]` near a `ret` are not simple
+  getters — one turned out to be a stack-canary check (`xor eax, esp` with the security cookie
+  at `0x1152000`). A heuristic that ranks "busiest global" finds security plumbing, not clocks.
+
+**Runtime search:** reading the eight busiest candidate globals and comparing against
+`GameGetFrameNum` produced **no match** — the values were 0, 1, and unrelated constants, not
+the frame number. A `memscan` over live memory for the frame value reached **92% of 921 MB with
+2 hits** and was aborted; at that rate the value has advanced past the needle before the scan
+finishes, so a whole-memory search for a moving counter cannot converge.
+
+### Why it stops here
+
+Not because it is dangerous — the risk was accepted — but because it is **not verifiable**:
+
+- A candidate address cannot be confirmed from inside the game. The only available test is
+  "does the game advance differently", which a wrong write also produces, while corrupting
+  something else.
+- The one instrument that could measure a change, `noita_framerate`, **stops when the engine
+  stops** — it samples from the bridge's per-frame update, which runs inside the engine's frame
+  loop. Verified: pressing ESC froze `state.json` and made `ping` time out six times running.
+  So the moment a wrong write freezes the game, the instrument that would report it goes with
+  it.
+- Reading the counter out-of-band from the DLL's worker thread would fix that, and the attempt
+  to locate the counter is recorded above. It did not succeed.
+
+A write that cannot be confirmed and cannot be measured is not a feature, so no time-scale
+control is offered. The measurement tool stays, because it answers a different real question:
+telling a stopped engine from a stopped bridge.
+
+---
+
 ## [1.4.0] — 2026-09-24
 
 Adds the instrument needed before any time-scale work, plus the static analysis behind it.

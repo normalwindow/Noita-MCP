@@ -288,3 +288,38 @@ tables". If a mock helper receives nothing when you passed a table, check the ha
   thing, `PhysicsBodyIDSetGravityScale`, affects one body, not the world clock.
 - **Firing the wand without the input extension.** Nothing in the physics state is a button
   press. `noita_macro` refuses such a macro rather than appearing to run it.
+
+### Why time scaling was not pursued further, and what would change that
+
+Recorded so it is not retried from scratch. The full account is in `CHANGELOG.md` under 1.4.1.
+
+The static analysis found **no string anywhere naming the concept** — no `timescale`,
+`time_scale`, `slowmo`, `game_speed`, `timestep`, `fixed_dt`. That absence is the finding:
+there is no time-scale *variable* to locate, because the engine has no time-scale concept.
+`1/60` exists as a real constant in 9 places in `.rdata`, and "scaling time" would mean editing
+whichever of those the frame happens to use.
+
+Two further attempts and their results:
+
+- Following `GameGetFrameNum`'s registration pushes, and scanning for `mov reg, [absolute]`
+  near a `ret`, produced candidates that are not simple getters. The busiest candidate global
+  (`0x1152000`) is the **stack canary** — the code around it is `xor eax, esp`, the
+  `/GS` cookie check. A heuristic of "the most-read global" finds security plumbing, not clocks.
+- Reading the eight busiest candidates and comparing against `GameGetFrameNum` gave **no
+  match** (values 0, 1, and unrelated constants). A `memscan` for the live frame value reached
+  **92% of 921 MB with 2 hits** before being aborted: the counter advances past the needle
+  before the scan finishes, so a whole-memory search for a moving counter cannot converge.
+
+**What would change the conclusion:** finding the counter's address by another route — for
+instance from a debugger with symbols, or by pattern-matching the frame-advance code rather than
+the getter — so that `noita_framerate` could read it from the DLL's worker thread instead of from
+the engine's frame loop. That is the actual blocker: the measuring instrument currently stops
+when the engine stops, so a wrong write freezes the game *and* the instrument that would report
+it. Fix that first, and a careful attempt becomes worth making.
+
+Two things are needed before a write is acceptable, and neither is in place:
+
+1. **An out-of-band counter read**, so a frozen engine can still be measured.
+2. **A write that can be undone**, so a wrong guess costs a restart rather than the run.
+
+A write that cannot be confirmed and cannot be measured is not a feature.
