@@ -349,8 +349,13 @@ function player_ops.drop_targeted(params)
   local ang = tonumber(params.angle)
   local vx, vy
   if ang then
+    -- WORLD CONVENTION: y increases downward, so a positive angle rotates CLOCKWISE on
+    -- screen and 90 degrees points DOWN. This used to be written with a negated sin here and in
+    -- two other places in this file, which flipped every angle vertically -- the documented
+    -- convention said 90 = down while these paths went up. Found by writing the convention down
+    -- and then checking the code against it; see ANGLES-AND-DISTANCES.md.
     vx = math.cos(math.rad(ang)) * speed
-    vy = -math.sin(math.rad(ang)) * speed
+    vy = math.sin(math.rad(ang)) * speed
   else
     vx, vy = speed, 0
   end
@@ -429,7 +434,7 @@ function player_ops.launch(params)
     local dist = tonumber(params.distance) or 200
     local a = math.rad(tonumber(params.angle))
     tx = px + math.cos(a) * dist
-    ty = py - math.sin(a) * dist
+    ty = py + math.sin(a) * dist
   end
   if not tx then tx, ty = px + 200, py end
 
@@ -758,7 +763,7 @@ function player_ops.input_aim(params)
     local dist = tonumber(params.distance) or 200
     local a = math.rad(tonumber(params.angle))
     tx = px + math.cos(a) * dist
-    ty = py - math.sin(a) * dist
+    ty = py + math.sin(a) * dist
     cal.derived_world_target = { tx, ty }
   end
 

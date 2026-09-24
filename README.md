@@ -20,7 +20,7 @@ Noita MCP 由一个 MCP（Model Context Protocol）服务器和一个 Noita 模�
 | | 基础版（base） | 完整版（full） |
 | --- | --- | --- |
 | 内容 | 纯 Lua，不含 DLL | 基础版 + 输入扩展 DLL |
-| MCP 工具 | **90 个**（71 个可直接使用，9 个 `noita_input_*` 需要输入扩展） | **90 个**全部可用 |
+| MCP 工具 | **91 个**（71 个可直接使用，9 个 `noita_input_*` 需要输入扩展） | **91 个**全部可用 |
 | 外部依赖 | 无 | 构建出的 DLL（32 位） |
 | 观察游戏 | 可以 | 可以 |
 | 修改玩家、物品、法杖、世界 | 可以 | 可以 |
@@ -218,7 +218,7 @@ Noita-MCP/
 
 ## 要改代码？先读这两份
 
-- **[ENGINE-NOTES.md](ENGINE-NOTES.md)** —— 实测的引擎事实，以及它们设下的陷阱。**每条都注明了"测到了什么、它弄坏了什么、怎么避开"**：
+- **- [ANGLES-AND-DISTANCES.md](ANGLES-AND-DISTANCES.md) — the angle and distance conventions every tool shares, and which tool uses screen pixels instead
   - SDL2 的导出是 **7 字节跳转桩**，不是函数本身
   - `mVelocity` 在**两个组件**上都存在，**只有一个是向量**（写错的那个静默无效）
   - **`GuiTranslateSet` 不存在**（我臆造过它，导致面板内容区空白）

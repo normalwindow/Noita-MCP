@@ -2132,6 +2132,17 @@ const TOOLS = [
     },
   },
   {
+    name: 'noita_angles',
+    description: 'The angle and distance conventions every noita_* tool uses, with worked examples. ' +
+      'Read this once before mixing an angle from one tool with a coordinate from another: angles ' +
+      'here increase CLOCKWISE on screen (0 = east, 90 = DOWN) because Noita\'s world has y ' +
+      'increasing downward, which is the opposite of the school convention. Also states which tool ' +
+      'uses screen pixels instead, and that the terrain sweep does not detect entities. Takes no ' +
+      'arguments.',
+    inputSchema: { type: 'object', properties: {} },
+    handler: () => rpc('angle_conventions'),
+  },
+  {
     name: 'noita_raw_rpc',
     description: 'Escape hatch: call a game-side bridge method directly with raw params. Methods: ' +
       'ping, status, get_state, get_player, get_nearby, get_inventory, get_wands, get_held_wand, raycast, ' +

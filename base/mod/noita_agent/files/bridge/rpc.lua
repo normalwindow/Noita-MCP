@@ -861,6 +861,60 @@ handlers.percept_set_budget = function(params)
   return percept.set_budget(params.raycasts)
 end
 
+-- The angle and distance conventions, reported by a tool rather than only written in a document,
+-- so an agent can ask instead of guessing. Measured, not asserted: the example numbers come from a
+-- chest that was spawned and then located.
+handlers.angle_conventions = function()
+  return {
+    ok = true,
+    convention = "degrees(atan2(dy, dx)) over world-space offsets",
+    directions = {
+      ["0"] = "east (right)",
+      ["90"] = "south (DOWN) -- angles increase clockwise on screen",
+      ["180"] = "west (left)",
+      ["270"] = "north (up)",
+    },
+    why = "Noita's world has y increasing downward, so a positive angle rotates clockwise on " ..
+          "screen. This is the opposite of the mathematical convention, where 90 degrees points " ..
+          "up. It is consistent across the tools below.",
+    worked_example = {
+      note = "a chest spawned and then located, not a constructed example",
+      player = { x = -120, y = 96 },
+      chest = { x = -208, y = 132 },
+      dx = -88.4,
+      dy = 36.4,
+      reported_angle = 157.59,
+      school_convention_would_be = -157.59,
+      distance = 95.6,
+    },
+    tools = {
+      noita_get_nearby = "angle is an OUTPUT, world convention",
+      noita_raycast = "angle is an INPUT, world convention (0 = right, 90 = down)",
+      noita_percept_sweep = "degrees labels, world convention",
+      noita_percept_surroundings = "degrees labels, world convention",
+      noita_input_click = "x and y are SCREEN PIXELS, not an angle -- the engine derives its aim " ..
+                          "vector from the mouse, so this is a different space. Convert with the " ..
+                          "camera rectangle from noita_world.",
+    },
+    distances = {
+      unit = "world pixels; Noita cells are 8 pixels",
+      noita_get_nearby = "dist is straight-line from the player, with dx/dy available",
+      noita_percept_sweep = "the from/to of each band; first_contact is the nearest non-open slice",
+    },
+    resolution = {
+      sweep_default = "16 directions (22.5 degrees apart), 8 slices over 600px = a slice every 75px",
+      sweep_minimum = "8 directions",
+      cost = "4 raycasts per direction regardless of samples, so raising samples is free and " ..
+             "raising directions is what costs",
+      finer = "directions up to 64 (5.6 degrees apart); samples up to 32",
+    },
+    the_sweep_does_not_detect_entities = "It reports terrain only. A chest spawned 200px away " ..
+      "left the profile in that direction unchanged. Objects and creatures go through the entity " ..
+      "interface -- noita_get_nearby and noita_entity_info -- which is exact, where a raytrace " ..
+      "against a thin or fast-moving entity is a coin toss.",
+  }
+end
+
 -- ---------------------------------------------------------------- framerate
 
 -- Reading the engine's rate is observation, so none of these are gated. The measurement

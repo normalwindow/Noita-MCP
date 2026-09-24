@@ -244,7 +244,7 @@ use it: the mod loads the DLL itself through FFI.
 
 **Start with these two if you are going to change anything:**
 
-- [ENGINE-NOTES.md](ENGINE-NOTES.md) — measured engine facts and the traps they set. SDL2's
+- - [ANGLES-AND-DISTANCES.md](ANGLES-AND-DISTANCES.md) — the angle and distance conventions every tool shares, and which tool uses screen pixels instead
   exports are 7-byte thunks; `mVelocity` exists on two components and only one of them is a
   vector; `GuiTranslateSet` does not exist; modules are globals, not returned values. Each entry
   says what was measured, what it broke, and how to avoid it.

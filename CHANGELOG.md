@@ -13,9 +13,109 @@ copy of the folder is always accepted by the game.
 
 ---
 
+## [2.4.0] — 2026-09-24
+
+The angle convention written down, and what the terrain sweep can and cannot say about MATERIAL.
+91 tools.
+
+### Answered — the sweep detects material CLASS, at every distance band
+
+Its glyphs are material classes, read from raycast behaviour:
+
+| glyph | class | how it is known |
+| --- | --- | --- |
+| `#` | standable solid | `RaytracePlatforms` stops there and nothing stricter does |
+| `%` | solid | `RaytraceSurfacesAndLiquiform` stops there |
+| `~` | liquid | `RaytraceSurfaces` stops there but `Liquiform` passes through |
+| `^` | gas or fire | only the permissive `Raytrace` stops there |
+| `.` | open | nothing stops |
+
+### And what it cannot: material IDENTITY, beyond the class
+
+Rock, coal, sand and steel are all `%` or `#`; water, acid, oil and lava are all `~`. The engine
+gives no signal that separates them from a raycast — **a ray that stops cannot tell you what stopped
+it**, and there is no `GetMaterial`/`GetCell` to ask. Claiming "this is coal" would be inventing
+data.
+
+### Resolution, measured rather than assumed
+
+| | angular | radial |
+| --- | --- | --- |
+| default | 16 directions, 22.5° apart | 8 slices over 600px — one every 75px |
+| maximum | 64 directions, 5.6° apart | 32 slices — one every 18.75px |
+
+The cost is **4 raycasts per direction regardless of `samples`**, so 16 directions is 64 raycasts
+whether the profile has 8 slices or 32. That measurement matters: it means radial resolution is
+free, and only angular resolution costs.
+
+Tested at 8 slices and at 32 against the same view: **the finer profile found no material the
+coarse one missed** — it located the same boundaries more precisely. So the default does not hide
+material; it rounds its position to the nearest 75px.
+
+### Do the defaults need strengthening? Only angularly, and only when aiming at something
+
+- **Radial**: no. Free to raise, and 8 slices is enough to say roughly where a boundary is.
+- **Angular**: yes, if precision is wanted. A 1-cell gap is 8px; at 400px away that subtends about
+  1.1°, and 22.5° spacing steps straight over it. `directions: 32` or `64` is the fix, and it says
+  so in the output rather than being something to discover.
+
+That is a trade the caller should make knowingly, so the numbers are in `noita_angles` and in
+`ANGLES-AND-DISTANCES.md` rather than being a default that silently costs 256 raycasts.
+
+### Added — the angle convention, written down and queryable
+
+Angles here increase **CLOCKWISE on screen** — 0 = east, **90 = DOWN** — because Noita's world has y
+increasing downward. The opposite of the school convention, and nothing said so.
+
+Measured with a chest that was spawned and then located:
+
+```
+player (-120, 96)   chest (-208, 132)   dx -88.4   dy +36.4
+
+atan2(dy, dx)  =  157.59   <- what noita_get_nearby reports
+atan2(-dy, dx) = -157.59   <- the school convention, not used here
+```
+
+Four tools share it — `noita_get_nearby`, `noita_raycast`, `noita_percept_sweep`,
+`noita_percept_surroundings` — so an angle from one can be handed to another. `noita_input_click`
+takes **screen pixels** instead, because the engine derives its aim vector from the mouse; a
+different space, converted with the camera rectangle from `noita_world`.
+
+- **`ANGLES-AND-DISTANCES.md`** — tables, the worked example, resolution, and what the sweep does
+  not detect
+- **`noita_angles`** — the same as a tool, so an agent can ask rather than guess
+
+### Also recorded — entities are NOT found by rays
+
+A chest was spawned 200px away and the profile in that direction was **unchanged**. Objects and
+creatures go through the entity interface, which is exact:
+
+```
+miner_weak 8   shotgunner_weak 4   tree_entity 14   coalmine_i_structure 4
+lantern_small 1   verlet_vine 2   prop 44   potion 2   spell 2   wand 2
+by tag:  enemy 23   mortal 52   hittable 38
+```
+
+Rays answer "what is the terrain like out there"; the entity interface answers "what is standing
+there". A raytrace against a thin or fast-moving entity is a coin toss.
+
+### Verified at this release
+
+| Check | Result |
+| --- | --- |
+| Material classes, live | `#` `%` `~` `^` `.` all produced from raycast behaviour |
+| Resolution, 8 vs 32 slices | same materials found; boundaries 4x more precise |
+| Cost vs `samples` | 64 raycasts at both 8 and 32 slices, 16 directions |
+| Sweep vs a spawned chest | profile unchanged — terrain only |
+| Angle convention | measured against a located chest, 157.59 both ways |
+| Lua syntax / mock / MCP end to end | 23/23, 85/86, 15/15 |
+| Encoding | no BOMs, no mojibake |
+
+---
+
 ## [2.3.0] — 2026-09-24
 
-Three corrections from review. 90 tools.
+Three corrections from review. 91 tools.
 
 ### Fixed — the seed reader required the answer to find the answer
 
@@ -99,7 +199,7 @@ invokes them on load, on spawn or on a timer. The capability ships; the behaviou
 
 ## [2.2.0] — 2026-09-24
 
-Chunked material perception, and the material catalogue from the unpacked game data. 90 tools.
+Chunked material perception, and the material catalogue from the unpacked game data. 91 tools.
 
 ### Added — perception by chunk, which is the shape this needed
 
@@ -180,7 +280,7 @@ frames without health still end in a death if they lapse.
 
 ## [2.1.0] — 2026-09-24
 
-Three gaps found in a review of what the bridge can see. 90 tools.
+Three gaps found in a review of what the bridge can see. 91 tools.
 
 ### Added — the world seed, read out of memory
 
@@ -364,7 +464,7 @@ Every one of these was invisible from inside the repository, where the developme
 ## [2.0.0] — 2026-09-24
 
 **Time scaling works.** Slow motion and fast forward, verified in a live game in both
-directions. 90 tools.
+directions. 91 tools.
 
 This replaces the 1.4.1 conclusion that it was not feasible. That conclusion was wrong, and the
 reason is worth recording: the search was for Noita's own time variable, and **there is no such
