@@ -1980,6 +1980,18 @@ const TOOLS = [
     handler: () => rpc('time_check'),
   },
   {
+    name: 'noita_controls_snapshot',
+    description: 'The input the game currently sees: the frame each button was last pressed on, ' +
+      'the held flags, and the held wand\'s mana. Use it to CHECK that an action actually ' +
+      'happened rather than trusting that a key was pushed — noita_macro kick returning ok only ' +
+      'means the extension handed an F key-down to SDL, which is not the same as the game ' +
+      'acting on it. Note that the mButtonFrame* fields are FRAME NUMBERS, not counts: a kick ' +
+      'that just happened has mButtonFrameKick close to the reported `frame`, and a stale one ' +
+      'is hundreds behind.',
+    inputSchema: { type: 'object', properties: {} },
+    handler: () => rpc('controls_snapshot'),
+  },
+  {
     name: 'noita_raw_rpc',
     description: 'Escape hatch: call a game-side bridge method directly with raw params. Methods: ' +
       'ping, status, get_state, get_player, get_nearby, get_inventory, get_wands, get_held_wand, raycast, ' +

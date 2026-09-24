@@ -13,6 +13,58 @@ copy of the folder is always accepted by the game.
 
 ---
 
+## [2.0.2] — 2026-09-24
+
+The kick — the F-key action that shoves objects away from the player's feet — is confirmed to
+work through `noita_macro`, and a caller can now verify it rather than take it on trust.
+
+### Answered — yes, `noita_macro kick` performs a real kick
+
+It was already in the macro set as `kick = { { key = "F", frames = 8 } }`, but "the macro
+returned ok" only means the extension handed an F key-down to SDL. That is not the same as the
+game acting on it, and this project has had to retract an unverified claim before.
+
+So it was measured, against real input as the control:
+
+| step | result |
+| --- | --- |
+| extension armed, no input | every control field reads 0 |
+| a human presses F | `mButtonFrameKick` and `mButtonDownKick` move |
+| `noita_macro kick` | the same signature, **4 runs out of 4, at a frame gap of 0** |
+
+`noita_macro kick` is the tool; `noita_controls_snapshot` is how to check it.
+
+### Added — `noita_controls_snapshot` reports `mButtonFrameKick` and `mButtonDownKick`
+
+Previously absent, which made a kick impossible to confirm from outside. The reason the field
+was added is written where it is read, so the next person does not have to rediscover why.
+
+### Fixed — three wrong measurements of the same field, and what it actually is
+
+`mButtonFrameKick` **is a frame number, not a count of kicks**. The name reads like a counter and
+is not one, and three successive attempts to test with it produced confident nonsense:
+
+1. Comparing raw differences across the macro called a **2405-frame gap a pass** — that gap was
+   just elapsed time.
+2. Treating the same number as a count called it a **failure**, for the same reason.
+3. The passing version checks **how old** the kick frame is: a kick that just happened has a gap
+   of a few frames, and time passing cannot make a gap small. Measured at 0.
+
+The check also verifies the field is **still** before running the macro, so someone else pressing
+F cannot be credited to it. That guard was added after a run reported three passes with jumps of
+4351, 205 and 206 — a human, not the macro.
+
+### Verified at this release
+
+| Check | Result |
+| --- | --- |
+| `noita_macro kick` | 4/4 runs, kick frame gap 0 |
+| Field still when idle | yes, over 32-frame windows |
+| Mock / MCP end to end | 80/81, 15/15 |
+| Encoding | no BOMs, no mojibake |
+
+---
+
 ## [2.0.1] — 2026-09-24
 
 Renamed to **Noita MCP Agent Bridge** for consistency with the repository, and the release
@@ -83,7 +135,7 @@ Every one of these was invisible from inside the repository, where the developme
 ## [2.0.0] — 2026-09-24
 
 **Time scaling works.** Slow motion and fast forward, verified in a live game in both
-directions. 81 tools.
+directions. 82 tools.
 
 This replaces the 1.4.1 conclusion that it was not feasible. That conclusion was wrong, and the
 reason is worth recording: the search was for Noita's own time variable, and **there is no such

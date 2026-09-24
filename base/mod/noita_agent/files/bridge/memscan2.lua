@@ -262,6 +262,18 @@ function memscan.snapshot_controls()
     mButtonFrameDown = g("mButtonFrameDown"),
     mButtonFrameRun = g("mButtonFrameRun"),
     mButtonFrameFly = g("mButtonFrameFly"),
+    -- The kick button, so a caller can confirm a kick actually reached the game rather than
+    -- trusting that a key was pushed.
+    --
+    -- Established against real input rather than assumed: with the extension armed and no
+    -- input, every field here reads 0; a human pressing F moves mButtonFrameKick and
+    -- mButtonDownKick; and `noita_macro kick` produces exactly the same signature -- the frame
+    -- counter rising by one and the down flag rising and falling once. Reproduced four times.
+    --
+    -- That check matters because a pushed key is not an executed action. The macro's ok=true
+    -- only means the extension handed the event to SDL; this is what says the game acted on it.
+    mButtonFrameKick = g("mButtonFrameKick"),
+    mButtonDownKick = g("mButtonDownKick"),
     mana = mana,
     wand_children = (function()
       if not wand then return nil end

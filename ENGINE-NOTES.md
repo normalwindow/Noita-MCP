@@ -277,6 +277,31 @@ tables". If a mock helper receives nothing when you passed a table, check the ha
 
 ---
 
+### `mButtonFrameKick` is a FRAME NUMBER, not a counter
+
+The name reads like a count and is not one. It holds the frame the kick last happened on, so
+the way to test "did a kick just happen" is whether the value is close to `GameGetFrameNum()`,
+not whether it went up.
+
+Both wrong readings were tried and both produced confident nonsense: comparing raw differences
+called a 2405-frame gap a pass, and treating the same gap as a count called it a failure. Neither
+was measuring anything. Sampled immediately after a kick: `frame 8757, kick 8757, down true` —
+a gap of zero; the field then freezes while the gap grows.
+
+Measured this way, `noita_macro kick` produces the signature real input does, four runs out of
+four, at a gap of 0. The macro's own `ok` is not evidence of that: it means the extension handed
+an F key-down to SDL, and a pushed key is not an executed action.
+
+### The kick button is confirmed against real input, not assumed
+
+With the extension armed and no input, every control field reads 0. A human pressing F moves
+`mButtonFrameKick` and `mButtonDownKick`. `mButtonFrameKick` is now reported by
+`noita_controls_snapshot` for exactly this reason — so a caller can confirm a kick reached the
+game instead of trusting that a key was pushed.
+
+The field is `Kick`, not `Throw`. Both were watched together; a physical kick moves only the
+first, and `mButtonDownAction`/`mButtonFrameAction` do not exist on this component at all.
+
 ## Things that are NOT possible, verified
 
 - **Driving the player through control fields.** They mirror input; the engine overwrites them.
