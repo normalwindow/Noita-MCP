@@ -122,30 +122,66 @@ function percept.set_budget(n)
   return { ok = true, budget = percept._budget }
 end
 
--- PENETRATING profile along one direction, from ONE set of rays.
+-- PENETRATING profile along one direction.
 --
--- WHY THIS SHAPE AND NOT A PROBE PER SLICE
+-- TWO MODES, and the advanced one is used automatically when it works.
 --
--- The first version probed each distance slice separately, starting the probe inside whatever was
--- there. That fails for the reason established earlier: a ray beginning inside solid matter stops
--- at its own start and all four variants agree, so most slices came back unresolvable ("?"). It
--- also cost a raycast per variant per slice.
---
--- Casting each variant ONCE from the player and reading where it STOPPED is both cheaper and
--- correct. A variant's stop distance is the depth at which that variant is blocked, so the profile
--- falls out of four numbers:
+-- CLASS mode, the original: cast each variant ONCE from the player and read where it STOPPED. A
+-- variant's stop distance is the depth at which that variant is blocked, so the profile falls out
+-- of four numbers:
 --
 --   stop_platforms  the depth standable ground begins
 --   stop_liquiform  where a solid begins
 --   stop_surfaces   where a liquid begins
 --   stop_any        where gas, fire or anything begins
 --
--- and every slice is classified by which of those is nearest, which is exactly the
--- densest-thing-first ordering the classes are defined by.
+-- and every slice is classified by which of those is nearest. This costs 4 rays per direction and
+-- reports a CLASS -- rock, coal, sand and steel are all `%`.
 --
--- This is the penetration the user asked for: a wall at 40px does not hide the gas at 200px,
--- because the permissive variant's stop distance is what says where the gas is.
-local function profile(px, py, dx, dy, reach, samples)
+-- MATERIAL mode, the advanced form: read the engine's own grid directly, through FFI, at each slice
+-- position. That gives the ACTUAL material name -- "coal", "water", "rock_static" -- because it is
+-- the same data the engine's own raytrace consults. It costs one memory read per slice instead of
+-- nothing, so it is cheaper than the rays, and it is attempted first.
+--
+-- Material mode is why this module reports real names rather than classes. It needs the address
+-- chain to hold, so it is GUARDED: `advmat.check()` is consulted, and if the chain does not apply
+-- -- a different build, or the game not yet in a run -- the class mode is used and the result says
+-- which was used. A wrong address must never be allowed to produce a confident wrong name.
+local function profile(px, py, dx, dy, reach, samples, want_material)
+  local step = reach / samples
+  local hits = {}
+  local chars = {}
+  local GLYPH = {
+    standable = "#", solid = "%", liquid = "~", gas_or_fire = "^", open = ".",
+  }
+
+  -- MATERIAL MODE -----------------------------------------------------------
+  if want_material then
+    local names, resolved = {}, 0
+    for s = 1, samples do
+      local mid = step * (s - 0.5)
+      local m = advmat.at(px + dx * mid, py + dy * mid)
+      if m and m.ok and m.material then
+        names[s] = m.material
+        resolved = resolved + 1
+      else
+        names[s] = nil
+      end
+    end
+
+    -- Only accept material mode if EVERY slice resolved. A partial read means the chain is
+    -- failing somewhere, and mixing real names with blanks would be worse than falling back.
+    if resolved == samples then
+      for s = 1, samples do
+        hits[s] = { from = math.floor(step * (s - 1)), to = math.floor(step * s),
+                    material = names[s] }
+      end
+      return { hits = hits, names = names, mode = "material" }
+    end
+    -- fall through to class mode
+  end
+
+  -- CLASS MODE --------------------------------------------------------------
   local stop = {}
   for _, v in ipairs(VARIANTS) do
     local ok, did, hx, hy = pcall(v.fn, px, py, px + dx * reach, py + dy * reach)
@@ -158,13 +194,6 @@ local function profile(px, py, dx, dy, reach, samples)
       stop[v.name] = (d <= reach + 1) and d or nil
     end
   end
-
-  local step = reach / samples
-  local hits = {}
-  local chars = {}
-  local GLYPH = {
-    standable = "#", solid = "%", liquid = "~", gas_or_fire = "^", open = ".",
-  }
 
   for s = 1, samples do
     local d0, d1 = step * (s - 1), step * s
@@ -215,35 +244,78 @@ function percept.sweep(params)
   local rows = {}
   local totals = {}
 
+  -- Material mode is attempted first: it reads the engine's own grid, which is cheaper than rays and
+  -- reports the ACTUAL material rather than a class. `want_material` is false when the address chain
+  -- is not structurally sound, so a wrong chain cannot produce a confident wrong name.
+  local want_material = false
+  local material_note = nil
+  if params.material ~= false and advmat and type(advmat.check) == "function" then
+    local chk = advmat.check()
+    if chk.ok then
+      want_material = true
+    else
+      material_note = "material reading unavailable, using behaviour classes: " ..
+                      table.concat(chk.problems or {}, "; ")
+    end
+  else
+    material_note = "material reading not requested or not present, using behaviour classes"
+  end
+
+  local rows = {}
+  local totals = {}
+  local material_names = {}
+  local mode_used = want_material and "material" or "class"
+
   for i = 0, directions - 1 do
     local deg = offset + (360 / directions) * i
     local rad = math.rad(deg)
     local dx, dy = math.cos(rad), math.sin(rad)
 
-    local hits, bar, stop = profile(px, py, dx, dy, reach, samples)
+    local hits, bar, stop = profile(px, py, dx, dy, reach, samples, want_material)
+
+    -- Material mode returns a table; class mode returns (hits, string, stops).
+    local used_material = type(hits) == "table" and hits.mode == "material"
+    if used_material then
+      bar = ""
+      local names = hits.names
+      hits = hits.hits
+      for s = 1, samples do
+        local n = names[s] or "?"
+        -- A per-slice character cannot hold a name, so material mode reports names in `bands` and
+        -- puts a legible initial in the bar.
+        bar = bar .. (n == "air" and "." or n:sub(1, 1))
+        material_names[n] = (material_names[n] or 0) + 1
+      end
+      if i == 0 then mode_used = "material" end
+    elseif used_material == false and i == 0 and want_material then
+      -- First direction fell back: the chain resolves structurally but not per cell.
+      mode_used = "class"
+      material_note = "material reading fell back to behaviour classes mid-sweep"
+    end
+
     rows[#rows + 1] = {
       degrees = math.floor(deg + 0.5),
       profile = bar,
       bands = hits,
-      -- The raw stop distances, so a caller can see the evidence the profile was derived from
-      -- rather than only its conclusion.
-      stop_distance = {
+      mode = used_material and "material" or "class",
+      stop_distance = (not used_material and stop) and {
         platforms = stop.platforms and math.floor(stop.platforms) or nil,
         liquiform = stop.liquiform and math.floor(stop.liquiform) or nil,
         surfaces  = stop.surfaces  and math.floor(stop.surfaces)  or nil,
         any       = stop.any       and math.floor(stop.any)       or nil,
-      },
+      } or nil,
     }
 
     for _, h in ipairs(hits) do
-      totals[h.class] = (totals[h.class] or 0) + 1
+      local key = h.material or h.class or "unknown"
+      totals[key] = (totals[key] or 0) + 1
     end
   end
 
   local total_samples = directions * samples
   local composition = {}
-  for class, n in pairs(totals) do
-    composition[class] = {
+  for key, n in pairs(totals) do
+    composition[key] = {
       count = n,
       fraction = math.floor((n / total_samples) * 1000) / 1000,
     }
@@ -255,7 +327,8 @@ function percept.sweep(params)
   for _, row in ipairs(rows) do
     local d = nil
     for _, h in ipairs(row.bands) do
-      if h.class ~= "open" then d = h.from break end
+      local occupied = (h.material and h.material ~= "air") or (h.class and h.class ~= "open")
+      if occupied then d = h.from break end
     end
     first_contact[#first_contact + 1] = { degrees = row.degrees, distance = d }
   end
@@ -268,6 +341,15 @@ function percept.sweep(params)
     reach = reach,
     raycasts = cost,
     trimmed_to_budget = trimmed,
+    -- Which mode this sweep actually used, and why. A caller gets REAL material names when the
+    -- chain holds and behaviour classes when it does not, and should be able to see which.
+    mode = mode_used,
+    material_names = (mode_used == "material") and material_names or nil,
+    mode_note = (mode_used == "material")
+      and "REAL material names, read from the engine's own grid through FFI. Each band carries a " ..
+          "`material` field; the character in the bar is the name's first letter, '.' for air."
+      or "behaviour CLASSES inferred from where four raytrace variants stop. Run noita_material_verify " ..
+         "to see why material reading is unavailable.",
     composition = composition,
     lines = (function()
       local out = {}
@@ -278,14 +360,18 @@ function percept.sweep(params)
     end)(),
     rows = rows,
     first_contact = first_contact,
-    legend = {
+    legend = (mode_used == "material") and {
+      ["."] = "air",
+      ["other"] = "the first letter of the material name in that band, e.g. 'c' for coal, 'w' for water",
+    } or {
       ["#"] = "standable", ["%"] = "solid", ["~"] = "liquid", ["^"] = "gas or fire",
       ["+"] = "occupied, unclassified", ["?"] = "solid or liquid, unresolvable",
       ["."] = "open",
     },
     note = "Each character is one slice of distance, near to far. PENETRATING: a wall does not " ..
-           "hide what is behind it, because every slice is its own probe. 'first_contact' is " ..
-           "where the nearest non-open slice is, per direction.",
+           "hide what is behind it. 'first_contact' is where the nearest non-open slice is, per " ..
+           "direction. Read `mode` and the per-band fields, not just the bar: a character cannot " ..
+           "hold a material name.",
   }
 end
 

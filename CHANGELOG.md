@@ -16,7 +16,7 @@ copy of the folder is always accepted by the game.
 ## [2.4.0] — 2026-09-24
 
 The angle convention written down, and what the terrain sweep can and cannot say about MATERIAL.
-91 tools.
+94 tools.
 
 ### Answered — the sweep detects material CLASS, at every distance band
 
@@ -115,7 +115,7 @@ there". A raytrace against a thin or fast-moving entity is a coin toss.
 
 ## [2.3.0] — 2026-09-24
 
-Three corrections from review. 91 tools.
+Three corrections from review. 94 tools.
 
 ### Fixed — the seed reader required the answer to find the answer
 
@@ -199,7 +199,7 @@ invokes them on load, on spawn or on a timer. The capability ships; the behaviou
 
 ## [2.2.0] — 2026-09-24
 
-Chunked material perception, and the material catalogue from the unpacked game data. 91 tools.
+Chunked material perception, and the material catalogue from the unpacked game data. 94 tools.
 
 ### Added — perception by chunk, which is the shape this needed
 
@@ -280,7 +280,7 @@ frames without health still end in a death if they lapse.
 
 ## [2.1.0] — 2026-09-24
 
-Three gaps found in a review of what the bridge can see. 91 tools.
+Three gaps found in a review of what the bridge can see. 94 tools.
 
 ### Added — the world seed, read out of memory
 
@@ -464,7 +464,7 @@ Every one of these was invisible from inside the repository, where the developme
 ## [2.0.0] — 2026-09-24
 
 **Time scaling works.** Slow motion and fast forward, verified in a live game in both
-directions. 91 tools.
+directions. 94 tools.
 
 This replaces the 1.4.1 conclusion that it was not feasible. That conclusion was wrong, and the
 reason is worth recording: the search was for Noita's own time variable, and **there is no such

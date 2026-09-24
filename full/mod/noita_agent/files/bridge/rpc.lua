@@ -851,6 +851,17 @@ handlers.percept_surroundings = function(params) return percept.surroundings(par
 handlers.percept_sweep = function(params) return percept.sweep(params) end
 handlers.percept_chunk = function(params) return percept.chunk(params) end
 handlers.percept_vocabulary = function() return percept.vocabulary() end
+-- Advanced material reading: the engine's own grid, through FFI, no DLL involved.
+handlers.material_verify = function(params)
+  params = params or {}
+  return advmat.verify(params.limit)
+end
+handlers.material_at = function(params)
+  params = params or {}
+  return advmat.at(params.x, params.y)
+end
+handlers.material_grid = function(params) return advmat.grid(params) end
+handlers.material_status = function() return advmat.status() end
 handlers.percept_enabled = function() return percept.enabled() end
 handlers.percept_set_enabled = function(params)
   params = params or {}

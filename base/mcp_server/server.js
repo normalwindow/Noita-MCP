@@ -2142,6 +2142,57 @@ const TOOLS = [
     inputSchema: { type: 'object', properties: {} },
     handler: () => rpc('angle_conventions'),
   },
+  // ---- advanced material reading ------------------------------------------
+  // REAL material names, read from the engine's own cell grid through FFI. No DLL, so this works in
+  // the BASE package. The Lua API cannot report a cell's material at all; the engine can, and the
+  // data is one pointer chain from a static address. Verified by comparing the engine's name table,
+  // read by pointer arithmetic, against Lua's own CellFactory_GetName for all 466 entries.
+  {
+    name: 'noita_material_at',
+    description: 'The REAL material at a world-pixel position — "coal", "water", "rock_static" — ' +
+      'not a class inferred from rays. This is what the engine itself has in that cell. Works in the ' +
+      'base package: it reads the engine\'s grid directly through FFI, with no DLL. Values are in ' +
+      'world pixels, the same units as entity x/y and noita_raycast.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        x: { type: 'number', description: 'world pixel x' },
+        y: { type: 'number', description: 'world pixel y' },
+      },
+      required: ['x', 'y'],
+    },
+    handler: (args) => rpc('material_at', args || {}),
+  },
+  {
+    name: 'noita_material_grid',
+    description: 'A grid of REAL material names around a point, one character per sample with a ' +
+      'legend mapping each character to a material. This is the advanced form of a terrain scan: ' +
+      'where noita_percept_sweep infers a class from raycast behaviour, this reads what the engine ' +
+      'actually has in each cell. Works in the base package (FFI, no DLL).',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        cells: { type: 'integer', description: 'cells per side, 3-25, default 9' },
+        radius: { type: 'integer', description: 'width in world pixels, 8-600, default 120' },
+        x: { type: 'number', description: 'centre; defaults to the player' },
+        y: { type: 'number' },
+      },
+    },
+    handler: (args) => rpc('material_grid', args || {}),
+  },
+  {
+    name: 'noita_material_verify',
+    description: 'Checks that material reading is trustworthy, by comparing the engine\'s material ' +
+      'name table — read by pointer arithmetic — against Lua\'s own CellFactory_GetName for every ' +
+      'entry. The two go through entirely different routes, so agreement across hundreds of entries ' +
+      'is not something a wrong address produces. Run this if noita_material_at ever returns a name ' +
+      'that looks wrong, or after a game update.',
+    inputSchema: {
+      type: 'object',
+      properties: { limit: { type: 'integer', description: 'compare only the first N entries' } },
+    },
+    handler: (args) => rpc('material_verify', args || {}),
+  },
   {
     name: 'noita_raw_rpc',
     description: 'Escape hatch: call a game-side bridge method directly with raw params. Methods: ' +
