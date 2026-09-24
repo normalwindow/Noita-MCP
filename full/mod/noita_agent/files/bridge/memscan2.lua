@@ -234,6 +234,20 @@ end
 
 -- A snapshot of everything the engine would have to change if it consumed the
 -- button: its own frame counters, the wand's mana, and the wand's child count.
+-- The complete button set, measured by enumerating the live ControlsComponent rather than taken
+-- from the docs. There are 19, each with a `Down` and a `Frame` field; `LastFrame` exists for
+-- `Fire` alone.
+--
+-- The order here is the order they are reported in, grouped the way a reader thinks about them:
+-- movement, combat, interaction, inventory.
+local BUTTON_FIELDS = {
+  "Left", "Right", "Up", "Down",
+  "Jump", "Run", "Fly",
+  "Fire", "Fire2", "Dig", "Kick", "Throw",
+  "Interact", "Action",
+  "Inventory", "Eat", "DropItem", "ChangeItemL", "ChangeItemR",
+}
+
 function memscan.snapshot_controls()
   local p = ser.player()
   local ctl = ser.comp(p, "ControlsComponent")
@@ -251,36 +265,45 @@ function memscan.snapshot_controls()
     if gun then mana = (select(2, pcall(ComponentGetValue2, gun, "mana"))) end
   end
 
-  return {
+  local out = {
     frame = GameGetFrameNum(),
-    mButtonFrameFire = g("mButtonFrameFire"),
-    mButtonDownFire = g("mButtonDownFire"),
-    mButtonFrameInteract = g("mButtonFrameInteract"),
-    mButtonFrameLeft = g("mButtonFrameLeft"),
-    mButtonFrameRight = g("mButtonFrameRight"),
-    mButtonFrameUp = g("mButtonFrameUp"),
-    mButtonFrameDown = g("mButtonFrameDown"),
-    mButtonFrameRun = g("mButtonFrameRun"),
-    mButtonFrameFly = g("mButtonFrameFly"),
-    -- The kick button, so a caller can confirm a kick actually reached the game rather than
-    -- trusting that a key was pushed.
-    --
-    -- Established against real input rather than assumed: with the extension armed and no
-    -- input, every field here reads 0; a human pressing F moves mButtonFrameKick and
-    -- mButtonDownKick; and `noita_macro kick` produces exactly the same signature -- the frame
-    -- counter rising by one and the down flag rising and falling once. Reproduced four times.
-    --
-    -- That check matters because a pushed key is not an executed action. The macro's ok=true
-    -- only means the extension handed the event to SDL; this is what says the game acted on it.
-    mButtonFrameKick = g("mButtonFrameKick"),
-    mButtonDownKick = g("mButtonDownKick"),
     mana = mana,
     wand_children = (function()
       if not wand then return nil end
       local c = EntityGetAllChildren(wand)
       return c and #c or 0
     end)(),
+    buttons = {},
+    note = "mButtonFrame* values are FRAME NUMBERS, not counts: a button pressed recently has " ..
+           "its Frame close to `frame`, and a stale one is far behind. mButtonDown* is whether " ..
+           "it is held right now.",
   }
+
+  -- Both forms for every button, so a caller can see what is held and when it was last pressed
+  -- without knowing the field names in advance.
+  for _, b in ipairs(BUTTON_FIELDS) do
+    out.buttons[b] = {
+      down = g("mButtonDown" .. b),
+      frame = g("mButtonFrame" .. b),
+    }
+  end
+
+  -- Kept as flat top-level keys as well: callers written against the previous shape read
+  -- `mButtonFrameFire` directly, and breaking them to tidy the structure would be a poor trade.
+  out.mButtonFrameFire = out.buttons.Fire.frame
+  out.mButtonDownFire = out.buttons.Fire.down
+  out.mButtonFrameInteract = out.buttons.Interact.frame
+  out.mButtonFrameLeft = out.buttons.Left.frame
+  out.mButtonFrameRight = out.buttons.Right.frame
+  out.mButtonFrameUp = out.buttons.Up.frame
+  out.mButtonFrameDown = out.buttons.Down.frame
+  out.mButtonFrameRun = out.buttons.Run.frame
+  out.mButtonFrameFly = out.buttons.Fly.frame
+  out.mButtonFrameKick = out.buttons.Kick.frame
+  out.mButtonDownKick = out.buttons.Kick.down
+  out.mButtonLastFrameFire = g("mButtonLastFrameFire")
+
+  return out
 end
 
 function memscan.read_probe_check(params)

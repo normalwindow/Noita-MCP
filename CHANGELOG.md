@@ -13,6 +13,70 @@ copy of the folder is always accepted by the game.
 
 ---
 
+## [2.1.0] — 2026-09-24
+
+Three gaps found in a review of what the bridge can see. 84 tools.
+
+### Added — the world seed, read out of memory
+
+The pause screen shows the seed, so the game has it. There was no way to **ask** for it: the Lua
+API exposes `SetWorldSeed` and no getter, `SessionNumbersGetValue` returns an empty string for
+every plausible key, the `WorldStateComponent` carries only `day_count` and `time`, and a scan of
+the 40 MB game data shows the engine itself uses exactly one session number
+(`NEW_GAME_PLUS_COUNT`).
+
+So it is found by searching for it — which is only possible because the player can **read it off
+the pause screen**. A known number is a needle; an unknown one is not.
+
+- `noita_seed_find` takes the seed the player sees and reports every address holding it, with the
+  region each falls in. Measured: **2 hits in 1.2 s** on one run, 13 in 1.4 s on another.
+- `noita_seed_verify` re-reads those addresses, which is cheap and answers "is that still true".
+- **Addresses are found fresh every time and never cached.** They move: one run's hits were two
+  module-static globals plus heap allocations, another's were three heap addresses and no static
+  one at all. A cached address would survive exactly until the allocator moved.
+- **No DLL needed** — the scan uses LuaJIT's FFI, which is part of the base mod. Verified with the
+  input extension not loaded: 2 hits, 1.2 s, game unaffected. The tool description says so.
+
+### Fixed — `noita_controls_snapshot` reported 8 of the 19 buttons
+
+The button set was enumerated in a live game rather than taken from the documentation, because the
+component **schema does not list these fields at all** — it declares only config variables like
+`enabled` and the gamepad options. There are **19 buttons, each with a `Down` and a `Frame`
+field**; `LastFrame` exists for `Fire` alone.
+
+The old snapshot covered 8. The gap was invisible until the kick work needed `mButtonFrameKick`
+and found it missing, and the review then found `Fire2`, `DropItem` and `Action` missing as well.
+The snapshot now reports all 19 in a `buttons` map, keeps the old flat keys so existing callers do
+not break, and says in its own output that the `Frame` fields are **frame numbers, not counts**.
+
+### Fixed — nearby entities had no way to say what species they are
+
+`noita_get_nearby` returned `kind` (`creature` / `item` / `prop`), which does not distinguish a rat
+from a bat. Entity entries now carry **`species`**, taken from the source definition path — the
+only reliable classifier the engine offers, since entity names are localisation keys
+(`$animal_fish`) and are absent on many props.
+
+Measured in a live run, which is also what proves it works: `species: "rat"` (洛塔, hp 0.2),
+`species: "bat"` (勒巴可, hp 0.5), `species: "fish"` (伊瓦卡斯, hp 0.1) — three distinct creatures
+told apart by species, each with its own hp. The same field is what distinguishes one explosive
+prop from another (`physics_box_explosive` vs `temple_lantern`).
+
+Worth knowing: for the player's own carried items this reads `player` or `action`, because those
+entities are loaded from generic files. That is the field reporting what the source path says, not
+a wrong answer.
+
+### Verified at this release
+
+| Check | Result |
+| --- | --- |
+| Buttons enumerated, live | 19 down + 19 frame + 1 last-frame |
+| Seed scan, extension not loaded | 2 hits, 1.2 s, game alive |
+| Species, live | rat / bat / fish distinguished, with hp |
+| Lua syntax / mock / MCP end to end | 22/22, 80/81, 15/15 |
+| Encoding | no BOMs, no mojibake |
+
+---
+
 ## [2.0.2] — 2026-09-24
 
 The kick — the F-key action that shoves objects away from the player's feet — is confirmed to
@@ -135,7 +199,7 @@ Every one of these was invisible from inside the repository, where the developme
 ## [2.0.0] — 2026-09-24
 
 **Time scaling works.** Slow motion and fast forward, verified in a live game in both
-directions. 82 tools.
+directions. 84 tools.
 
 This replaces the 1.4.1 conclusion that it was not feasible. That conclusion was wrong, and the
 reason is worth recording: the search was for Noita's own time variable, and **there is no such

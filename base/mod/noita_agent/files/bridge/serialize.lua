@@ -892,6 +892,18 @@ function ser.entity_info(entity, origin_x, origin_y)
     name = name,
     label = name or (type(filename) == "string" and filename:match("([^/\\]+)$") or "unknown"),
     filename = filename,
+    -- `species` is the identity of the KIND of thing this is, which `kind` alone does not give:
+    -- `kind` says "creature", `species` says "fish" or "miner_weak". Taken from the source
+    -- definition path, which is the only reliable classifier the engine offers -- entity names
+    -- are localisation keys ("$animal_fish") and are absent on many props.
+    --
+    -- Measured on a live run: data/entities/animals/fish.xml -> "fish",
+    -- data/entities/props/physics_box_explosive.xml -> "physics_box_explosive",
+    -- data/entities/props/physics/temple_lantern.xml -> "temple_lantern".
+    species = (type(filename) == "string" and filename ~= "")
+      and (filename:match("([^/\\]+)%.xml$") or filename:match("([^/\\]+)$"))
+      or nil,
+    file = filename,
     x = x,
     y = y,
   }

@@ -831,6 +831,16 @@ handlers.time_measure_start = function() return xinput.time_measure_start() end
 handlers.time_measure_sample = function() return xinput.time_measure_sample() end
 handlers.time_measure_finish = function() return xinput.time_measure_finish() end
 
+-- ---------------------------------------------------------------- world seed
+
+-- Reading the seed is observation. The scan only reads, so none of these are gated.
+handlers.seed_find = function(params)
+  params = params or {}
+  return seedreader.find(params.value, params.max_hits)
+end
+handlers.seed_verify = function() return seedreader.verify() end
+handlers.seed_status = function() return seedreader.status() end
+
 -- ---------------------------------------------------------------- framerate
 
 -- Reading the engine's rate is observation, so none of these are gated. The measurement

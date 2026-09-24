@@ -1991,6 +1991,40 @@ const TOOLS = [
     inputSchema: { type: 'object', properties: {} },
     handler: () => rpc('controls_snapshot'),
   },
+  // ---- world seed ---------------------------------------------------------
+  // The seed is shown on the pause screen but cannot be asked for: the API has SetWorldSeed and
+  // no getter, no session-number key holds it, and the world state component carries only
+  // day_count and time. It IS in memory, and a value the player can read is a value that can be
+  // searched for -- so that is what these do.
+  //
+  // No DLL needed: the scan uses LuaJIT's FFI, which is part of the base mod. Verified with the
+  // input extension NOT loaded: 2 hits, 1.2 s, game unaffected.
+  {
+    name: 'noita_seed_find',
+    description: 'Locate the run\'s world seed in process memory. You must pass the seed the ' +
+      'player reads off the PAUSE SCREEN — the whole method depends on having a known value to ' +
+      'search for, because the API cannot supply one (it has SetWorldSeed and no getter). ' +
+      'Reports every address holding it and which region each is in. Addresses move between ' +
+      'runs, so they are found fresh each time rather than cached. Takes 1-2 seconds and freezes ' +
+      'nothing; the game keeps running.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        value: { type: 'integer', description: 'the seed as shown on the pause screen' },
+        max_hits: { type: 'integer', description: 'stop after this many hits, default 64' },
+      },
+      required: ['value'],
+    },
+    handler: (args) => rpc('seed_find', args || {}),
+  },
+  {
+    name: 'noita_seed_verify',
+    description: 'Re-read the addresses from the last seed search and report which still hold the ' +
+      'seed. Cheap, because it reads a handful of addresses rather than rescanning memory — use ' +
+      'it to check the answer is still good before relying on one of them.',
+    inputSchema: { type: 'object', properties: {} },
+    handler: () => rpc('seed_verify'),
+  },
   {
     name: 'noita_raw_rpc',
     description: 'Escape hatch: call a game-side bridge method directly with raw params. Methods: ' +
