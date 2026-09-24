@@ -242,6 +242,18 @@ use it: the mod loads the DLL itself through FFI.
 
 ## Documentation
 
+**Start with these two if you are going to change anything:**
+
+- [ENGINE-NOTES.md](ENGINE-NOTES.md) — measured engine facts and the traps they set. SDL2's
+  exports are 7-byte thunks; `mVelocity` exists on two components and only one of them is a
+  vector; `GuiTranslateSet` does not exist; modules are globals, not returned values. Each entry
+  says what was measured, what it broke, and how to avoid it.
+- [CONTRIBUTING.md](CONTRIBUTING.md) — the working method, with templates for a bridge module,
+  an RPC handler, an MCP tool and an in-game fixture, plus the check list to run before
+  committing.
+
+Then:
+
 - [base/README.en.md](base/README.en.md) — base tier: install, tool groups, limits, troubleshooting
 - [full/README.en.md](full/README.en.md) — full tier: building and arming the DLL, safety design, uninstall
 - [mcp-skill/README.en.md](mcp-skill/README.en.md) — the agent Skill and how to install it

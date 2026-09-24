@@ -13,6 +13,64 @@ copy of the folder is always accepted by the game.
 
 ---
 
+## [1.3.0] — 2026-09-24
+
+Documentation for whoever changes this next, including a future version of the author. No
+behaviour changed.
+
+### Added — `ENGINE-NOTES.md`
+
+The measured engine facts, each with what it broke and how to avoid it. Every entry is a trap
+that looks like something else, and each one cost hours to find:
+
+- SDL2's exported input functions are **7-byte thunks**; a 6-byte prologue analysis puts a
+  truncated instruction in the trampoline. Three freezes came from this.
+- **`mVelocity` exists on two components.** `CharacterDataComponent.mVelocity` is the pair the
+  engine integrates; `VelocityComponent.mVelocity` is a scalar, and writing a pair to it does
+  nothing at all. This defeated every velocity-based movement in the project's history and made
+  one real measurement impossible to reproduce.
+- **`GuiTranslateSet` does not exist.** Inside a `pcall` it failed silently and every pane drew
+  at `(0, 0)`, leaving the panel's content area blank.
+- The engine **drains the SDL event queue** before a poll sees it, so rewriting polled events
+  only works by accident; and returning 1 for an empty queue freezes the machine.
+- `ControlsComponent` fields **mirror** input rather than driving it, so patching their reset
+  would leave a value the engine never consults.
+- Modules are **globals**; `dofile_once` discards return values, so a `local x = {} ... return x`
+  module is `nil` everywhere else.
+- **`pcall` does not catch access violations** — a bad memory read kills the process, and a
+  guard-page walk killed the game once.
+- PowerShell's ANSI round-trip **lossily corrupts** non-ASCII text, which is how the Chinese
+  documentation and a regex in `server.js` were damaged.
+- A hook that installs is not a hook that is called; and a mock's fidelity is part of the test,
+  not a given.
+
+### Added — `CONTRIBUTING.md`
+
+The working method: copyable templates for a bridge module, an RPC handler, an MCP tool and an
+in-game fixture; the check list to run before committing; the release procedure across the two
+copies of the tree; and an explicit list of what not to add — engine claims without a
+measurement, mock checks for physics fidelity, silent fallbacks, inference inside the bridge,
+and unverifiable memory writes.
+
+### Changed
+
+- The Skill (`mcp-skill/SKILL.md`) now opens with the `ENGINE-NOTES.md` summary, so an agent
+  changing the code sees the traps before it starts rather than after.
+- Both main READMEs point at the two new documents first.
+
+### Verified at this release
+
+| Suite | Result |
+| --- | --- |
+| Lua syntax | 20/20 files compile |
+| Mock game | 71/72 checks |
+| MCP end to end | 15/15 checks |
+| Documented tool names | all real |
+| Package split | base differs from full only by the extension |
+| Encoding | no BOMs, no mojibake |
+
+---
+
 ## [1.2.0] — 2026-09-24
 
 Movement macros now work **without** the input extension, so the base package can walk,

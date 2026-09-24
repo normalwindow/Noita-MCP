@@ -196,6 +196,8 @@ Noita 的 `data/` 目录**不包含**散装的实体 XML——它们打包在 `d
 Noita-MCP/
   README.md            主文档（中文，链接到 README.en.md）
   README.en.md         英文主文档
+  ENGINE-NOTES.md      实测的引擎事实与陷阱（改代码前先读）
+  CONTRIBUTING.md      工作方法、模板与检查清单
   base/                纯 Lua 版本
     README.md  README.en.md
     install.ps1
@@ -209,10 +211,21 @@ Noita-MCP/
     extension/xinput_hook.c, injector.c, build.ps1, build/xinput_hook.dll
     mod/...  mcp_server/...
   mcp-skill/           智能体 Skill（SKILL.md）+ README
-  tools/               unpack-data.ps1, verify.ps1, build_db.py, build_index.py, search_entities.js, noita_db.json, entity_index.json
+  tools/               unpack-data.ps1, verify.ps1, build_db.py, build_index.py, search_entities.js, 校验脚本, noita_db.json, entity_index.json
 ```
 
 `full/extension/injector.c` 能构建一个独立的 32 位注入器，但正常安装不需要它：模组自己通过 FFI 载入 DLL。
+
+## 要改代码？先读这两份
+
+- **[ENGINE-NOTES.md](ENGINE-NOTES.md)** —— 实测的引擎事实，以及它们设下的陷阱。**每条都注明了"测到了什么、它弄坏了什么、怎么避开"**：
+  - SDL2 的导出是 **7 字节跳转桩**，不是函数本身
+  - `mVelocity` 在**两个组件**上都存在，**只有一个是向量**（写错的那个静默无效）
+  - **`GuiTranslateSet` 不存在**（我臆造过它，导致面板内容区空白）
+  - 模块是**全局变量**，`dofile_once` 的返回值被丢弃
+  - `pcall` **抓不住**访问违例
+
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** —— 工作方法：桥接模块 / RPC 处理器 / MCP 工具 / 实机探针的**可复制模板**，提交前要跑的检查清单，以及**明确不该加的东西**。
 
 ## 故障排查
 

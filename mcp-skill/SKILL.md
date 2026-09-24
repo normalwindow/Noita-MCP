@@ -9,6 +9,24 @@ whenToUse: The user is playing Noita, asks about their run, their wands or spell
 You control a **running** Noita game via the `noita_*` tools. The game exposes itself
 through an in-game mod; a bridge process translates tool calls into game actions.
 
+## If you are going to change this mod's code, read `ENGINE-NOTES.md` first
+
+It is in the repository root and it is not optional reading: every entry is a trap that looks
+like something else, and each one cost hours. The short version, so you know what is in there:
+
+- SDL2's exported input functions are **7-byte thunks**. Hook analysis that counts 6 puts a
+  truncated instruction in the trampoline and freezes the machine.
+- **`mVelocity` exists on two components** — `CharacterDataComponent` (a pair, the real vector)
+  and `VelocityComponent` (a scalar). Writing a pair to the scalar one does nothing, silently.
+- **`GuiTranslateSet` does not exist.** Calling it inside a `pcall` fails silently and every
+  pane draws at `(0, 0)`.
+- Modules are **globals**; `dofile_once` discards return values, so `local x = {} ... return x`
+  is `nil` everywhere else.
+- **`pcall` does not catch access violations.** A bad memory read kills the process.
+- PowerShell's ANSI round-trip **lossily corrupts** non-ASCII text.
+
+`CONTRIBUTING.md` has the templates and the check list to run before committing.
+
 ## Start every session like this
 
 1. `noita_bridge_status` — if `bridge_live` is false, **stop and tell the user to start
