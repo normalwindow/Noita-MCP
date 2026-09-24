@@ -765,6 +765,48 @@ handlers.observe_sample     = function() return memscan.observe_sample() end
 handlers.observe_stop       = function() return memscan.observe_stop() end
 handlers.memscan_regions     = function() local r = memscan.regions() return { ok = r ~= nil, count = r and #r or 0 } end
 handlers.po_capabilities = function() return player_ops.capabilities() end
+
+-- ---------------------------------------------------------------- terrain
+
+-- Reading terrain is observation: it looks, it does not change anything, so none of these
+-- are in the write table and read-only mode keeps them available.
+handlers.terrain_grid = function(params) return terrain.grid(params) end
+handlers.terrain_rays = function(params) return terrain.rays(params) end
+handlers.terrain_probe = function(params) return terrain.probe(params) end
+
+-- ---------------------------------------------------------------- macros
+
+-- Running a macro presses keys, so it is a player action. Its reads (list, status) are
+-- not gated, which is the same split the rest of the bridge uses.
+handlers.macro_list = function()
+  local out = {}
+  local names = macro.names()
+  for i = 1, #names do out[i] = macro.describe(names[i]) end
+  return { ok = true, count = #out, macros = out, problems = macro.problems() }
+end
+handlers.macro_start = function(params)
+  params = params or {}
+  local r = macro.start(params.name, params)
+  -- Record the intent on the decision stream, so a replay knows what was asked for rather
+  -- than having to infer it from a key stream.
+  if r and r.ok and stream and type(stream.action) == "function" then
+    stream.action("macro:" .. tostring(params.name), { frames = r.total_frames })
+  end
+  return r
+end
+handlers.macro_stop = function(params) return macro.stop((params or {}).reason) end
+handlers.macro_status = function() return macro.status() end
+
+-- ---------------------------------------------------------------- decision stream
+
+handlers.stream_start = function(params) return stream.start(params) end
+handlers.stream_stop = function(params) return stream.stop((params or {}).reason) end
+handlers.stream_status = function() return stream.status() end
+handlers.stream_recent = function(params) return stream.recent((params or {}).n) end
+handlers.stream_action = function(params)
+  params = params or {}
+  return { ok = true, recorded = stream.action(params.name or "unspecified", params.detail) }
+end
 handlers.po_world        = function(params) return player_ops.world(params) end
 handlers.po_biome_at     = function(params) return player_ops.biome_at(params) end
 handlers.po_inventory    = function(params) return player_ops.inventory(params) end
@@ -1123,6 +1165,11 @@ function rpc.pre_update()
   -- Mouse holds use the same mechanism; firing the wand is a mouse button, not a
   -- key, so this is the path that makes the player actually shoot.
   pcall(xinput.mouse_tick)
+  -- Walk the running input macro. Driven from here for the same reason as the holds:
+  -- events are pushed outside SDL, never from inside a hook.
+  if macro and type(macro.tick) == "function" then pcall(macro.tick) end
+  -- Publish a decision-stream observation if one is due. Does nothing when off.
+  if stream and type(stream.tick) == "function" then pcall(stream.tick) end
   -- service the socket from the pre-update phase so a request that arrives while
   -- the game is idle is answered before the engine's own update for that frame
   pcall(sock.poll)

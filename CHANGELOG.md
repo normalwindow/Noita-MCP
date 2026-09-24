@@ -13,11 +13,89 @@ copy of the folder is always accepted by the game.
 
 ---
 
+## [1.1.0] — 2026-09-24
+
+Adds the three things a high-frequency decision loop was missing. The tool count goes from
+64 to 76.
+
+### Added — terrain (the largest gap)
+
+Noita's Lua API cannot read a cell's material: there is no `GetMaterial` or `GetCell`, and
+the `CellFactory_*` functions only go the other way (id to name). So terrain is sampled with
+the four raytrace variants and reported as **reachability**, never as material names.
+
+- `noita_terrain_grid` — a grid as text, one character per cell, with a legend. Measured in
+  a live run at `cells=9, radius=120`: 32 ground, 47 open, 2 solid, 324 raycasts, 26.7px
+  cells.
+- `noita_terrain_probe` — clear distance in each direction plus where the ground is, which
+  is the "can I walk that way" question in one call. Measured: ground 3px below, up clear
+  56px, left clear 56px, right blocked at 32px.
+- `noita_terrain_rays` — up to 512 arbitrary rays per call, for a custom sampling pattern.
+
+### Added — input macros
+
+- `noita_macro_list`, `noita_macro`, `noita_macro_status`, `noita_macro_stop`. 22 named
+  intents (`jump_right`, `fire_and_retreat`, `interact`, ...) so the mapping from intent to
+  key timing lives in one place and a replay can record the intent instead of a key stream.
+- A macro holds each key for the frames the engine needs, releases everything when it ends,
+  and refuses to start at all if the input extension is not armed. Starting a new macro
+  cancels the running one cleanly rather than leaving a key down.
+- Measured: `jump_right` is 2 steps / 34 frames and moved the player Δx = 23.7 with the
+  expected velocity curve.
+
+### Added — decision stream
+
+- `noita_stream_start` publishes `(state, action, outcome)` records to
+  `<run>/decisions.jsonl`, one JSON object per line, appended so an external loop can tail
+  it. This removes the one-RPC-round-trip-per-decision bottleneck for a 5-10 Hz loop.
+- Deliberately **transport, not inference**: the model stays in its own process, which is
+  what keeps latency attributable.
+- A ring of recent observations is retro-filled with their outcomes when those become known,
+  so delayed-reward labelling does not need a second pass over a replay.
+- `noita_stream_recent` reads the ring without touching disk, for sandboxes where `io` is
+  unavailable; `noita_stream_action` records an intent so a replay does not have to infer it.
+
+### Verified at this release
+
+| Suite | Result |
+| --- | --- |
+| Lua syntax | 24/24 files compile |
+| Mock game | 69/70 checks |
+| MCP end to end | 15/15 checks |
+| Live smoke, against a running game | 23/23 checks |
+| Game API names | 61 `Gui*` call sites, all real |
+| Documented tool names | all real |
+| Encoding | no BOMs, no mojibake |
+
+Terrain, macros and the decision stream were each exercised against a live game: the grid
+produced a readable map, `jump_right` moved the player, and the stream wrote a 150-line
+`decisions.jsonl`.
+
+### Considered and rejected
+
+- **Time scaling.** The request asked for slow-motion or fast-forward, flagged as "confirm
+  whether this is possible first". It is not: the Lua API exposes no time-scale setter at
+  all, only read-only time accessors (`GameGetFrameNum`, `GameGetRealWorldTimeSinceStarted`,
+  `GameGetDateAndTimeUTC`). Reaching it through memory writing was not attempted, because
+  the failure mode of a wrong write there is a frozen game.
+- **Inference inside the bridge.** Explicitly not added. Keeping the model in a separate
+  process is what makes latency attribution possible; mixing the two would remove that.
+
+### Fixed during development
+
+- `macro.lua` compared `xinput.push_key`'s return against the number 1. It returns a table
+  (`{ok = true, scancode = n}`), so every macro start reported "the extension refused the
+  first key-down" while the RPC path, which reads `.ok`, worked. Caught by running a macro
+  in a live game -- the mock could not see it, because its `xinput` is unavailable and the
+  guard above short-circuits first.
+
+---
+
 ## [1.0.0] — 2026-09-24
 
 First release. Two tiers that install together but stand alone:
 
-- **base** — pure Lua, no external dependency, 55 tools.
+- **base** — pure Lua, no external dependency, 67 tools.
 - **full** — base plus an optional 32-bit DLL that synthesises SDL events,
   adding 9 input tools (64 total).
 

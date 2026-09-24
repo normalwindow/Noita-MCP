@@ -1740,6 +1740,154 @@ const TOOLS = [
       };
     },
   },
+  // ---- terrain ------------------------------------------------------------
+  // Noita's Lua API cannot read a cell's material -- there is no GetMaterial or GetCell.
+  // The only way to learn what surrounds the player is to ask where things are, using the
+  // four raytrace variants, so these sample with rays and classify what they hit.
+  {
+    name: 'noita_terrain_grid',
+    description: 'A coarse reachability grid around the player, as text: one character per ' +
+      'cell, with a legend. This is the pathfinding input. IMPORTANT: cells are classified ' +
+      'by raycast, not by material -- Lua cannot read a cell\'s material in Noita -- so the ' +
+      'grid reports ground / solid / liquid / open, never "this is coal". Use ' +
+      'noita_terrain_probe for distances to the nearest obstruction in each direction.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        cells: { type: 'integer', description: 'cells per side, 3-25, default 9' },
+        radius: { type: 'integer', description: 'half-width in world pixels, 16-600, default 120' },
+        reach: { type: 'integer', description: 'how far below a cell to test, 2-12, default 4' },
+      },
+    },
+    handler: (args) => rpc('terrain_grid', args || {}),
+  },
+  {
+    name: 'noita_terrain_probe',
+    description: 'How far the player can move in each direction before something blocks, ' +
+      'plus where the ground is. Six directional questions in one call instead of six. ' +
+      'Use this for "can I walk that way" and "how far is the drop".',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        reach: { type: 'integer', description: 'max distance to test, default 40 pixels' },
+        step: { type: 'integer', description: 'sampling step, default 8 pixels' },
+      },
+    },
+    handler: (args) => rpc('terrain_probe', args || {}),
+  },
+  {
+    name: 'noita_terrain_rays',
+    description: 'A batch of arbitrary rays in one call, for a custom sampling pattern. ' +
+      'Each ray is [x1,y1,x2,y2] or {from:{x,y}, to:{x,y}}, with an optional variant: ' +
+      'any (stops on any cell), surfaces (ignores gas and fire), liquiform (also passes ' +
+      'liquids), platforms (only standable cells). Up to 512 per call.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        rays: { type: 'array', description: 'ray list', items: {} },
+        variant: {
+          type: 'string',
+          enum: ['any', 'surfaces', 'liquiform', 'platforms'],
+          description: 'default variant when a ray does not name one',
+        },
+      },
+      required: ['rays'],
+    },
+    handler: (args) => rpc('terrain_rays', args || {}),
+  },
+  // ---- macros -------------------------------------------------------------
+  {
+    name: 'noita_macro_list',
+    description: 'List the named input macros and the exact key sequence each sends. Use a ' +
+      'macro instead of assembling key timings by hand: the intent is then one value in a ' +
+      'log or a replay, and it is the same whichever client is driving.',
+    inputSchema: { type: 'object', properties: {} },
+    handler: () => rpc('macro_list'),
+  },
+  {
+    name: 'noita_macro',
+    description: 'Run a named macro (jump_right, fire_and_retreat, interact, ...). Requires ' +
+      'the input extension. Returns immediately; the bridge advances it one step per frame ' +
+      'and releases every key when it ends. Only one macro runs at a time -- starting a new ' +
+      'one cancels the current one cleanly rather than leaving a key held.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        name: { type: 'string', description: 'macro name from noita_macro_list' },
+        scale: { type: 'number', description: 'speed factor for every hold, 0.25-4, default 1' },
+      },
+      required: ['name'],
+    },
+    handler: (args) => rpc('macro_start', args || {}),
+  },
+  {
+    name: 'noita_macro_status',
+    description: 'Which macro is running, which step, and how many frames it has left.',
+    inputSchema: { type: 'object', properties: {} },
+    handler: () => rpc('macro_status'),
+  },
+  {
+    name: 'noita_macro_stop',
+    description: 'Stop the running macro and release whatever it is holding.',
+    inputSchema: { type: 'object', properties: {} },
+    handler: () => rpc('macro_stop', {}),
+  },
+  // ---- decision stream ----------------------------------------------------
+  {
+    name: 'noita_stream_start',
+    description: 'Start publishing (state, action, outcome) records to a JSON Lines file the ' +
+      'game writes, so an external loop can read observations at its own rate instead of ' +
+      'paying one RPC round trip per decision. This is transport, NOT inference: the model ' +
+      'stays in its own process, which is what keeps latency attributable. Records are ' +
+      'appended, so a reader can tail the file while the game runs.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        interval: { type: 'integer', description: 'frames between observations, default 6 (10 Hz at 60 fps)' },
+        path: { type: 'string', description: 'default <run>/decisions.jsonl' },
+      },
+    },
+    handler: (args) => rpc('stream_start', args || {}),
+  },
+  {
+    name: 'noita_stream_stop',
+    description: 'Stop the decision stream and close its file.',
+    inputSchema: { type: 'object', properties: {} },
+    handler: () => rpc('stream_stop', {}),
+  },
+  {
+    name: 'noita_stream_status',
+    description: 'Whether the decision stream is running, where it writes, and how many ' +
+      'lines it has produced.',
+    inputSchema: { type: 'object', properties: {} },
+    handler: () => rpc('stream_status'),
+  },
+  {
+    name: 'noita_stream_recent',
+    description: 'The recent observations held in memory, newest first, without reading the ' +
+      'file. Useful when io is unavailable in the game sandbox, or to inspect the ring ' +
+      'without touching disk.',
+    inputSchema: {
+      type: 'object',
+      properties: { n: { type: 'integer', description: 'how many, default 20, max 240' } },
+    },
+    handler: (args) => rpc('stream_recent', args || {}),
+  },
+  {
+    name: 'noita_stream_action',
+    description: 'Record that an action was taken, attaching it to the newest observation so a ' +
+      'replay does not have to infer intent from a key stream. Call it around anything the ' +
+      'stream cannot see by itself (a direct state write, a wand edit).',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        name: { type: 'string', description: 'what was done' },
+        detail: { type: 'object', description: 'optional structured detail' },
+      },
+      required: ['name'],
+    },
+    handler: (args) => rpc('stream_action', args || {}),
+  },
   {
     name: 'noita_raw_rpc',
     description: 'Escape hatch: call a game-side bridge method directly with raw params. Methods: ' +

@@ -2,7 +2,7 @@
 
 The base tier is the mod plus the MCP server, with **no DLL and no external dependency**. It
 lets an AI read a running Noita game and change its state: the player, inventory, wands, spell
-decks, items, and world/map data, through **55 MCP tools**.
+decks, items, and world/map data, through **67 MCP tools**.
 
 It cannot forge input. That limit is not a setting: Noita's C++ cannot be modded from Lua, so
 button presses are impossible from the base tier. See
@@ -112,7 +112,7 @@ they express policy rather than a moment.
 
 ## Tool groups
 
-55 tools in the base tier, grouped by what they do:
+67 tools in the base tier, grouped by what they do:
 
 | Group | Count | Tools |
 | --- | --- | --- |

@@ -24,7 +24,7 @@ Nothing works from the main menu.
 | | Base | Full |
 | --- | --- | --- |
 | Contents | Pure Lua, no DLL | Base + input extension DLL |
-| MCP tools | 64 (all registered; the 9 input tools refuse without the extension) | 64 |
+| MCP tools | 76 (all registered; the 9 input tools refuse without the extension) | 76 |
 | External dependencies | None | Built DLL (x86) |
 | Observe the game | Yes | Yes |
 | Modify player, items, wands, world | Yes | Yes |

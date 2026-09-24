@@ -161,6 +161,44 @@ Routine for "shoot that thing": `noita_input_click` toward it, `noita_input_fire
 - `noita_input_install` — arm the hooks.
 - `noita_input_uninstall` — restore the game's original behaviour without restarting.
 
+### Read the terrain (pathfinding input)
+Noita's Lua API **cannot read a cell's material** — there is no `GetMaterial` or `GetCell`.
+Everything here is inferred from the four raytrace variants, so the grid reports
+reachability (`ground` / `solid` / `liquid` / `open`), **never** "this cell is coal".
+
+- `noita_terrain_grid` — a grid as text, one character per cell, with its legend. Measured
+  in a live run at `cells=9, radius=120`: 32 ground, 47 open, 2 solid, 324 raycasts, cell
+  size 26.7px. Rows are constant-y (north at the top), columns constant-x.
+- `noita_terrain_probe` — how far the player can move in each direction before something
+  blocks, plus where the ground is. This is the "can I walk that way" call. Measured:
+  ground 3px below, up clear 56px, left clear 56px, right blocked at 32px.
+- `noita_terrain_rays` — a batch of arbitrary rays, up to 512, for a custom sampling
+  pattern. Variants: `any`, `surfaces` (ignores gas and fire), `liquiform` (also passes
+  liquids), `platforms` (only standable cells).
+
+### Use macros instead of assembling key timings
+- `noita_macro_list` — 22 named macros with the exact key sequence each sends.
+- `noita_macro` — run one (`jump_right`, `fire_and_retreat`, `interact`, ...). Returns
+  immediately; the bridge advances it one step per frame and **releases every key when it
+  ends**, so a macro cannot leave the player walking. Only one runs at a time; starting a
+  new one cancels the current one cleanly. Requires the input extension.
+- `noita_macro_status`, `noita_macro_stop`.
+
+Measured: `jump_right` is 2 steps / 34 frames and moved the player Δx = 23.7 with the
+expected velocity curve — jump, accelerate to +52, decelerate to 0 after release.
+
+### The decision stream, for a fast loop
+- `noita_stream_start` — publishes `(state, action, outcome)` records to
+  `<run>/decisions.jsonl`, one JSON object per line, appended so a reader can tail it while
+  the game runs. `interval` defaults to 6 frames (10 Hz at 60 fps), which replaces one RPC
+  round trip per decision. **This is transport, not inference** — the model stays in its
+  own process, which is what keeps latency attributable.
+- `noita_stream_recent` — the in-memory ring, newest first, without touching disk.
+- `noita_stream_action` — attach an intent to the newest observation, so a replay does not
+  have to infer it from a key stream. Call it around anything the stream cannot see by
+  itself (a direct state write, a wand edit).
+- `noita_stream_status`, `noita_stream_stop`.
+
 ### Know what exists before spawning
 The mod can only see entities near the player. The game defines ~3000, and these read the
 unpacked game data, so use them instead of guessing a path:

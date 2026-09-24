@@ -2,8 +2,8 @@
 
 The full tier is everything in the [base version](../base/README.en.md) plus
 `xinput_hook.dll`, a 32-bit Windows DLL that is loaded into the game process by the mod itself
-and synthesises SDL keyboard and mouse events. It brings the tool count to **64**: the base
-tier's 55 tools plus 9 `noita_input_*` tools. With it, the AI can move, jump, press interact,
+and synthesises SDL keyboard and mouse events. It brings the tool count to **76**: the base
+tier's 67 tools plus 9 `noita_input_*` tools. With it, the AI can move, jump, press interact,
 and fire the held wand; without it, none of those are possible —see the base readme for why.
 
 Chinese documentation: [README.md](README.md). Main readme: [../README.en.md](../README.en.md).

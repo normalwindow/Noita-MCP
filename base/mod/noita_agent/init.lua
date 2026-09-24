@@ -19,6 +19,11 @@ dofile_once("mods/noita_agent/files/bridge/memscan2.lua")
 dofile_once("mods/noita_agent/files/bridge/patchlib.lua")
 dofile_once("mods/noita_agent/files/bridge/xinput.lua")
 dofile_once("mods/noita_agent/files/bridge/player_ops.lua")
+-- terrain depends on serialize (for the player) and on nothing else; macro depends on
+-- xinput, which is loaded above it.
+dofile_once("mods/noita_agent/files/bridge/terrain.lua")
+dofile_once("mods/noita_agent/files/bridge/macro.lua")
+dofile_once("mods/noita_agent/files/bridge/stream.lua")
 dofile_once("mods/noita_agent/files/ui/panel.lua")
 dofile_once("mods/noita_agent/files/bridge/rpc.lua")
 local boot = dofile_once("mods/noita_agent/files/bridge/boot.lua")

@@ -251,6 +251,12 @@ local OP_METHODS = {
   input_load = "op_player", input_install = "op_player", input_remove = "op_player",
   input_unload = "op_player", poll_install = "op_player", poll_remove = "op_player",
   peep_install = "op_player", peep_remove = "op_player",
+  -- Macros press keys, so they are player actions. macro_list and macro_status are reads
+  -- and stay ungated, matching how the rest of the bridge splits the two.
+  macro_start = "op_player", macro_stop = "op_player",
+  -- The decision stream writes a log file and records actions. Both sit behind the player
+  -- switch rather than being freely available to a paused session.
+  stream_start = "op_player", stream_stop = "op_player", stream_action = "op_player",
   patchlib_restore = "op_world", patchlib_selftest = "op_world",
   socket_control = "op_world",
 }
