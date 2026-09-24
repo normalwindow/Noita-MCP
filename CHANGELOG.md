@@ -13,6 +13,74 @@ copy of the folder is always accepted by the game.
 
 ---
 
+## [1.2.0] — 2026-09-24
+
+Movement macros now work **without** the input extension, so the base package can walk,
+climb and dodge. That required fixing a bug which had been silently defeating every velocity
+write in the project.
+
+### Fixed — the velocity write went to the wrong component
+
+The player carries **two** components with a field called `mVelocity`, and they are not the
+same thing:
+
+| Component | Shape | Measured displacement |
+| --- | --- | --- |
+| `CharacterDataComponent.mVelocity` | a **pair** `(0, 60)` | **171.4 px** |
+| `VelocityComponent.mVelocity` | a **scalar** `0` | 0.0 px |
+
+`lever.lua`'s write list targeted the VelocityComponent, so writing `{x, y}` landed on a
+scalar field and did nothing -- quietly. Every velocity-based movement in this project was
+affected, which is why direct motion control "worked" once (a measurement of 126px) and then
+could not be reproduced. Both observations were correct: the working case wrote to the
+character component.
+
+Found by enumerating the components' fields rather than guessing which name carried the
+vector, then measuring both paths side by side in one run with identical parameters.
+
+### Added — macros run without the extension
+
+Each macro step may now carry a direction as well as a key. With the extension armed the key
+is used (exact, and the only way to press a button); without it, motion macros drive velocity
+through `lever.lua`. Of 24 macros, **11 run in the base package** and 13 need the extension.
+
+A macro that must be a button press **refuses** without the extension rather than appearing to
+succeed: `noita_macro` returns which steps are blocked, why, and what would work instead.
+Firing the wand has no physics equivalent, so pretending would be worse than failing.
+
+- `noita_macro_list` now reports capabilities: what runs now, what needs the extension.
+- Measured in a live game with the extension **not** loaded: `walk_right` moved the player
+  Δx = 62.3, with velocity released when the macro ended.
+
+### Considered and not added — time scaling
+
+Recorded because the request was to try a more invasive approach, and the honest answer is
+that it was not attempted rather than that it failed.
+
+The Lua API has **no time-scale setter at all**. Every time-related function is read-only:
+`GameGetFrameNum`, `GameGetRealWorldTimeSinceStarted`, `GameGetDateAndTimeUTC`,
+`GameGetDateAndTimeLocal`, `StreamingGetVotingCycleDurationFrames`. The nearest writable
+thing, `PhysicsBodyIDSetGravityScale`, affects one physics body, not the world clock.
+
+Reaching it through memory writes was not attempted, and the reason is verifiability: a
+candidate address cannot be confirmed from inside the game. The only available test is "does
+the game appear to slow down", which a wrong address can also produce while corrupting
+something else, and the failure mode of a wrong write there is a frozen machine. Memory
+mistakes have already frozen this project's host twice, so an unverifiable write is not a
+trade worth making.
+
+### Verified at this release
+
+| Suite | Result |
+| --- | --- |
+| Lua syntax | 23/23 files compile |
+| Mock game | 71/72 checks |
+| MCP end to end | 15/15 checks |
+| Package split | base differs from full only by the extension |
+| Encoding | no BOMs, no mojibake |
+
+---
+
 ## [1.1.0] — 2026-09-24
 
 Adds the three things a high-frequency decision loop was missing. The tool count goes from

@@ -24,13 +24,37 @@ local active = nil       -- current engagement (or nil)
 local snapshot = nil     -- pristine values captured at engage time
 
 -- Movement-relevant fields, grouped by component.
+--
+-- WHICH COMPONENT HOLDS THE VELOCITY VECTOR -- measured, because guessing it cost a lot.
+--
+-- The player carries TWO components with a field called `mVelocity`, and they are different
+-- things:
+--
+--   CharacterDataComponent.mVelocity   a PAIR   (0, 60)  -- the vector the engine integrates
+--   VelocityComponent.mVelocity        a SCALAR (0)      -- not a vector at all
+--
+-- Writing {x, y} into the scalar one does nothing, quietly. Because VELOCITY_FIELDS listed
+-- the VelocityComponent, every velocity-based movement in this project wrote to the scalar
+-- and had no effect -- which is why direct motion control appeared to work once (measured
+-- 126px) and then could not be reproduced. Both were real: the working case wrote to the
+-- character component.
+--
+-- Measured side by side in one live run, same 220px/s for 50 frames:
+--   VelocityComponent.mVelocity        dx =   0.0   (moved=false)
+--   CharacterDataComponent.mVelocity   dx = 171.4   (moved=true)
+--
+-- So the vector belongs in CHAR_FIELDS. VELOCITY_FIELDS keeps the scalar physics knobs,
+-- which are real fields on that component and are still worth being able to set, but the
+-- velocity itself is no longer written there.
 local CHAR_FIELDS = {
   "mVelocity", "gravity", "mass", "dont_update_velocity_and_xform",
   "mFlyingTimeLeft", "fly_time_max", "flying_needs_recharge",
   "fly_recharge_spd", "fly_recharge_spd_ground", "platforming_type",
   "is_on_ground", "send_transform_update_message",
 }
-local VELOCITY_FIELDS = { "mVelocity", "mPrevVelocity", "gravity_y", "gravity_x",
+-- Scalars on VelocityComponent. `mVelocity` is deliberately NOT here: it is a scalar on this
+-- component and writing a pair to it is a silent no-op.
+local VELOCITY_FIELDS = { "mPrevVelocity", "gravity_y", "gravity_x",
   "air_friction", "updates_velocity", "affect_physics_bodies", "mass" }
 
 -- Reads a component field, preserving its shape.
