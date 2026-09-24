@@ -841,6 +841,13 @@ end
 handlers.seed_verify = function() return seedreader.verify() end
 handlers.seed_status = function() return seedreader.status() end
 
+-- ---------------------------------------------------------------- perception
+
+-- Reading the surroundings is observation, so none of these are gated.
+handlers.percept_surroundings = function(params) return percept.surroundings(params) end
+handlers.percept_chunk = function(params) return percept.chunk(params) end
+handlers.percept_vocabulary = function() return percept.vocabulary() end
+
 -- ---------------------------------------------------------------- framerate
 
 -- Reading the engine's rate is observation, so none of these are gated. The measurement

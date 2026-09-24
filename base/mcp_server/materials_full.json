@@ -1,0 +1,5577 @@
+{
+ "source": "materials.xml",
+ "counts": {
+  "total": 469,
+  "by_cell_type": {
+   "(none)": 247,
+   "fire": 4,
+   "liquid": 155,
+   "solid": 42,
+   "gas": 21
+  }
+ },
+ "materials": [
+  {
+   "name": "air",
+   "ui_name": "$mat_air"
+  },
+  {
+   "name": "fire",
+   "ui_name": "$mat_fire",
+   "cell_type": "fire",
+   "tags": [
+    "fire",
+    "hot"
+   ],
+   "burnable": "0",
+   "density": "1",
+   "temperature_of_fire": "100",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "1",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "0"
+  },
+  {
+   "name": "fire_blue",
+   "ui_name": "$mat_fire_blue"
+  },
+  {
+   "name": "spark",
+   "ui_name": "$mat_spark",
+   "cell_type": "fire",
+   "tags": [
+    "fire",
+    "hot"
+   ],
+   "burnable": "0",
+   "density": "1",
+   "temperature_of_fire": "0",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "0"
+  },
+  {
+   "name": "spark_green",
+   "ui_name": "$mat_spark_green"
+  },
+  {
+   "name": "spark_green_bright",
+   "ui_name": "$mat_spark_green"
+  },
+  {
+   "name": "spark_blue",
+   "ui_name": "$mat_spark_blue"
+  },
+  {
+   "name": "spark_blue_dark",
+   "ui_name": "$mat_spark_blue"
+  },
+  {
+   "name": "spark_red",
+   "ui_name": "$mat_spark_red"
+  },
+  {
+   "name": "spark_red_bright",
+   "ui_name": "$mat_spark_red"
+  },
+  {
+   "name": "spark_white",
+   "ui_name": "$mat_spark_white"
+  },
+  {
+   "name": "spark_white_bright",
+   "ui_name": "$mat_spark_white"
+  },
+  {
+   "name": "spark_yellow",
+   "ui_name": "$mat_spark_yellow"
+  },
+  {
+   "name": "spark_purple",
+   "ui_name": "$mat_spark_purple"
+  },
+  {
+   "name": "spark_purple_bright",
+   "ui_name": "$mat_spark_purple"
+  },
+  {
+   "name": "spark_player",
+   "ui_name": "$mat_spark_player"
+  },
+  {
+   "name": "spark_teal",
+   "ui_name": "$mat_spark_teal"
+  },
+  {
+   "name": "spark_electric",
+   "ui_name": "$mat_spark_electric",
+   "cell_type": "fire",
+   "tags": [
+    "fire",
+    "hot"
+   ],
+   "burnable": "0",
+   "density": "1",
+   "temperature_of_fire": "0",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "0"
+  },
+  {
+   "name": "flame",
+   "ui_name": "$mat_flame",
+   "cell_type": "fire",
+   "tags": [
+    "fire",
+    "hot"
+   ],
+   "burnable": "0",
+   "density": "1",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "1",
+   "liquid_gravity": "5.0",
+   "liquid_sand": "0"
+  },
+  {
+   "name": "sand_static",
+   "ui_name": "$mat_sand_static",
+   "cell_type": "liquid",
+   "tags": [
+    "static",
+    "corrodible",
+    "alchemy",
+    "solid",
+    "earth"
+   ],
+   "burnable": "0",
+   "density": "10",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "1.2",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "sand_static_rainforest",
+   "ui_name": "$mat_sand_static_rainforest"
+  },
+  {
+   "name": "sand_static_rainforest_dark",
+   "ui_name": "$mat_sand_static_rainforest"
+  },
+  {
+   "name": "bone_static",
+   "ui_name": "$mat_bone_static"
+  },
+  {
+   "name": "rust_static",
+   "ui_name": "$mat_rust_static"
+  },
+  {
+   "name": "sand_static_bright",
+   "ui_name": "$mat_sand_static_bright"
+  },
+  {
+   "name": "meat_static",
+   "ui_name": "$mat_meat"
+  },
+  {
+   "name": "sand_static_red",
+   "ui_name": "$mat_sand_static_red"
+  },
+  {
+   "name": "nest_static",
+   "ui_name": "$mat_nest_static",
+   "cell_type": "liquid",
+   "tags": [
+    "static",
+    "corrodible",
+    "burnable",
+    "alchemy",
+    "solid",
+    "earth"
+   ],
+   "burnable": "1",
+   "density": "10",
+   "temperature_of_fire": "40",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "0.6",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "bluefungi_static",
+   "ui_name": "$mat_bluefungi_static",
+   "cell_type": "liquid",
+   "tags": [
+    "static",
+    "corrodible",
+    "burnable",
+    "alchemy",
+    "solid",
+    "earth",
+    "fungus"
+   ],
+   "burnable": "1",
+   "density": "10",
+   "temperature_of_fire": "40",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "0.6",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "rock_static",
+   "ui_name": "$mat_rock_static",
+   "cell_type": "liquid",
+   "tags": [
+    "static",
+    "corrodible",
+    "meltable_to_lava",
+    "alchemy",
+    "solid",
+    "earth"
+   ],
+   "burnable": "0",
+   "density": "10",
+   "on_fire": "0",
+   "liquid_gravity": "1.2",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "rock_static_intro",
+   "ui_name": "$mat_rock_static_intro"
+  },
+  {
+   "name": "rock_static_trip_secret",
+   "ui_name": "$mat_rock_static"
+  },
+  {
+   "name": "rock_static_trip_secret2",
+   "ui_name": "$mat_rock_static"
+  },
+  {
+   "name": "rock_static_cursed",
+   "ui_name": "$mat_rock_static_cursed"
+  },
+  {
+   "name": "rock_static_purple",
+   "ui_name": "$mat_rock_static_intro"
+  },
+  {
+   "name": "water_static",
+   "ui_name": "$mat_water_static",
+   "cell_type": "liquid",
+   "tags": [
+    "static"
+   ],
+   "burnable": "0",
+   "density": "4",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "1.5",
+   "liquid_sand": "0",
+   "liquid_stains": "1",
+   "status_effects": "WET"
+  },
+  {
+   "name": "endslime_static",
+   "ui_name": "$mat_endslime_static",
+   "cell_type": "liquid",
+   "tags": [
+    "static",
+    "alchemy",
+    "solid",
+    "earth"
+   ],
+   "burnable": "0",
+   "density": "4",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "1.0",
+   "liquid_sand": "0",
+   "liquid_stains": "1"
+  },
+  {
+   "name": "slime_static",
+   "ui_name": "$mat_slime_static",
+   "cell_type": "liquid",
+   "tags": [
+    "static",
+    "alchemy",
+    "solid",
+    "earth",
+    "food"
+   ],
+   "burnable": "0",
+   "density": "4",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "1.0",
+   "liquid_sand": "0",
+   "liquid_stains": "1"
+  },
+  {
+   "name": "spore_pod_stalk",
+   "ui_name": "$mat_bluefungi_static",
+   "cell_type": "liquid",
+   "tags": [
+    "static",
+    "alchemy",
+    "solid",
+    "burnable",
+    "earth",
+    "fungus"
+   ],
+   "burnable": "1",
+   "density": "4",
+   "temperature_of_fire": "90",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "1.0",
+   "liquid_sand": "0",
+   "liquid_stains": "1"
+  },
+  {
+   "name": "rock_hard",
+   "ui_name": "$mat_rock_hard"
+  },
+  {
+   "name": "rock_static_fungal",
+   "ui_name": "$mat_fungisoil"
+  },
+  {
+   "name": "wood_tree",
+   "ui_name": "$mat_wood"
+  },
+  {
+   "name": "rock_static_noedge",
+   "ui_name": "$mat_rock_static_noedge"
+  },
+  {
+   "name": "rock_hard_border",
+   "ui_name": "$mat_rock_hard_border"
+  },
+  {
+   "name": "rock_magic_gate",
+   "ui_name": "$mat_rock_magic_gate"
+  },
+  {
+   "name": "rock_magic_bottom",
+   "ui_name": "$mat_rock_magic_bottom"
+  },
+  {
+   "name": "rock_eroding",
+   "ui_name": "$mat_rock_eroding",
+   "cell_type": "solid"
+  },
+  {
+   "name": "rock_vault",
+   "ui_name": "$mat_rock_vault"
+  },
+  {
+   "name": "coal_static",
+   "ui_name": "$mat_coal_static",
+   "cell_type": "liquid",
+   "density": "8",
+   "liquid_gravity": "1.2",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "rock_static_grey",
+   "ui_name": "$mat_rock_static_grey"
+  },
+  {
+   "name": "rock_static_radioactive",
+   "ui_name": "$mat_rock_static_radioactive"
+  },
+  {
+   "name": "rock_static_cursed_green",
+   "ui_name": "$mat_rock_static_cursed_green"
+  },
+  {
+   "name": "rock_static_poison",
+   "ui_name": "$mat_rock_static_poison"
+  },
+  {
+   "name": "skullrock",
+   "ui_name": "$mat_skullrock"
+  },
+  {
+   "name": "rock_static_wet",
+   "ui_name": "$mat_rock_static_wet"
+  },
+  {
+   "name": "lavarock_static",
+   "ui_name": "$mat_lavarock_static",
+   "cell_type": "liquid",
+   "tags": [
+    "static",
+    "corrodible",
+    "alchemy",
+    "solid",
+    "earth"
+   ],
+   "burnable": "0",
+   "density": "10",
+   "on_fire": "0",
+   "liquid_gravity": "1.2",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "static_magic_material",
+   "ui_name": "$mat_static_magic_material",
+   "cell_type": "liquid",
+   "tags": [
+    "static",
+    "corrodible",
+    "alchemy",
+    "solid"
+   ],
+   "burnable": "0",
+   "density": "10",
+   "on_fire": "0",
+   "liquid_gravity": "1.2",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "meteorite_static",
+   "ui_name": "$mat_meteorite_static",
+   "cell_type": "liquid",
+   "tags": [
+    "static",
+    "corrodible",
+    "alchemy",
+    "solid",
+    "earth"
+   ],
+   "burnable": "0",
+   "density": "10",
+   "on_fire": "0",
+   "liquid_gravity": "1.2",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "templerock_static",
+   "ui_name": "$mat_templerock_static",
+   "cell_type": "liquid",
+   "tags": [
+    "static",
+    "corrodible",
+    "alchemy",
+    "solid",
+    "earth"
+   ],
+   "burnable": "0",
+   "density": "10",
+   "on_fire": "0",
+   "liquid_gravity": "1.2",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "templebrick_static",
+   "ui_name": "$mat_templebrick_static"
+  },
+  {
+   "name": "templebrick_static_broken",
+   "ui_name": "$mat_templebrick_static"
+  },
+  {
+   "name": "templebrick_static_soft",
+   "ui_name": "$mat_templebrick_static"
+  },
+  {
+   "name": "templebrick_noedge_static",
+   "ui_name": "$mat_templebrick_noedge_static"
+  },
+  {
+   "name": "templerock_soft",
+   "ui_name": "$mat_templerock_static",
+   "cell_type": "liquid",
+   "tags": [
+    "static",
+    "corrodible",
+    "alchemy",
+    "solid",
+    "earth"
+   ],
+   "burnable": "0",
+   "density": "10",
+   "on_fire": "0",
+   "liquid_gravity": "1.2",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "templebrick_thick_static",
+   "ui_name": "$mat_templebrick_thick_static"
+  },
+  {
+   "name": "templebrick_thick_static_noedge",
+   "ui_name": "$mat_templebrick_thick_static"
+  },
+  {
+   "name": "templeslab_static",
+   "ui_name": "$mat_templeslab_static"
+  },
+  {
+   "name": "templeslab_crumbling_static",
+   "ui_name": "$mat_templeslab_crumbling_static"
+  },
+  {
+   "name": "templebrickdark_static",
+   "ui_name": "$mat_templebrickdark_static"
+  },
+  {
+   "name": "wizardstone",
+   "ui_name": "$mat_wizardstone"
+  },
+  {
+   "name": "templebrick_golden_static",
+   "ui_name": "$mat_templebrick_golden_static"
+  },
+  {
+   "name": "templebrick_diamond_static",
+   "ui_name": "$mat_templebrick_diamond_static"
+  },
+  {
+   "name": "templebrick_static_ruined",
+   "ui_name": "$mat_templebrick_static_ruined"
+  },
+  {
+   "name": "glowstone",
+   "ui_name": "$mat_glowstone"
+  },
+  {
+   "name": "glowstone_altar",
+   "ui_name": "$mat_glowstone_altar"
+  },
+  {
+   "name": "glowstone_altar_hdr",
+   "ui_name": "$mat_glowstone_altar"
+  },
+  {
+   "name": "glowstone_potion",
+   "ui_name": "$mat_glowstone_potion"
+  },
+  {
+   "name": "templebrick_red",
+   "ui_name": "$mat_templebrick_red"
+  },
+  {
+   "name": "templebrick_moss_static",
+   "ui_name": "$mat_templebrick_moss_static"
+  },
+  {
+   "name": "the_end",
+   "ui_name": "$mat_the_end"
+  },
+  {
+   "name": "steel_static",
+   "ui_name": "$mat_steel_static",
+   "cell_type": "liquid",
+   "tags": [
+    "static",
+    "corrodible",
+    "rust",
+    "alchemy",
+    "meltable_metal_generic",
+    "solid",
+    "earth"
+   ],
+   "burnable": "0",
+   "density": "10",
+   "on_fire": "0",
+   "liquid_gravity": "1.2",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "steelmoss_static",
+   "ui_name": "$mat_steelmoss_static"
+  },
+  {
+   "name": "steelmoss_static",
+   "ui_name": "$mat_steelrusted"
+  },
+  {
+   "name": "steel_rusted_no_holes",
+   "ui_name": "$mat_steelrusted"
+  },
+  {
+   "name": "steel_grey_static",
+   "ui_name": "$mat_steel_static_strong"
+  },
+  {
+   "name": "steelfrost_static",
+   "ui_name": "$mat_steelfrost_static"
+  },
+  {
+   "name": "steelmoss_slanted",
+   "ui_name": "$mat_steelmoss_slanted"
+  },
+  {
+   "name": "steelsmoke_static",
+   "ui_name": "$mat_steelsmoke_static"
+  },
+  {
+   "name": "steelpipe_static",
+   "ui_name": "$mat_steelpipe_static"
+  },
+  {
+   "name": "steel_static_strong",
+   "ui_name": "$mat_steel_static_strong",
+   "tags": [
+    "static",
+    "alchemy",
+    "solid",
+    "earth"
+   ]
+  },
+  {
+   "name": "steel_static_unmeltable",
+   "ui_name": "$mat_steel_static_unmeltable",
+   "tags": [
+    "static",
+    "alchemy",
+    "corrodible",
+    "solid",
+    "earth"
+   ]
+  },
+  {
+   "name": "rock_static_glow",
+   "ui_name": "$mat_rock_static_glow",
+   "cell_type": "liquid",
+   "tags": [
+    "static",
+    "corrodible",
+    "meltable_to_lava",
+    "alchemy",
+    "solid",
+    "earth"
+   ],
+   "burnable": "0",
+   "density": "10",
+   "on_fire": "0",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "snow_static",
+   "ui_name": "$mat_snow_static",
+   "cell_type": "liquid",
+   "tags": [
+    "static",
+    "corrodible",
+    "frozen",
+    "meltable_to_water",
+    "alchemy",
+    "solid"
+   ],
+   "burnable": "0",
+   "density": "8",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "warmth_melts_to_material": "water",
+   "on_fire": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "ice_static",
+   "ui_name": "$mat_ice_static",
+   "cell_type": "liquid",
+   "tags": [
+    "static",
+    "corrodible",
+    "frozen",
+    "meltable_to_water",
+    "alchemy",
+    "solid"
+   ],
+   "burnable": "0",
+   "density": "10",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "rock_static_intro_breakable",
+   "ui_name": "$mat_rock_static_intro_breakable"
+  },
+  {
+   "name": "ice_blood_static",
+   "ui_name": "$mat_ice_blood_static",
+   "warmth_melts_to_material": "blood"
+  },
+  {
+   "name": "ice_slime_static",
+   "ui_name": "$mat_ice_slime_static"
+  },
+  {
+   "name": "ice_acid_static",
+   "ui_name": "$mat_ice_acid_static",
+   "cell_type": "liquid",
+   "tags": [
+    "static",
+    "corrodible",
+    "frozen",
+    "meltable_to_acid",
+    "alchemy",
+    "solid"
+   ],
+   "burnable": "0",
+   "density": "10",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "ice_cold_static",
+   "ui_name": "$mat_ice_cold_static",
+   "cell_type": "liquid",
+   "tags": [
+    "static",
+    "corrodible",
+    "frozen",
+    "meltable_to_cold",
+    "alchemy",
+    "solid"
+   ],
+   "burnable": "0",
+   "density": "10",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "ice_radioactive_static",
+   "ui_name": "$mat_ice_radioactive_static",
+   "cell_type": "liquid",
+   "tags": [
+    "static",
+    "corrodible",
+    "frozen",
+    "meltable_to_radioactive",
+    "alchemy",
+    "solid"
+   ],
+   "burnable": "0",
+   "density": "10",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "ice_poison_static",
+   "ui_name": "$mat_ice_poison_static",
+   "cell_type": "liquid",
+   "tags": [
+    "static",
+    "corrodible",
+    "frozen",
+    "meltable_to_poison",
+    "alchemy",
+    "solid"
+   ],
+   "burnable": "0",
+   "density": "10",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "ice_meteor_static",
+   "ui_name": "$mat_ice_meteor_static",
+   "cell_type": "liquid",
+   "tags": [
+    "static",
+    "corrodible",
+    "frozen",
+    "meltable_to_lava",
+    "alchemy",
+    "solid",
+    "earth"
+   ],
+   "burnable": "0",
+   "density": "10",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "tubematerial",
+   "ui_name": "$mat_tubematerial",
+   "cell_type": "liquid",
+   "tags": [
+    "static",
+    "corrodible",
+    "alchemy",
+    "solid",
+    "earth"
+   ],
+   "burnable": "0",
+   "density": "10",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "glass_static",
+   "ui_name": "$mat_glass_static",
+   "cell_type": "liquid",
+   "tags": [
+    "static",
+    "alchemy",
+    "solid",
+    "earth"
+   ],
+   "burnable": "0",
+   "density": "10",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "waterrock",
+   "ui_name": "$mat_waterrock",
+   "cell_type": "solid",
+   "tags": [
+    "static",
+    "alchemy",
+    "solid",
+    "earth"
+   ],
+   "burnable": "0",
+   "density": "6",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0"
+  },
+  {
+   "name": "ice_glass",
+   "ui_name": "$mat_ice_glass",
+   "cell_type": "solid",
+   "tags": [
+    "box2d",
+    "static",
+    "meltable_to_water",
+    "alchemy",
+    "solid",
+    "cold"
+   ],
+   "burnable": "0",
+   "density": "6",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "warmth_melts_to_material": "water",
+   "on_fire": "0"
+  },
+  {
+   "name": "tube_physics",
+   "ui_name": "$mat_tube_physics"
+  },
+  {
+   "name": "ice_acid_glass",
+   "ui_name": "$mat_ice_acid_glass"
+  },
+  {
+   "name": "ice_cold_glass",
+   "ui_name": "$mat_ice_cold_glass"
+  },
+  {
+   "name": "ice_radioactive_glass",
+   "ui_name": "$mat_ice_radioactive_glass"
+  },
+  {
+   "name": "ice_poison_glass",
+   "ui_name": "$mat_ice_poison_glass"
+  },
+  {
+   "name": "ice_blood_glass",
+   "ui_name": "$mat_ice_blood_glass",
+   "warmth_melts_to_material": "blood"
+  },
+  {
+   "name": "ice_slime_glass",
+   "ui_name": "$mat_ice_slime_glass",
+   "warmth_melts_to_material": "slime"
+  },
+  {
+   "name": "ice_glass_b2",
+   "ui_name": "$mat_ice_glass_b2",
+   "cell_type": "solid",
+   "tags": [
+    "static",
+    "meltable_to_water",
+    "alchemy",
+    "solid",
+    "cold"
+   ],
+   "burnable": "0",
+   "density": "6",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "warmth_melts_to_material": "water",
+   "on_fire": "0"
+  },
+  {
+   "name": "glass_brittle",
+   "ui_name": "$mat_glass_brittle",
+   "cell_type": "solid",
+   "tags": [
+    "static",
+    "alchemy",
+    "solid",
+    "earth"
+   ],
+   "burnable": "0",
+   "density": "6",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0"
+  },
+  {
+   "name": "snowrock_static",
+   "ui_name": "$mat_snowrock_static",
+   "cell_type": "liquid",
+   "tags": [
+    "static",
+    "corrodible",
+    "alchemy",
+    "solid",
+    "earth"
+   ],
+   "burnable": "0",
+   "density": "10",
+   "on_fire": "0",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "concrete_static",
+   "ui_name": "$mat_concrete_static",
+   "cell_type": "liquid",
+   "tags": [
+    "static",
+    "corrodible",
+    "meltable_to_lava",
+    "alchemy",
+    "solid",
+    "earth"
+   ],
+   "burnable": "0",
+   "density": "10",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "wood_static",
+   "ui_name": "$mat_wood_static",
+   "cell_type": "liquid",
+   "tags": [
+    "corrodible",
+    "burnable",
+    "alchemy",
+    "solid",
+    "earth"
+   ],
+   "burnable": "1",
+   "density": "11",
+   "temperature_of_fire": "90",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "cheese_static",
+   "ui_name": "$mat_cheese_static",
+   "cell_type": "liquid",
+   "tags": [
+    "static",
+    "corrodible",
+    "meltable_to_lava",
+    "alchemy",
+    "solid",
+    "earth"
+   ],
+   "burnable": "0",
+   "density": "5",
+   "on_fire": "0",
+   "liquid_gravity": "1.2",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "wood_static_wet",
+   "ui_name": "$mat_wood_static_wet"
+  },
+  {
+   "name": "root_growth",
+   "ui_name": "$mat_root",
+   "burnable": "1",
+   "temperature_of_fire": "30"
+  },
+  {
+   "name": "wood_burns_forever",
+   "ui_name": "$mat_wood_static"
+  },
+  {
+   "name": "creepy_liquid_emitter",
+   "ui_name": "$mat_creepy_liquid_emitter",
+   "burnable": "0"
+  },
+  {
+   "name": "gold_static",
+   "ui_name": "$mat_gold_static",
+   "burnable": "0"
+  },
+  {
+   "name": "gold_static_radioactive",
+   "ui_name": "$mat_gold_radioactive",
+   "burnable": "0",
+   "danger_radioactive": "1",
+   "status_effects": "RADIOACTIVE"
+  },
+  {
+   "name": "gold_static_dark",
+   "ui_name": "$mat_gold_static_dark",
+   "burnable": "0"
+  },
+  {
+   "name": "wood_static_vertical",
+   "ui_name": "$mat_wood_static_vertical"
+  },
+  {
+   "name": "wood_static_gas",
+   "ui_name": "$mat_wood_static_gas",
+   "temperature_of_fire": "90"
+  },
+  {
+   "name": "corruption_static",
+   "ui_name": "$mat_corruption_static"
+  },
+  {
+   "name": "smoke",
+   "ui_name": "$mat_smoke",
+   "cell_type": "gas",
+   "tags": [
+    "gas"
+   ],
+   "burnable": "0",
+   "density": "1",
+   "temperature_of_fire": "60",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "0"
+  },
+  {
+   "name": "cloud",
+   "ui_name": "$mat_cloud",
+   "cell_type": "gas",
+   "tags": [
+    "gas"
+   ],
+   "burnable": "0",
+   "density": "4.17",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "0"
+  },
+  {
+   "name": "cloud_lighter",
+   "ui_name": "$mat_cloud",
+   "cell_type": "gas",
+   "tags": [
+    "gas"
+   ],
+   "burnable": "0",
+   "density": "1",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "0"
+  },
+  {
+   "name": "smoke_magic",
+   "ui_name": "$mat_smoke_magic"
+  },
+  {
+   "name": "smoke_explosion",
+   "ui_name": "$mat_smoke_explosion",
+   "cell_type": "gas",
+   "tags": [
+    "gas"
+   ],
+   "burnable": "0",
+   "density": "1",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "0"
+  },
+  {
+   "name": "steam",
+   "ui_name": "$mat_steam",
+   "cell_type": "gas",
+   "tags": [
+    "gas"
+   ],
+   "burnable": "0",
+   "density": "1",
+   "temperature_of_fire": "60",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "0"
+  },
+  {
+   "name": "steam_trailer",
+   "ui_name": "$mat_steam"
+  },
+  {
+   "name": "acid_gas",
+   "ui_name": "$mat_acid_gas",
+   "cell_type": "gas",
+   "tags": [
+    "gas",
+    "burnable_fast"
+   ],
+   "burnable": "1",
+   "density": "2",
+   "temperature_of_fire": "60",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "0"
+  },
+  {
+   "name": "acid_gas_static",
+   "ui_name": "$mat_acid_gas_static",
+   "cell_type": "gas",
+   "tags": [
+    "gas",
+    "burnable_fast"
+   ],
+   "burnable": "1",
+   "density": "2",
+   "temperature_of_fire": "60",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "0"
+  },
+  {
+   "name": "smoke_static",
+   "ui_name": "$mat_smoke_static",
+   "cell_type": "gas",
+   "tags": [
+    "gas"
+   ],
+   "burnable": "0",
+   "density": "1",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "0"
+  },
+  {
+   "name": "poison_gas",
+   "ui_name": "$mat_poison_gas"
+  },
+  {
+   "name": "fungal_gas",
+   "ui_name": "$mat_fungal_gas"
+  },
+  {
+   "name": "poo_gas",
+   "ui_name": "$mat_poo_gas",
+   "liquid_stains": "1"
+  },
+  {
+   "name": "blood_cold_vapour",
+   "ui_name": "$mat_blood_cold_vapour",
+   "cell_type": "gas",
+   "tags": [
+    "gas",
+    "vapour",
+    "cold"
+   ],
+   "burnable": "0",
+   "density": "2",
+   "temperature_of_fire": "0",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "0"
+  },
+  {
+   "name": "sand_herb_vapour",
+   "ui_name": "$mat_sand_herb_vapour",
+   "cell_type": "gas",
+   "tags": [
+    "gas",
+    "vapour"
+   ],
+   "burnable": "0",
+   "density": "2",
+   "temperature_of_fire": "0",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "0"
+  },
+  {
+   "name": "radioactive_gas",
+   "ui_name": "$mat_radioactive_gas",
+   "cell_type": "gas",
+   "tags": [
+    "gas"
+   ],
+   "burnable": "0",
+   "density": "2",
+   "generates_smoke": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "0"
+  },
+  {
+   "name": "radioactive_gas_static",
+   "ui_name": "$mat_radioactive_gas_static",
+   "cell_type": "gas",
+   "tags": [
+    "gas"
+   ],
+   "burnable": "0",
+   "density": "2",
+   "generates_smoke": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "0"
+  },
+  {
+   "name": "magic_gas_hp_regeneration",
+   "ui_name": "$mat_magic_gas_hp_regeneration",
+   "cell_type": "gas",
+   "tags": [
+    "gas",
+    "vapour",
+    "regenerative_gas"
+   ],
+   "burnable": "0",
+   "density": "2",
+   "temperature_of_fire": "0",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "0",
+   "liquid_stains": "1",
+   "status_effects": "HP_REGENERATION"
+  },
+  {
+   "name": "magic_gas_midas",
+   "ui_name": "$mat_magic_gas_midas",
+   "cell_type": "gas",
+   "tags": [
+    "gas",
+    "vapour"
+   ],
+   "burnable": "0",
+   "density": "2",
+   "temperature_of_fire": "0",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "0"
+  },
+  {
+   "name": "magic_gas_worm_blood",
+   "ui_name": "$mat_magic_gas_worm_blood",
+   "cell_type": "gas",
+   "tags": [
+    "gas",
+    "vapour"
+   ],
+   "burnable": "0",
+   "density": "2",
+   "temperature_of_fire": "0",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "0",
+   "liquid_stains": "1",
+   "status_effects": "NIGHTVISION"
+  },
+  {
+   "name": "rainbow_gas",
+   "ui_name": "$mat_rainbow_gas",
+   "cell_type": "gas",
+   "tags": [
+    "gas"
+   ],
+   "burnable": "0",
+   "density": "2",
+   "temperature_of_fire": "0",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "0"
+  },
+  {
+   "name": "magic_gas_polymorph",
+   "ui_name": "$mat_magic_gas_polymorph",
+   "cell_type": "gas",
+   "tags": [
+    "gas",
+    "vapour",
+    "alchemy"
+   ],
+   "burnable": "0",
+   "density": "2",
+   "temperature_of_fire": "0",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "0",
+   "liquid_stains": "1",
+   "status_effects": "POLYMORPH"
+  },
+  {
+   "name": "magic_gas_weakness",
+   "ui_name": "$mat_magic_gas_weakness",
+   "cell_type": "gas",
+   "tags": [
+    "gas",
+    "vapour",
+    "alchemy"
+   ],
+   "burnable": "0",
+   "density": "2",
+   "temperature_of_fire": "0",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "0",
+   "liquid_stains": "1",
+   "status_effects": "WEAKNESS"
+  },
+  {
+   "name": "magic_gas_teleport",
+   "ui_name": "$mat_magic_gas_teleport",
+   "cell_type": "gas",
+   "tags": [
+    "gas",
+    "vapour",
+    "alchemy"
+   ],
+   "burnable": "0",
+   "density": "2",
+   "temperature_of_fire": "0",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "0",
+   "liquid_stains": "1",
+   "status_effects": "TELEPORTATION"
+  },
+  {
+   "name": "magic_gas_fungus",
+   "ui_name": "$mat_magic_gas_fungus",
+   "cell_type": "gas",
+   "tags": [
+    "gas",
+    "vapour",
+    "alchemy"
+   ],
+   "burnable": "0",
+   "density": "2",
+   "temperature_of_fire": "0",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "0",
+   "liquid_stains": "1",
+   "status_effects": "TRIP"
+  },
+  {
+   "name": "water",
+   "ui_name": "$mat_water",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "corrodible",
+    "freezable",
+    "water",
+    "liquid_common",
+    "chaotic_transmutation"
+   ],
+   "burnable": "0",
+   "density": "4",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "cold_freezes_to_material": "ice_static",
+   "warmth_melts_to_material": "steam",
+   "on_fire": "0",
+   "liquid_gravity": "1.5",
+   "liquid_sand": "0",
+   "liquid_stains": "1"
+  },
+  {
+   "name": "water_fading",
+   "ui_name": "$mat_water_fading",
+   "warmth_melts_to_material": "steam",
+   "status_effects": "WET"
+  },
+  {
+   "name": "water_salt",
+   "ui_name": "$mat_water_salt",
+   "tags": [
+    "liquid",
+    "corrodible",
+    "freezable",
+    "water",
+    "liquid_common"
+   ],
+   "density": "4.01",
+   "cold_freezes_to_material": "ice_static",
+   "warmth_melts_to_material": "steam",
+   "status_effects": "WET"
+  },
+  {
+   "name": "void_liquid",
+   "ui_name": "$mat_void_liquid",
+   "density": "14.5"
+  },
+  {
+   "name": "mimic_liquid",
+   "ui_name": "$mat_mimic_liquid",
+   "density": "6"
+  },
+  {
+   "name": "just_death",
+   "ui_name": "$mat_magic_liquid_death"
+  },
+  {
+   "name": "water_temp",
+   "ui_name": "$mat_water_temp",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "corrodible",
+    "freezable",
+    "water",
+    "liquid_common"
+   ],
+   "burnable": "0",
+   "density": "4",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "cold_freezes_to_material": "ice_static",
+   "warmth_melts_to_material": "steam",
+   "on_fire": "0",
+   "liquid_gravity": "1.5",
+   "liquid_sand": "0",
+   "liquid_stains": "1",
+   "status_effects": "WET"
+  },
+  {
+   "name": "water_ice",
+   "ui_name": "$mat_water_ice",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "corrodible",
+    "meltable_to_water",
+    "freezable",
+    "water",
+    "liquid_common",
+    "chaotic_transmutation"
+   ],
+   "burnable": "0",
+   "density": "3.5",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "cold_freezes_to_material": "ice_static",
+   "warmth_melts_to_material": "water",
+   "on_fire": "0",
+   "liquid_gravity": "1.5",
+   "liquid_sand": "0",
+   "liquid_stains": "1",
+   "status_effects": "WET"
+  },
+  {
+   "name": "water_swamp",
+   "ui_name": "$mat_water_swamp",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "corrodible",
+    "meltable_to_water",
+    "water",
+    "impure",
+    "liquid_common"
+   ],
+   "burnable": "0",
+   "density": "3.4",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "cold_freezes_to_material": "ice_static",
+   "warmth_melts_to_material": "steam",
+   "on_fire": "0",
+   "liquid_gravity": "0.9",
+   "liquid_sand": "0",
+   "liquid_stains": "1",
+   "status_effects": "WET"
+  },
+  {
+   "name": "oil",
+   "ui_name": "$mat_oil",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "burnable",
+    "impure",
+    "liquid_common",
+    "chaotic_transmutation"
+   ],
+   "burnable": "1",
+   "density": "1",
+   "temperature_of_fire": "95",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "0",
+   "liquid_stains": "4"
+  },
+  {
+   "name": "liquid_fire",
+   "ui_name": "$mat_liquid_fire",
+   "tags": [
+    "liquid",
+    "burnable",
+    "impure",
+    "hot",
+    "fire_strong",
+    "liquid_common"
+   ],
+   "temperature_of_fire": "150",
+   "requires_oxygen": "0",
+   "on_fire": "1",
+   "liquid_gravity": "0.2",
+   "liquid_stains": "0",
+   "status_effects": "OILED"
+  },
+  {
+   "name": "liquid_fire_weak",
+   "ui_name": "$mat_liquid_fire_weak",
+   "tags": [
+    "liquid",
+    "burnable",
+    "impure",
+    "hot",
+    "fire_strong",
+    "liquid_common"
+   ],
+   "temperature_of_fire": "150",
+   "requires_oxygen": "0",
+   "on_fire": "1",
+   "liquid_gravity": "0.2",
+   "liquid_stains": "0",
+   "status_effects": "OILED"
+  },
+  {
+   "name": "alcohol",
+   "ui_name": "$mat_alcohol",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "water",
+    "impure",
+    "liquid_common",
+    "chaotic_transmutation"
+   ],
+   "density": "3.5",
+   "liquid_gravity": "1.2",
+   "liquid_sand": "0",
+   "liquid_stains": "1"
+  },
+  {
+   "name": "beer",
+   "ui_name": "$mat_beer",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "water",
+    "impure",
+    "liquid_common"
+   ],
+   "density": "3.5",
+   "liquid_gravity": "1.2",
+   "liquid_sand": "0",
+   "liquid_stains": "1"
+  },
+  {
+   "name": "milk",
+   "ui_name": "$mat_milk",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "water",
+    "impure",
+    "liquid_common"
+   ],
+   "density": "3.5",
+   "liquid_gravity": "1.2",
+   "liquid_sand": "0",
+   "liquid_stains": "1"
+  },
+  {
+   "name": "molut",
+   "ui_name": "$mat_molut",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "water",
+    "impure",
+    "liquid_common"
+   ],
+   "density": "3.5",
+   "liquid_gravity": "1.2",
+   "liquid_sand": "0",
+   "liquid_stains": "1"
+  },
+  {
+   "name": "sima",
+   "ui_name": "$mat_sima",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "water",
+    "impure",
+    "liquid_common"
+   ],
+   "density": "3.5",
+   "liquid_gravity": "1.2",
+   "liquid_sand": "0",
+   "liquid_stains": "1"
+  },
+  {
+   "name": "juhannussima",
+   "ui_name": "$mat_juhannussima",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "water",
+    "impure",
+    "liquid_common"
+   ],
+   "density": "3.5",
+   "liquid_gravity": "1.2",
+   "liquid_sand": "0",
+   "liquid_stains": "1"
+  },
+  {
+   "name": "alcohol_gas",
+   "ui_name": "$mat_alcohol_gas",
+   "cell_type": "gas",
+   "tags": [
+    "gas",
+    "burnable",
+    "evaporable"
+   ],
+   "burnable": "1",
+   "density": "1",
+   "temperature_of_fire": "80",
+   "generates_smoke": "1",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "0",
+   "liquid_sand": "0",
+   "liquid_stains": "1",
+   "status_effects": "ALCOHOLIC"
+  },
+  {
+   "name": "midas_precursor",
+   "ui_name": "$mat_midas_precursor",
+   "liquid_gravity": "0.5"
+  },
+  {
+   "name": "midas",
+   "ui_name": "$mat_midas",
+   "density": "4",
+   "liquid_gravity": "0.5"
+  },
+  {
+   "name": "magic_liquid",
+   "ui_name": "$mat_magic_liquid",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "water",
+    "magic_liquid",
+    "impure"
+   ],
+   "burnable": "0",
+   "density": "5.23",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0",
+   "liquid_gravity": "0.8",
+   "liquid_sand": "0"
+  },
+  {
+   "name": "material_confusion",
+   "ui_name": "$mat_confusion",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "water",
+    "magic_liquid",
+    "impure"
+   ],
+   "density": "1.2",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0",
+   "liquid_gravity": "0.8",
+   "liquid_sand": "0",
+   "liquid_stains": "1",
+   "status_effects": "CONFUSION"
+  },
+  {
+   "name": "material_darkness",
+   "ui_name": "$mat_darkness",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "water",
+    "magic_liquid",
+    "impure"
+   ],
+   "density": "1.2434",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0",
+   "liquid_gravity": "0.8",
+   "liquid_sand": "0",
+   "liquid_stains": "1",
+   "status_effects": "POISONED"
+  },
+  {
+   "name": "pus",
+   "ui_name": "$mat_pus"
+  },
+  {
+   "name": "material_rainbow",
+   "ui_name": "$mat_rainbow",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "water",
+    "magic_liquid",
+    "impure"
+   ],
+   "density": "1.874",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0",
+   "liquid_gravity": "0.8",
+   "liquid_sand": "0",
+   "liquid_stains": "1"
+  },
+  {
+   "name": "magic_liquid_weakness",
+   "ui_name": "$magic_liquid_weakness",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "water",
+    "magic_liquid",
+    "impure",
+    "magic_faster"
+   ],
+   "burnable": "0",
+   "density": "1.872",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0",
+   "liquid_gravity": "0.8",
+   "liquid_sand": "0",
+   "liquid_stains": "1",
+   "status_effects": "WEAKNESS"
+  },
+  {
+   "name": "magic_liquid_movement_faster",
+   "ui_name": "$mat_magic_liquid_movement_faster",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "water",
+    "magic_liquid",
+    "impure",
+    "magic_faster"
+   ],
+   "burnable": "0",
+   "density": "1.1",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0",
+   "liquid_gravity": "0.8",
+   "liquid_sand": "0",
+   "liquid_stains": "1",
+   "status_effects": "MOVEMENT_FASTER_2X"
+  },
+  {
+   "name": "magic_liquid_faster_levitation",
+   "ui_name": "$mat_magic_liquid_faster_levitation",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "water",
+    "magic_liquid",
+    "impure",
+    "magic_faster"
+   ],
+   "burnable": "0",
+   "density": "1.11",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0",
+   "liquid_gravity": "0.8",
+   "liquid_sand": "0",
+   "liquid_stains": "1",
+   "status_effects": "FASTER_LEVITATION"
+  },
+  {
+   "name": "magic_liquid_faster_levitation_and_movement",
+   "ui_name": "$mat_magic_liquid_faster_levitation_and_movement",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "water",
+    "magic_liquid",
+    "impure",
+    "magic_faster"
+   ],
+   "burnable": "0",
+   "density": "1.091",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0",
+   "liquid_gravity": "0.8",
+   "liquid_sand": "0",
+   "liquid_stains": "1"
+  },
+  {
+   "name": "magic_liquid_worm_attractor",
+   "ui_name": "$mat_magic_liquid_worm_attractor",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "water",
+    "magic_liquid",
+    "impure"
+   ],
+   "burnable": "0",
+   "density": "4.76",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0",
+   "liquid_gravity": "0.8",
+   "liquid_sand": "0",
+   "liquid_stains": "1",
+   "status_effects": "WORM_ATTRACTOR"
+  },
+  {
+   "name": "magic_liquid_protection_all",
+   "ui_name": "$mat_magic_liquid_protection_all",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "water",
+    "magic_liquid",
+    "impure"
+   ],
+   "burnable": "0",
+   "density": "5.12",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0",
+   "liquid_gravity": "0.8",
+   "liquid_sand": "0",
+   "liquid_stains": "1",
+   "status_effects": "PROTECTION_ALL"
+  },
+  {
+   "name": "magic_liquid_mana_regeneration",
+   "ui_name": "$mat_magic_liquid_mana_regeneration",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "water",
+    "magic_liquid",
+    "impure"
+   ],
+   "burnable": "0",
+   "density": "4.921",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0",
+   "liquid_gravity": "0.8",
+   "liquid_sand": "0",
+   "liquid_stains": "1",
+   "status_effects": "MANA_REGENERATION"
+  },
+  {
+   "name": "magic_liquid_unstable_teleportation",
+   "ui_name": "$mat_magic_liquid_unstable_teleportation",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "water",
+    "magic_liquid",
+    "impure"
+   ],
+   "burnable": "1",
+   "density": "4.43",
+   "temperature_of_fire": "95",
+   "generates_smoke": "250",
+   "requires_oxygen": "0",
+   "on_fire": "0",
+   "liquid_gravity": "0.8",
+   "liquid_sand": "0",
+   "liquid_stains": "1",
+   "status_effects": "UNSTABLE_TELEPORTATION"
+  },
+  {
+   "name": "magic_liquid_teleportation",
+   "ui_name": "$mat_magic_liquid_teleportation",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "water",
+    "magic_liquid",
+    "impure"
+   ],
+   "burnable": "1",
+   "density": "4.21",
+   "temperature_of_fire": "95",
+   "generates_smoke": "250",
+   "requires_oxygen": "0",
+   "on_fire": "0",
+   "liquid_gravity": "0.8",
+   "liquid_sand": "0",
+   "liquid_stains": "1",
+   "status_effects": "TELEPORTATION"
+  },
+  {
+   "name": "magic_liquid_hp_regeneration",
+   "ui_name": "$mat_magic_liquid_hp_regeneration",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "water",
+    "magic_liquid",
+    "regenerative"
+   ],
+   "burnable": "0",
+   "density": "5.53",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0",
+   "liquid_gravity": "0.8",
+   "liquid_sand": "0",
+   "liquid_stains": "1",
+   "status_effects": "HP_REGENERATION"
+  },
+  {
+   "name": "magic_liquid_hp_regeneration_unstable",
+   "ui_name": "$mat_magic_liquid_hp_regeneration_unstable",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "water",
+    "magic_liquid",
+    "regenerative"
+   ],
+   "burnable": "0",
+   "density": "5.74",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0",
+   "liquid_gravity": "0.8",
+   "liquid_sand": "0",
+   "liquid_stains": "1",
+   "status_effects": "HP_REGENERATION"
+  },
+  {
+   "name": "magic_liquid_polymorph",
+   "ui_name": "$mat_magic_liquid_polymorph",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "water",
+    "magic_liquid",
+    "magic_polymorph",
+    "impure"
+   ],
+   "burnable": "0",
+   "density": "4.14",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0",
+   "liquid_gravity": "0.8",
+   "liquid_sand": "0",
+   "liquid_stains": "1",
+   "status_effects": "POLYMORPH"
+  },
+  {
+   "name": "magic_liquid_random_polymorph",
+   "ui_name": "$mat_magic_liquid_random_polymorph",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "water",
+    "magic_liquid",
+    "magic_polymorph",
+    "impure"
+   ],
+   "burnable": "0",
+   "density": "4.15",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0",
+   "liquid_gravity": "0.8",
+   "liquid_sand": "0",
+   "liquid_stains": "1",
+   "status_effects": "POLYMORPH_RANDOM"
+  },
+  {
+   "name": "magic_liquid_unstable_polymorph",
+   "ui_name": "$mat_magic_liquid_unstable_polymorph",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "water",
+    "magic_liquid",
+    "magic_polymorph",
+    "impure"
+   ],
+   "burnable": "0",
+   "density": "4.16",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0",
+   "liquid_gravity": "0.8",
+   "liquid_sand": "0",
+   "liquid_stains": "1",
+   "status_effects": "POLYMORPH_UNSTABLE"
+  },
+  {
+   "name": "magic_liquid_berserk",
+   "ui_name": "$mat_magic_liquid_berserk",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "water",
+    "magic_liquid",
+    "impure"
+   ],
+   "burnable": "0",
+   "density": "2.412",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0",
+   "liquid_gravity": "0.8",
+   "liquid_sand": "0",
+   "liquid_stains": "1",
+   "status_effects": "BERSERK"
+  },
+  {
+   "name": "magic_liquid_charm",
+   "ui_name": "$mat_magic_liquid_charm",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "water",
+    "magic_liquid",
+    "impure"
+   ],
+   "burnable": "0",
+   "density": "3.513",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0",
+   "liquid_gravity": "0.8",
+   "liquid_sand": "0",
+   "liquid_stains": "1",
+   "status_effects": "CHARM"
+  },
+  {
+   "name": "magic_liquid_invisibility",
+   "ui_name": "$mat_magic_liquid_invisibility",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "water",
+    "magic_liquid",
+    "impure"
+   ],
+   "burnable": "0",
+   "density": "5.3272",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0",
+   "liquid_gravity": "0.8",
+   "liquid_sand": "0",
+   "liquid_stains": "1",
+   "status_effects": "INVISIBILITY"
+  },
+  {
+   "name": "cloud_radioactive",
+   "ui_name": "$mat_cloud_radioactive",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "radioactive",
+    "impure",
+    "liquid_common"
+   ],
+   "burnable": "0",
+   "density": "1",
+   "danger_radioactive": "1",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "0",
+   "liquid_sand": "0",
+   "liquid_stains": "2"
+  },
+  {
+   "name": "cloud_blood",
+   "ui_name": "$mat_cloud_blood",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "blood",
+    "impure",
+    "liquid_common"
+   ],
+   "burnable": "0",
+   "density": "1",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "0",
+   "liquid_sand": "0",
+   "liquid_stains": "2",
+   "status_effects": "BLOODY"
+  },
+  {
+   "name": "cloud_slime",
+   "ui_name": "$mat_cloud_slime",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "impure",
+    "slime",
+    "liquid_common"
+   ],
+   "burnable": "0",
+   "density": "1",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "0",
+   "liquid_sand": "0",
+   "liquid_stains": "2",
+   "status_effects": "SLIMY"
+  },
+  {
+   "name": "swamp",
+   "ui_name": "$mat_swamp",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "corrodible",
+    "soluble",
+    "meltable_to_water",
+    "freezable",
+    "water",
+    "impure",
+    "liquid_common",
+    "chaotic_transmutation"
+   ],
+   "burnable": "0",
+   "density": "3.5",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "0.6",
+   "liquid_sand": "0",
+   "liquid_stains": "1",
+   "status_effects": "WET"
+  },
+  {
+   "name": "mud",
+   "ui_name": "$mat_mud",
+   "cell_type": "liquid",
+   "tags": [
+    "sand_ground",
+    "corrodible",
+    "meltable_to_lava",
+    "impure"
+   ],
+   "burnable": "0",
+   "density": "6",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "0.3",
+   "liquid_sand": "1",
+   "liquid_stains": "1",
+   "status_effects": "WET"
+  },
+  {
+   "name": "blood",
+   "ui_name": "$mat_blood",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "corrodible",
+    "soluble",
+    "blood",
+    "impure",
+    "liquid_common",
+    "food",
+    "chaotic_transmutation"
+   ],
+   "burnable": "0",
+   "density": "4.1",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "cold_freezes_to_material": "ice_blood_static",
+   "on_fire": "0",
+   "liquid_gravity": "0.7",
+   "liquid_sand": "0",
+   "liquid_stains": "2",
+   "status_effects": "BLOODY"
+  },
+  {
+   "name": "blood_fading",
+   "ui_name": "$mat_blood_fading",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "corrodible",
+    "soluble",
+    "evaporable_fast",
+    "blood",
+    "impure",
+    "liquid_common",
+    "food"
+   ],
+   "burnable": "0",
+   "density": "3",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "cold_freezes_to_material": "ice_blood_static",
+   "on_fire": "0",
+   "liquid_gravity": "0.7",
+   "liquid_sand": "0",
+   "liquid_stains": "2"
+  },
+  {
+   "name": "blood_fading_slow"
+  },
+  {
+   "name": "blood_fungi",
+   "ui_name": "$mat_blood_fungi",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "corrodible",
+    "soluble",
+    "evaporable",
+    "blood",
+    "impure",
+    "liquid_common",
+    "food",
+    "fungus",
+    "chaotic_transmutation"
+   ],
+   "burnable": "0",
+   "density": "3",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "1.0",
+   "liquid_sand": "0",
+   "liquid_stains": "2",
+   "status_effects": "SLIMY"
+  },
+  {
+   "name": "blood_worm",
+   "ui_name": "$mat_blood_worm",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "corrodible",
+    "soluble",
+    "blood",
+    "impure",
+    "liquid_common",
+    "food",
+    "chaotic_transmutation"
+   ],
+   "burnable": "0",
+   "density": "2.123",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "1.0",
+   "liquid_sand": "0",
+   "liquid_stains": "2"
+  },
+  {
+   "name": "porridge",
+   "ui_name": "$mat_porridge",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "corrodible",
+    "soluble",
+    "impure",
+    "liquid_common",
+    "evaporable_by_fire",
+    "food"
+   ],
+   "burnable": "1",
+   "density": "2.123",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "1.0",
+   "liquid_sand": "0",
+   "liquid_stains": "2"
+  },
+  {
+   "name": "blood_cold",
+   "ui_name": "$mat_blood_cold",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "corrodible",
+    "soluble",
+    "evaporable_custom",
+    "blood",
+    "impure",
+    "cold",
+    "liquid_common"
+   ],
+   "burnable": "0",
+   "density": "3",
+   "temperature_of_fire": "0",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "cold_freezes_to_material": "ice_cold_static",
+   "on_fire": "0",
+   "liquid_gravity": "1.0",
+   "liquid_sand": "0",
+   "liquid_stains": "2"
+  },
+  {
+   "name": "radioactive_liquid",
+   "ui_name": "$mat_radioactive_liquid",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "corrodible",
+    "soluble",
+    "radioactive",
+    "impure",
+    "liquid_common",
+    "chaotic_transmutation"
+   ],
+   "burnable": "0",
+   "density": "3",
+   "danger_radioactive": "1",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "cold_freezes_to_material": "ice_radioactive_static",
+   "on_fire": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "0",
+   "liquid_stains": "2"
+  },
+  {
+   "name": "poison",
+   "ui_name": "$mat_poison",
+   "danger_radioactive": "0",
+   "danger_poison": "1",
+   "cold_freezes_to_material": "ice_poison_static"
+  },
+  {
+   "name": "cursed_liquid",
+   "ui_name": "$mat_cursed_liquid",
+   "danger_radioactive": "1",
+   "danger_poison": "0",
+   "cold_freezes_to_material": "ice_radioactive_static"
+  },
+  {
+   "name": "radioactive_liquid_yellow",
+   "ui_name": "$mat_radioactive_liquid_yellow",
+   "danger_radioactive": "1",
+   "danger_poison": "0"
+  },
+  {
+   "name": "radioactive_liquid_fading",
+   "ui_name": "$mat_radioactive_liquid_fading",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "corrodible",
+    "soluble",
+    "evaporable",
+    "radioactive",
+    "impure",
+    "liquid_common"
+   ],
+   "burnable": "0",
+   "density": "3",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "0",
+   "liquid_stains": "2"
+  },
+  {
+   "name": "plasma_fading",
+   "ui_name": "$mat_plasma_fading",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "corrodible",
+    "soluble",
+    "evaporable_fast",
+    "impure",
+    "liquid_common"
+   ],
+   "burnable": "0",
+   "density": "3",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "1.0",
+   "liquid_sand": "0",
+   "liquid_stains": "0"
+  },
+  {
+   "name": "plasma_fading_bright",
+   "ui_name": "$mat_plasma_fading"
+  },
+  {
+   "name": "plasma_fading_green",
+   "ui_name": "$mat_plasma_fading_green",
+   "temperature_of_fire": "150",
+   "requires_oxygen": "0",
+   "on_fire": "1",
+   "liquid_gravity": "0.2",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "plasma_fading_pink",
+   "ui_name": "$mat_plasma_fading_pink",
+   "temperature_of_fire": "150",
+   "requires_oxygen": "0",
+   "on_fire": "1",
+   "liquid_gravity": "0.2",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "gold_molten",
+   "ui_name": "$mat_gold_molten",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "corrodible",
+    "molten",
+    "alchemy",
+    "gold",
+    "solid",
+    "liquid_common",
+    "earth"
+   ],
+   "burnable": "1",
+   "density": "5",
+   "danger_fire": "1",
+   "temperature_of_fire": "100",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "1",
+   "liquid_gravity": "1.5",
+   "liquid_sand": "0",
+   "status_effects": "ON_FIRE"
+  },
+  {
+   "name": "steel_static_molten",
+   "ui_name": "$mat_steel_static_molten",
+   "danger_fire": "1",
+   "temperature_of_fire": "100",
+   "requires_oxygen": "1",
+   "on_fire": "1",
+   "status_effects": "ON_FIRE"
+  },
+  {
+   "name": "steelmoss_slanted_molten",
+   "ui_name": "$mat_steelmoss_slanted_molten",
+   "danger_fire": "1",
+   "temperature_of_fire": "100",
+   "requires_oxygen": "1",
+   "on_fire": "1",
+   "status_effects": "ON_FIRE"
+  },
+  {
+   "name": "steelmoss_static_molten",
+   "ui_name": "$mat_steelmoss_static_molten",
+   "danger_fire": "1",
+   "temperature_of_fire": "100",
+   "requires_oxygen": "1",
+   "on_fire": "1",
+   "status_effects": "ON_FIRE"
+  },
+  {
+   "name": "steelsmoke_static_molten",
+   "ui_name": "$mat_steelsmoke_static_molten",
+   "danger_fire": "1",
+   "temperature_of_fire": "100",
+   "requires_oxygen": "1",
+   "on_fire": "1",
+   "status_effects": "ON_FIRE"
+  },
+  {
+   "name": "metal_sand_molten",
+   "ui_name": "$mat_metal_sand_molten",
+   "danger_fire": "1",
+   "temperature_of_fire": "100",
+   "requires_oxygen": "1",
+   "on_fire": "1",
+   "status_effects": "ON_FIRE"
+  },
+  {
+   "name": "metal_molten",
+   "ui_name": "$mat_metal_molten",
+   "danger_fire": "1",
+   "temperature_of_fire": "100",
+   "requires_oxygen": "1",
+   "on_fire": "1",
+   "status_effects": "ON_FIRE"
+  },
+  {
+   "name": "metal_rust_molten",
+   "ui_name": "$mat_metal_rust_molten",
+   "danger_fire": "1",
+   "temperature_of_fire": "100",
+   "requires_oxygen": "1",
+   "on_fire": "1",
+   "status_effects": "ON_FIRE"
+  },
+  {
+   "name": "metal_nohit_molten",
+   "ui_name": "$mat_metal_nohit_molten",
+   "danger_fire": "1",
+   "temperature_of_fire": "100",
+   "requires_oxygen": "1",
+   "on_fire": "1",
+   "status_effects": "ON_FIRE"
+  },
+  {
+   "name": "aluminium_molten",
+   "ui_name": "$mat_aluminium_molten",
+   "danger_fire": "1",
+   "temperature_of_fire": "100",
+   "requires_oxygen": "1",
+   "on_fire": "1",
+   "status_effects": "ON_FIRE"
+  },
+  {
+   "name": "aluminium_robot_molten",
+   "ui_name": "$mat_aluminium_robot_molten",
+   "danger_fire": "1",
+   "temperature_of_fire": "100",
+   "requires_oxygen": "1",
+   "on_fire": "1",
+   "status_effects": "ON_FIRE"
+  },
+  {
+   "name": "metal_prop_molten",
+   "ui_name": "$mat_metal_prop_molten",
+   "danger_fire": "1",
+   "temperature_of_fire": "100",
+   "requires_oxygen": "1",
+   "on_fire": "1",
+   "status_effects": "ON_FIRE"
+  },
+  {
+   "name": "steel_rust_molten",
+   "ui_name": "$mat_steel_rust_molten",
+   "danger_fire": "1",
+   "temperature_of_fire": "100",
+   "requires_oxygen": "1",
+   "on_fire": "1",
+   "status_effects": "ON_FIRE"
+  },
+  {
+   "name": "aluminium_oxide_molten",
+   "ui_name": "$mat_aluminium_oxide_molten",
+   "danger_fire": "1",
+   "temperature_of_fire": "100",
+   "requires_oxygen": "1",
+   "on_fire": "1",
+   "status_effects": "ON_FIRE"
+  },
+  {
+   "name": "wax_molten",
+   "ui_name": "$mat_wax_molten",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "corrodible",
+    "molten",
+    "alchemy",
+    "impure",
+    "solid",
+    "liquid_common",
+    "earth"
+   ],
+   "burnable": "1",
+   "density": "2",
+   "danger_fire": "1",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "1",
+   "liquid_gravity": "0.3",
+   "liquid_sand": "0"
+  },
+  {
+   "name": "silver_molten",
+   "ui_name": "$mat_silver_molten",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "corrodible",
+    "molten",
+    "alchemy",
+    "solid",
+    "liquid_common",
+    "earth"
+   ],
+   "burnable": "1",
+   "density": "3",
+   "danger_fire": "1",
+   "temperature_of_fire": "50",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "1",
+   "liquid_gravity": "1.5",
+   "liquid_sand": "0",
+   "status_effects": "ON_FIRE"
+  },
+  {
+   "name": "copper_molten",
+   "ui_name": "$mat_copper_molten",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "corrodible",
+    "molten",
+    "alchemy",
+    "solid",
+    "liquid_common",
+    "earth"
+   ],
+   "burnable": "1",
+   "density": "3",
+   "danger_fire": "1",
+   "temperature_of_fire": "50",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "1",
+   "liquid_gravity": "1.5",
+   "liquid_sand": "0",
+   "status_effects": "ON_FIRE"
+  },
+  {
+   "name": "brass_molten",
+   "ui_name": "$mat_brass_molten",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "corrodible",
+    "molten",
+    "alchemy",
+    "solid",
+    "liquid_common",
+    "earth"
+   ],
+   "burnable": "1",
+   "density": "3",
+   "danger_fire": "1",
+   "temperature_of_fire": "50",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "1",
+   "liquid_gravity": "1.5",
+   "liquid_sand": "0",
+   "status_effects": "ON_FIRE"
+  },
+  {
+   "name": "glass_molten",
+   "ui_name": "$mat_glass_molten",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "molten",
+    "meltable_to_lava",
+    "alchemy",
+    "solid",
+    "liquid_common",
+    "earth"
+   ],
+   "burnable": "1",
+   "density": "3",
+   "danger_fire": "1",
+   "temperature_of_fire": "50",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "1",
+   "liquid_gravity": "1.5",
+   "liquid_sand": "0",
+   "status_effects": "ON_FIRE"
+  },
+  {
+   "name": "glass_broken_molten",
+   "ui_name": "$mat_glass_broken_molten",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "molten",
+    "meltable_to_lava",
+    "alchemy",
+    "solid",
+    "liquid_common",
+    "earth"
+   ],
+   "burnable": "1",
+   "density": "3",
+   "danger_fire": "1",
+   "temperature_of_fire": "50",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "1",
+   "liquid_gravity": "1.5",
+   "liquid_sand": "0",
+   "status_effects": "ON_FIRE"
+  },
+  {
+   "name": "steel_molten",
+   "ui_name": "$mat_steel_molten",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "molten",
+    "alchemy",
+    "solid",
+    "liquid_common",
+    "earth"
+   ],
+   "burnable": "1",
+   "density": "2",
+   "danger_fire": "1",
+   "temperature_of_fire": "100",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "1",
+   "liquid_gravity": "1.5",
+   "liquid_sand": "0",
+   "status_effects": "ON_FIRE"
+  },
+  {
+   "name": "creepy_liquid",
+   "ui_name": "$mat_creepy_liquid",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "impure"
+   ],
+   "burnable": "0",
+   "density": "1",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "0"
+  },
+  {
+   "name": "cement",
+   "ui_name": "$mat_cement",
+   "cell_type": "liquid",
+   "tags": [
+    "corrodible",
+    "meltable_to_lava",
+    "alchemy",
+    "impure",
+    "solid",
+    "earth"
+   ],
+   "burnable": "0",
+   "density": "6",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "0"
+  },
+  {
+   "name": "concrete_sand",
+   "ui_name": "$mat_concrete_sand",
+   "cell_type": "liquid",
+   "tags": [
+    "corrodible",
+    "meltable_to_lava",
+    "alchemy"
+   ],
+   "burnable": "0",
+   "density": "6",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "1.5",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "sand",
+   "ui_name": "$mat_sand",
+   "cell_type": "liquid",
+   "tags": [
+    "sand_ground",
+    "corrodible",
+    "meltable_to_lava_fast",
+    "alchemy",
+    "chaotic_transmutation"
+   ],
+   "burnable": "0",
+   "density": "6",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "0.9",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "sand_blue",
+   "ui_name": "$mat_sand_blue"
+  },
+  {
+   "name": "sand_surface",
+   "ui_name": "$mat_sand"
+  },
+  {
+   "name": "lavasand",
+   "ui_name": "$mat_lavasand"
+  },
+  {
+   "name": "sand_petrify",
+   "ui_name": "$mat_sand"
+  },
+  {
+   "name": "bone",
+   "ui_name": "$mat_bone",
+   "cell_type": "liquid",
+   "tags": [
+    "sand_ground",
+    "corrodible",
+    "meltable_to_lava",
+    "alchemy",
+    "chaotic_transmutation"
+   ],
+   "burnable": "0",
+   "density": "6",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "1.2",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "soil",
+   "ui_name": "$mat_soil",
+   "cell_type": "liquid",
+   "tags": [
+    "sand_ground",
+    "corrodible",
+    "grows_grass",
+    "meltable_to_lava",
+    "alchemy",
+    "solid"
+   ],
+   "burnable": "0",
+   "density": "6",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "soil_lush",
+   "ui_name": "$mat_soil_lush",
+   "burnable": "1",
+   "temperature_of_fire": "30"
+  },
+  {
+   "name": "soil_lush_dark",
+   "ui_name": "$mat_soil_lush",
+   "burnable": "1",
+   "temperature_of_fire": "10"
+  },
+  {
+   "name": "soil_dead",
+   "ui_name": "$mat_soil_dead",
+   "burnable": "1",
+   "temperature_of_fire": "30"
+  },
+  {
+   "name": "soil_dark",
+   "ui_name": "$mat_soil_dead",
+   "burnable": "1",
+   "temperature_of_fire": "10"
+  },
+  {
+   "name": "sandstone",
+   "ui_name": "$mat_sandstone",
+   "cell_type": "liquid",
+   "tags": [
+    "sand_ground",
+    "corrodible",
+    "meltable_to_lava",
+    "alchemy",
+    "solid",
+    "earth"
+   ],
+   "burnable": "0",
+   "density": "6",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "0.9",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "sandstone_surface",
+   "ui_name": "$mat_sandstone"
+  },
+  {
+   "name": "fungisoil",
+   "ui_name": "$mat_fungisoil",
+   "cell_type": "liquid",
+   "tags": [
+    "sand_ground",
+    "corrodible",
+    "grows_fungus",
+    "meltable_to_lava",
+    "alchemy",
+    "solid",
+    "earth",
+    "fungus"
+   ],
+   "burnable": "0",
+   "density": "6",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "honey",
+   "ui_name": "$mat_honey",
+   "cell_type": "liquid",
+   "tags": [
+    "corrodible",
+    "meltable_to_lava_fast",
+    "alchemy",
+    "meltable_by_fire",
+    "chaotic_transmutation"
+   ],
+   "burnable": "0",
+   "density": "10",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0",
+   "liquid_gravity": "0.2",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "glue",
+   "ui_name": "$mat_glue",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "burnable",
+    "alchemy",
+    "impure"
+   ],
+   "burnable": "1",
+   "density": "6",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "0.2",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "slime",
+   "ui_name": "$mat_slime_pink",
+   "cell_type": "liquid",
+   "tags": [
+    "corrodible",
+    "meltable_to_lava",
+    "alchemy",
+    "slime",
+    "liquid_common",
+    "food",
+    "chaotic_transmutation"
+   ],
+   "burnable": "0",
+   "density": "5",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "cold_freezes_to_material": "ice_slime_static",
+   "on_fire": "0",
+   "liquid_gravity": "0.1",
+   "liquid_sand": "0",
+   "liquid_stains": "2"
+  },
+  {
+   "name": "slush",
+   "ui_name": "$mat_slush",
+   "cell_type": "liquid",
+   "tags": [
+    "corrodible",
+    "meltable_to_water",
+    "alchemy",
+    "snow",
+    "chaotic_transmutation"
+   ],
+   "burnable": "0",
+   "density": "3",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "0",
+   "liquid_stains": "2",
+   "status_effects": "WET"
+  },
+  {
+   "name": "slime_green",
+   "ui_name": "$mat_slime_green",
+   "tags": [
+    "corrodible",
+    "meltable_to_lava",
+    "alchemy",
+    "slime",
+    "liquid_common",
+    "food",
+    "chaotic_transmutation"
+   ],
+   "status_effects": "SLIMY"
+  },
+  {
+   "name": "slime_yellow",
+   "ui_name": "$mat_slime_static",
+   "tags": [
+    "corrodible",
+    "meltable_to_lava",
+    "alchemy",
+    "slime",
+    "liquid_common",
+    "food"
+   ],
+   "status_effects": "SLIMY"
+  },
+  {
+   "name": "pea_soup",
+   "ui_name": "$mat_pea_soup",
+   "status_effects": "SLIMY"
+  },
+  {
+   "name": "vomit",
+   "ui_name": "$mat_vomit",
+   "tags": [
+    "food"
+   ]
+  },
+  {
+   "name": "endslime",
+   "ui_name": "$mat_endslime",
+   "tags": [
+    "static",
+    "corrodible",
+    "alchemy",
+    "slime",
+    "chaotic_transmutation"
+   ],
+   "liquid_gravity": "0.5",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "endslime_blood",
+   "ui_name": "$mat_endslime_blood",
+   "tags": [
+    "static",
+    "corrodible",
+    "slime"
+   ],
+   "liquid_gravity": "0.5",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "explosion_dirt",
+   "ui_name": "$mat_explosion_dirt",
+   "cell_type": "liquid",
+   "tags": [
+    "sand_ground",
+    "corrodible"
+   ],
+   "burnable": "0",
+   "density": "6",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "1.1",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "vine",
+   "ui_name": "$mat_vine",
+   "cell_type": "liquid",
+   "tags": [
+    "static",
+    "sand_ground",
+    "corrodible",
+    "burnable",
+    "alchemy"
+   ],
+   "burnable": "1",
+   "density": "6",
+   "temperature_of_fire": "90",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "root",
+   "ui_name": "$mat_root",
+   "cell_type": "liquid",
+   "tags": [
+    "static",
+    "sand_ground",
+    "corrodible",
+    "burnable",
+    "alchemy",
+    "solid",
+    "earth"
+   ],
+   "burnable": "1",
+   "density": "6",
+   "temperature_of_fire": "90",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "snow",
+   "ui_name": "$mat_snow",
+   "cell_type": "liquid",
+   "tags": [
+    "static",
+    "sand_ground",
+    "corrodible",
+    "frozen",
+    "meltable_to_water",
+    "alchemy",
+    "chaotic_transmutation"
+   ],
+   "burnable": "0",
+   "density": "8",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "warmth_melts_to_material": "water",
+   "on_fire": "0",
+   "liquid_gravity": "0.6",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "snow_sticky",
+   "ui_name": "$mat_snow",
+   "cell_type": "liquid",
+   "tags": [
+    "sand_ground",
+    "corrodible",
+    "frozen",
+    "meltable_to_water",
+    "alchemy"
+   ],
+   "burnable": "0",
+   "density": "8",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "warmth_melts_to_material": "water",
+   "on_fire": "0",
+   "liquid_gravity": "0.6",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "rotten_meat",
+   "ui_name": "$mat_rotten_meat",
+   "cell_type": "liquid",
+   "tags": [
+    "sand_ground",
+    "corrodible",
+    "meltable_to_lava",
+    "alchemy",
+    "meat",
+    "food"
+   ],
+   "burnable": "1",
+   "density": "6",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "1.0",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "meat_slime_sand",
+   "ui_name": "$mat_meat_slime_sand",
+   "cell_type": "liquid",
+   "tags": [
+    "sand_ground",
+    "corrodible",
+    "meltable_to_lava",
+    "alchemy",
+    "meat",
+    "slime",
+    "food"
+   ],
+   "burnable": "1",
+   "density": "6",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "0.8",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "meat_slime_green",
+   "ui_name": "$mat_meat_slime_green"
+  },
+  {
+   "name": "meat_slime_orange",
+   "ui_name": "$mat_meat_slime_orange"
+  },
+  {
+   "name": "rotten_meat_radioactive",
+   "ui_name": "$mat_rotten_meat_radioactive",
+   "cell_type": "liquid",
+   "tags": [
+    "sand_ground",
+    "corrodible",
+    "meltable_to_lava",
+    "alchemy",
+    "meat",
+    "solid",
+    "earth",
+    "food"
+   ],
+   "burnable": "0",
+   "density": "6",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "1.0",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "meat_worm",
+   "ui_name": "$mat_meat_worm"
+  },
+  {
+   "name": "meat_helpless",
+   "ui_name": "$mat_meat_helpless"
+  },
+  {
+   "name": "meat_trippy",
+   "ui_name": "$mat_meat_trippy"
+  },
+  {
+   "name": "meat_frog",
+   "ui_name": "$mat_meat_frog"
+  },
+  {
+   "name": "meat_cursed",
+   "ui_name": "$mat_meat_cursed"
+  },
+  {
+   "name": "meat_cursed_dry",
+   "ui_name": "$mat_meat_cursed"
+  },
+  {
+   "name": "meat_slime_cursed",
+   "ui_name": "$mat_meat_slime_cursed"
+  },
+  {
+   "name": "meat_teleport",
+   "ui_name": "$mat_meat_teleport"
+  },
+  {
+   "name": "meat_fast",
+   "ui_name": "$mat_meat_fast"
+  },
+  {
+   "name": "meat_polymorph",
+   "ui_name": "$mat_meat_polymorph"
+  },
+  {
+   "name": "meat_polymorph_protection",
+   "ui_name": "$mat_meat_polymorph_protection"
+  },
+  {
+   "name": "meat_confusion",
+   "ui_name": "$mat_meat_confusion"
+  },
+  {
+   "name": "ice",
+   "ui_name": "$mat_ice",
+   "cell_type": "liquid",
+   "tags": [
+    "sand_ground",
+    "corrodible",
+    "frozen",
+    "meltable_to_water",
+    "alchemy",
+    "solid"
+   ],
+   "burnable": "0",
+   "density": "6",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "1.5",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "sand_herb",
+   "ui_name": "$mat_sand_herb",
+   "cell_type": "liquid",
+   "tags": [
+    "corrodible",
+    "evaporable_custom",
+    "burnable",
+    "alchemy"
+   ],
+   "burnable": "1",
+   "density": "3",
+   "temperature_of_fire": "90",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "1.0",
+   "liquid_sand": "1",
+   "liquid_stains": "1"
+  },
+  {
+   "name": "wax",
+   "ui_name": "$mat_wax",
+   "cell_type": "liquid",
+   "tags": [
+    "burnable",
+    "corrodible",
+    "meltable",
+    "alchemy",
+    "solid",
+    "earth"
+   ],
+   "burnable": "0",
+   "density": "6",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "3",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "gold",
+   "ui_name": "$mat_gold",
+   "cell_type": "liquid",
+   "tags": [
+    "sand_metal",
+    "corrodible",
+    "meltable_metal",
+    "alchemy",
+    "gold",
+    "solid",
+    "earth"
+   ],
+   "burnable": "0",
+   "density": "9",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "3",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "gold_radioactive",
+   "ui_name": "$mat_gold_radioactive",
+   "tags": [
+    "sand_metal",
+    "corrodible",
+    "meltable_metal_generic",
+    "alchemy",
+    "gold",
+    "solid",
+    "earth"
+   ],
+   "danger_radioactive": "1",
+   "status_effects": "RADIOACTIVE"
+  },
+  {
+   "name": "silver",
+   "ui_name": "$mat_silver",
+   "cell_type": "liquid",
+   "tags": [
+    "sand_metal",
+    "corrodible",
+    "meltable_metal",
+    "alchemy",
+    "solid",
+    "earth"
+   ],
+   "burnable": "0",
+   "density": "8",
+   "temperature_of_fire": "50",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "2",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "steel_sand",
+   "ui_name": "$mat_steel_sand",
+   "tags": [
+    "sand_metal",
+    "corrodible",
+    "alchemy"
+   ]
+  },
+  {
+   "name": "metal_sand",
+   "ui_name": "$mat_metal_sand",
+   "tags": [
+    "sand_metal",
+    "corrodible",
+    "alchemy",
+    "meltable_metal"
+   ]
+  },
+  {
+   "name": "copper",
+   "ui_name": "$mat_copper",
+   "cell_type": "liquid",
+   "tags": [
+    "sand_metal",
+    "corrodible",
+    "meltable_metal",
+    "alchemy",
+    "solid",
+    "earth"
+   ],
+   "burnable": "0",
+   "density": "8",
+   "temperature_of_fire": "50",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "2.5",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "brass",
+   "ui_name": "$mat_brass",
+   "cell_type": "liquid",
+   "tags": [
+    "sand_metal",
+    "corrodible",
+    "meltable_metal",
+    "alchemy",
+    "solid",
+    "earth"
+   ],
+   "burnable": "0",
+   "density": "8",
+   "temperature_of_fire": "50",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "1.8",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "diamond",
+   "ui_name": "$mat_diamond",
+   "cell_type": "liquid",
+   "tags": [
+    "sand_metal",
+    "alchemy",
+    "solid",
+    "earth"
+   ],
+   "burnable": "0",
+   "density": "8",
+   "temperature_of_fire": "50",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "2.4",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "coal",
+   "ui_name": "$mat_coal",
+   "cell_type": "liquid",
+   "tags": [
+    "sand_other",
+    "corrodible",
+    "burnable",
+    "alchemy",
+    "chaotic_transmutation"
+   ],
+   "burnable": "1",
+   "density": "6",
+   "temperature_of_fire": "95",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "2",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "sulphur",
+   "ui_name": "$mat_sulphur",
+   "cell_type": "liquid",
+   "tags": [
+    "sand_other",
+    "corrodible",
+    "alchemy"
+   ],
+   "burnable": "1",
+   "density": "6",
+   "temperature_of_fire": "95",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "2",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "salt",
+   "ui_name": "$mat_salt",
+   "cell_type": "liquid",
+   "tags": [
+    "sand_other",
+    "corrodible",
+    "alchemy",
+    "chaotic_transmutation"
+   ],
+   "burnable": "0",
+   "density": "6",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "2",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "sodium",
+   "ui_name": "$mat_sodium"
+  },
+  {
+   "name": "purifying_powder",
+   "ui_name": "$mat_purifying_powder"
+  },
+  {
+   "name": "burning_powder",
+   "ui_name": "$mat_burning_powder",
+   "burnable": "1",
+   "temperature_of_fire": "50",
+   "requires_oxygen": "0"
+  },
+  {
+   "name": "sodium_unstable",
+   "ui_name": "$mat_sodium_unstable",
+   "cell_type": "liquid",
+   "tags": [
+    "sand_other",
+    "corrodible",
+    "alchemy"
+   ],
+   "burnable": "1",
+   "density": "2",
+   "temperature_of_fire": "200",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "1",
+   "liquid_gravity": "2",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "gunpowder",
+   "ui_name": "$mat_gunpowder",
+   "cell_type": "liquid",
+   "tags": [
+    "sand_other",
+    "corrodible",
+    "alchemy",
+    "chaotic_transmutation"
+   ],
+   "burnable": "1",
+   "density": "7",
+   "temperature_of_fire": "80",
+   "generates_smoke": "10",
+   "requires_oxygen": "0",
+   "on_fire": "0",
+   "liquid_gravity": "2",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "gunpowder_explosive",
+   "ui_name": "$mat_gunpowder_explosive",
+   "cell_type": "liquid",
+   "tags": [
+    "sand_other",
+    "corrodible",
+    "alchemy",
+    "chaotic_transmutation"
+   ],
+   "burnable": "1",
+   "density": "7",
+   "temperature_of_fire": "50",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0",
+   "liquid_gravity": "2",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "gunpowder_tnt",
+   "ui_name": "$mat_gunpowder_tnt",
+   "cell_type": "liquid",
+   "tags": [
+    "sand_other",
+    "corrodible",
+    "alchemy"
+   ],
+   "burnable": "1",
+   "density": "7",
+   "temperature_of_fire": "50",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0",
+   "liquid_gravity": "2",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "gunpowder_unstable",
+   "ui_name": "$mat_gunpowder_unstable",
+   "cell_type": "liquid",
+   "tags": [
+    "sand_other",
+    "corrodible",
+    "burnable",
+    "alchemy",
+    "chaotic_transmutation"
+   ],
+   "burnable": "1",
+   "density": "7",
+   "temperature_of_fire": "50",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "1",
+   "liquid_gravity": "2",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "gunpowder_unstable_big",
+   "ui_name": "$mat_gunpowder_unstable",
+   "cell_type": "liquid",
+   "tags": [
+    "sand_other",
+    "corrodible",
+    "burnable",
+    "alchemy"
+   ],
+   "burnable": "1",
+   "density": "7",
+   "temperature_of_fire": "50",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "1",
+   "liquid_gravity": "2",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "monster_powder_test",
+   "ui_name": "$mat_monster_powder_test",
+   "cell_type": "liquid",
+   "tags": [
+    "sand_other",
+    "corrodible",
+    "burnable",
+    "alchemy"
+   ],
+   "burnable": "1",
+   "density": "7",
+   "temperature_of_fire": "50",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "1",
+   "liquid_gravity": "2",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "rat_powder",
+   "ui_name": "$mat_rat_powder",
+   "cell_type": "liquid",
+   "tags": [
+    "sand_other"
+   ],
+   "burnable": "0",
+   "density": "7",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0",
+   "liquid_gravity": "2",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "fungus_powder",
+   "ui_name": "$mat_fungisoil",
+   "cell_type": "liquid",
+   "tags": [
+    "sand_other",
+    "fungus"
+   ],
+   "burnable": "0",
+   "density": "7",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0",
+   "liquid_gravity": "2",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "fungus_powder_bad",
+   "ui_name": "$mat_fungisoil"
+  },
+  {
+   "name": "shock_powder",
+   "ui_name": "$mat_fungisoil"
+  },
+  {
+   "name": "orb_powder",
+   "ui_name": "$mat_orb_powder",
+   "cell_type": "liquid",
+   "tags": [
+    "NO_FUNGAL_SHIFT"
+   ],
+   "burnable": "1",
+   "density": "7",
+   "temperature_of_fire": "100",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "1",
+   "liquid_gravity": "2",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "gunpowder_unstable_boss_limbs",
+   "ui_name": "$mat_gunpowder_unstable_boss_limbs",
+   "cell_type": "liquid",
+   "tags": [
+    "sand_other",
+    "corrodible",
+    "alchemy",
+    "meat"
+   ],
+   "burnable": "1",
+   "density": "7",
+   "temperature_of_fire": "50",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "1",
+   "liquid_gravity": "2",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "plastic_red",
+   "ui_name": "$mat_plastic_red",
+   "cell_type": "liquid",
+   "tags": [
+    "corrodible",
+    "meltable",
+    "alchemy"
+   ],
+   "burnable": "0",
+   "density": "6",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "3",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "plastic_grey",
+   "ui_name": "$mat_plastic_red",
+   "tags": [
+    "corrodible",
+    "meltable",
+    "alchemy"
+   ],
+   "liquid_sand": "1"
+  },
+  {
+   "name": "plastic_red_molten",
+   "ui_name": "$mat_plastic_red_molten",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "corrodible",
+    "molten",
+    "meltable_to_lava",
+    "alchemy",
+    "liquid_common"
+   ],
+   "burnable": "0",
+   "density": "5.1",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "3",
+   "liquid_sand": "0"
+  },
+  {
+   "name": "plastic_grey_molten",
+   "ui_name": "$mat_plastic_red_molten",
+   "tags": [
+    "liquid",
+    "corrodible",
+    "molten",
+    "meltable_to_lava",
+    "alchemy",
+    "liquid_common"
+   ]
+  },
+  {
+   "name": "plastic_molten",
+   "ui_name": "$mat_plastic_molten"
+  },
+  {
+   "name": "plastic_prop_molten",
+   "ui_name": "$mat_plastic_prop_molten"
+  },
+  {
+   "name": "grass",
+   "ui_name": "$mat_grass",
+   "cell_type": "liquid",
+   "tags": [
+    "plant",
+    "requires_air",
+    "corrodible",
+    "burnable",
+    "alchemy",
+    "impure"
+   ],
+   "burnable": "1",
+   "density": "6",
+   "temperature_of_fire": "50",
+   "generates_smoke": "20",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "1.0",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "grass_holy",
+   "ui_name": "$mat_grass_holy",
+   "cell_type": "liquid",
+   "tags": [
+    "plant",
+    "requires_air",
+    "corrodible",
+    "burnable",
+    "alchemy"
+   ],
+   "burnable": "1",
+   "density": "6",
+   "temperature_of_fire": "50",
+   "generates_smoke": "20",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "1.0",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "grass_darker",
+   "ui_name": "$mat_grass",
+   "cell_type": "liquid",
+   "tags": [
+    "plant",
+    "requires_air",
+    "corrodible",
+    "burnable",
+    "alchemy",
+    "impure"
+   ],
+   "burnable": "1",
+   "density": "6",
+   "temperature_of_fire": "50",
+   "generates_smoke": "20",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "1.0",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "grass_ice",
+   "ui_name": "$mat_ice",
+   "cell_type": "liquid",
+   "tags": [
+    "plant",
+    "corrodible",
+    "burnable",
+    "impure"
+   ],
+   "burnable": "1",
+   "density": "6",
+   "temperature_of_fire": "50",
+   "generates_smoke": "20",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "1.0",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "grass_dry",
+   "ui_name": "$mat_grass",
+   "cell_type": "liquid",
+   "tags": [
+    "plant",
+    "requires_air",
+    "corrodible",
+    "burnable",
+    "alchemy",
+    "impure"
+   ],
+   "burnable": "1",
+   "density": "6",
+   "temperature_of_fire": "80",
+   "generates_smoke": "20",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "1.0",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "fungi",
+   "ui_name": "$mat_fungi_trippy",
+   "cell_type": "liquid",
+   "tags": [
+    "plant",
+    "corrodible",
+    "burnable",
+    "alchemy",
+    "impure",
+    "fungus"
+   ],
+   "burnable": "1",
+   "density": "6",
+   "temperature_of_fire": "90",
+   "generates_smoke": "20",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "1.0",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "fungi_green",
+   "ui_name": "$mat_fungi_green"
+  },
+  {
+   "name": "fungi_yellow",
+   "ui_name": "$mat_fungi_green"
+  },
+  {
+   "name": "grass_dark",
+   "ui_name": "$mat_grass"
+  },
+  {
+   "name": "fungi_creeping",
+   "ui_name": "$mat_fungi_creeping",
+   "status_effects": "POLYMORPH"
+  },
+  {
+   "name": "fungi_creeping_secret",
+   "ui_name": "$mat_fungi_green",
+   "status_effects": "POLYMORPH"
+  },
+  {
+   "name": "spore",
+   "ui_name": "$mat_spore",
+   "cell_type": "liquid",
+   "tags": [
+    "plant",
+    "corrodible",
+    "burnable",
+    "alchemy",
+    "impure"
+   ],
+   "burnable": "1",
+   "density": "6",
+   "temperature_of_fire": "90",
+   "generates_smoke": "20",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "0.04",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "peat",
+   "ui_name": "$mat_peat"
+  },
+  {
+   "name": "moss_rust",
+   "ui_name": "$mat_moss_rust"
+  },
+  {
+   "name": "moss",
+   "ui_name": "$mat_moss",
+   "cell_type": "liquid",
+   "tags": [
+    "plant",
+    "corrodible",
+    "burnable",
+    "alchemy",
+    "impure"
+   ],
+   "burnable": "1",
+   "density": "6",
+   "temperature_of_fire": "50",
+   "generates_smoke": "20",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "plant_material",
+   "ui_name": "$mat_plant_material",
+   "cell_type": "liquid",
+   "tags": [
+    "plant",
+    "requires_air",
+    "corrodible",
+    "burnable"
+   ],
+   "burnable": "1",
+   "density": "6",
+   "temperature_of_fire": "50",
+   "generates_smoke": "20",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "0.8",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "plant_material_red",
+   "ui_name": "$mat_plant_material_red",
+   "cell_type": "liquid",
+   "tags": [
+    "plant",
+    "requires_air",
+    "corrodible",
+    "burnable"
+   ],
+   "burnable": "1",
+   "density": "6",
+   "temperature_of_fire": "50",
+   "generates_smoke": "20",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "0.8",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "plant_material_dark",
+   "ui_name": "$mat_plant_material",
+   "cell_type": "liquid",
+   "tags": [
+    "plant",
+    "requires_air",
+    "corrodible",
+    "burnable"
+   ],
+   "burnable": "1",
+   "density": "6",
+   "temperature_of_fire": "50",
+   "generates_smoke": "20",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "0.8",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "ceiling_plant_material",
+   "ui_name": "$mat_ceiling_plant_material",
+   "cell_type": "liquid",
+   "tags": [
+    "plant",
+    "corrodible",
+    "burnable"
+   ],
+   "burnable": "1",
+   "density": "6",
+   "temperature_of_fire": "50",
+   "generates_smoke": "20",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "mushroom_seed",
+   "ui_name": "$mat_mushroom_seed",
+   "cell_type": "liquid",
+   "tags": [
+    "plant",
+    "corrodible",
+    "burnable"
+   ],
+   "burnable": "1",
+   "density": "6",
+   "temperature_of_fire": "50",
+   "generates_smoke": "20",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "plant_seed",
+   "ui_name": "$mat_plant_seed",
+   "cell_type": "liquid",
+   "tags": [
+    "plant",
+    "corrodible",
+    "burnable"
+   ],
+   "burnable": "1",
+   "density": "6",
+   "temperature_of_fire": "50",
+   "generates_smoke": "20",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "mushroom",
+   "ui_name": "$mat_mushroom",
+   "cell_type": "liquid",
+   "tags": [
+    "plant",
+    "corrodible",
+    "burnable"
+   ],
+   "burnable": "1",
+   "density": "6",
+   "temperature_of_fire": "50",
+   "generates_smoke": "20",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "mushroom_giant_red",
+   "ui_name": "$mat_mushroom_giant_red",
+   "cell_type": "liquid",
+   "tags": [
+    "plant",
+    "requires_air",
+    "corrodible",
+    "burnable"
+   ],
+   "burnable": "1",
+   "density": "6",
+   "temperature_of_fire": "50",
+   "generates_smoke": "20",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "mushroom_giant_blue",
+   "ui_name": "$mat_mushroom_giant_blue",
+   "cell_type": "liquid",
+   "tags": [
+    "plant",
+    "requires_air",
+    "corrodible",
+    "burnable"
+   ],
+   "burnable": "1",
+   "density": "6",
+   "temperature_of_fire": "50",
+   "generates_smoke": "20",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "glowshroom",
+   "ui_name": "$mat_glowshroom",
+   "cell_type": "liquid",
+   "tags": [
+    "plant",
+    "requires_air",
+    "corrodible",
+    "burnable"
+   ],
+   "burnable": "1",
+   "density": "6",
+   "temperature_of_fire": "50",
+   "generates_smoke": "20",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "0.5",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "bush_seed",
+   "ui_name": "$mat_bush_seed",
+   "cell_type": "liquid",
+   "tags": [
+    "plant",
+    "requires_air",
+    "corrodible",
+    "burnable"
+   ],
+   "burnable": "1",
+   "density": "6",
+   "temperature_of_fire": "50",
+   "generates_smoke": "20",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "0.8",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "acid",
+   "ui_name": "$mat_acid",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "acid",
+    "impure",
+    "liquid_common",
+    "chaotic_transmutation"
+   ],
+   "burnable": "0",
+   "density": "2.9",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "cold_freezes_to_material": "ice_acid_static",
+   "on_fire": "0",
+   "liquid_gravity": "0.6",
+   "liquid_sand": "0"
+  },
+  {
+   "name": "lava",
+   "ui_name": "$mat_lava",
+   "cell_type": "liquid",
+   "tags": [
+    "fire_lava",
+    "liquid",
+    "lava",
+    "liquid_common",
+    "chaotic_transmutation"
+   ],
+   "burnable": "0",
+   "density": "6",
+   "danger_fire": "1",
+   "temperature_of_fire": "90",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "cold_freezes_to_material": "lavarock_static",
+   "on_fire": "0",
+   "liquid_gravity": "0.2",
+   "liquid_sand": "0",
+   "status_effects": "ON_FIRE"
+  },
+  {
+   "name": "wood_player",
+   "ui_name": "$mat_wood_player",
+   "cell_type": "liquid",
+   "tags": [
+    "static",
+    "corrodible",
+    "alchemy",
+    "solid",
+    "earth"
+   ],
+   "burnable": "1",
+   "density": "6",
+   "temperature_of_fire": "50",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "1.0",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "wood_player_b2",
+   "ui_name": "$mat_wood_player_b2",
+   "cell_type": "solid",
+   "tags": [
+    "static",
+    "box2d",
+    "alchemy",
+    "corrodible",
+    "solid",
+    "earth"
+   ],
+   "burnable": "1",
+   "density": "6",
+   "temperature_of_fire": "50",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0"
+  },
+  {
+   "name": "wood_player_b2_vertical",
+   "ui_name": "$mat_wood_player_b2_vertical"
+  },
+  {
+   "name": "wood",
+   "ui_name": "$mat_wood",
+   "cell_type": "solid",
+   "tags": [
+    "box2d",
+    "corrodible",
+    "alchemy",
+    "burnable",
+    "solid",
+    "earth"
+   ],
+   "burnable": "1",
+   "density": "6",
+   "temperature_of_fire": "50",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0"
+  },
+  {
+   "name": "wax_b2",
+   "ui_name": "$mat_wax_b2",
+   "cell_type": "solid",
+   "tags": [
+    "box2d",
+    "alchemy",
+    "solid",
+    "earth"
+   ],
+   "burnable": "1",
+   "density": "6",
+   "temperature_of_fire": "5",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0"
+  },
+  {
+   "name": "fuse",
+   "ui_name": "$mat_fuse",
+   "cell_type": "solid",
+   "tags": [
+    "box2d"
+   ],
+   "burnable": "1",
+   "density": "6",
+   "temperature_of_fire": "5",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0"
+  },
+  {
+   "name": "fuse_bright",
+   "ui_name": "$mat_fuse",
+   "tags": [
+    "box2d"
+   ]
+  },
+  {
+   "name": "fuse_tnt",
+   "ui_name": "$mat_fuse_tnt",
+   "tags": [
+    "box2d"
+   ]
+  },
+  {
+   "name": "fuse_holy",
+   "ui_name": "$mat_fuse_holy",
+   "tags": [
+    "box2d"
+   ]
+  },
+  {
+   "name": "templebrick_box2d",
+   "ui_name": "$mat_templebrick_box2d",
+   "burnable": "0"
+  },
+  {
+   "name": "wood_trailer",
+   "ui_name": "$mat_wood_trailer"
+  },
+  {
+   "name": "wood_wall",
+   "ui_name": "$mat_wood_wall"
+  },
+  {
+   "name": "cactus"
+  },
+  {
+   "name": "grass_loose",
+   "ui_name": "$mat_grass_loose"
+  },
+  {
+   "name": "fungus_loose",
+   "ui_name": "$mat_fungus_loose",
+   "tags": [
+    "box2d",
+    "alchemy",
+    "solid",
+    "earth",
+    "fungus"
+   ]
+  },
+  {
+   "name": "fungus_loose_green",
+   "ui_name": "$mat_fungus_loose",
+   "tags": [
+    "box2d",
+    "alchemy",
+    "solid",
+    "earth",
+    "fungus"
+   ]
+  },
+  {
+   "name": "fungus_loose_trippy",
+   "ui_name": "$mat_fungi_trippy"
+  },
+  {
+   "name": "wood_prop",
+   "ui_name": "$mat_wood_prop"
+  },
+  {
+   "name": "wood_prop_noplayerhit",
+   "ui_name": "$mat_wood_prop"
+  },
+  {
+   "name": "cloth_box2d",
+   "ui_name": "$mat_cloth"
+  },
+  {
+   "name": "wood_prop_durable",
+   "ui_name": "$mat_wood_prop_durable",
+   "temperature_of_fire": "15"
+  },
+  {
+   "name": "nest_box2d",
+   "ui_name": "$mat_nest_box2d"
+  },
+  {
+   "name": "nest_firebug_box2d",
+   "ui_name": "$mat_nest_box2d",
+   "burnable": "0",
+   "temperature_of_fire": "10"
+  },
+  {
+   "name": "cocoon_box2d",
+   "ui_name": "$mat_cocoon_box2d"
+  },
+  {
+   "name": "wood_loose",
+   "ui_name": "$mat_wood_loose",
+   "cell_type": "solid",
+   "tags": [
+    "box2d",
+    "corrodible",
+    "alchemy",
+    "solid",
+    "earth"
+   ],
+   "burnable": "1",
+   "density": "6",
+   "temperature_of_fire": "50",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0"
+  },
+  {
+   "name": "rock_loose",
+   "ui_name": "$mat_rock_loose",
+   "cell_type": "solid",
+   "tags": [
+    "box2d",
+    "corrodible",
+    "alchemy",
+    "solid",
+    "earth"
+   ],
+   "burnable": "0",
+   "density": "6",
+   "on_fire": "0"
+  },
+  {
+   "name": "ice_ceiling",
+   "ui_name": "$mat_ice_ceiling",
+   "cell_type": "solid",
+   "tags": [
+    "box2d",
+    "corrodible",
+    "alchemy",
+    "solid"
+   ],
+   "burnable": "0",
+   "density": "6",
+   "temperature_of_fire": "50",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0"
+  },
+  {
+   "name": "brick",
+   "ui_name": "$mat_brick",
+   "cell_type": "solid",
+   "tags": [
+    "box2d",
+    "corrodible",
+    "alchemy",
+    "solid",
+    "earth"
+   ],
+   "burnable": "1",
+   "density": "50",
+   "temperature_of_fire": "30",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0"
+  },
+  {
+   "name": "concrete_collapsed",
+   "ui_name": "$mat_concrete_collapsed",
+   "cell_type": "solid",
+   "tags": [
+    "box2d",
+    "corrodible",
+    "alchemy",
+    "solid",
+    "earth"
+   ],
+   "burnable": "1",
+   "density": "10",
+   "temperature_of_fire": "30",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0"
+  },
+  {
+   "name": "tnt",
+   "ui_name": "$mat_tnt",
+   "cell_type": "solid",
+   "tags": [
+    "box2d",
+    "corrodible",
+    "burnable",
+    "alchemy",
+    "solid",
+    "earth"
+   ],
+   "burnable": "1",
+   "density": "8",
+   "temperature_of_fire": "50",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0"
+  },
+  {
+   "name": "tnt_static",
+   "ui_name": "$mat_tnt",
+   "cell_type": "solid",
+   "tags": [
+    "box2d",
+    "corrodible",
+    "burnable",
+    "alchemy",
+    "solid",
+    "earth"
+   ],
+   "burnable": "1",
+   "density": "8",
+   "temperature_of_fire": "50",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0"
+  },
+  {
+   "name": "trailer_text",
+   "ui_name": "$mat_trailer_text"
+  },
+  {
+   "name": "meteorite",
+   "ui_name": "$mat_meteorite",
+   "cell_type": "solid",
+   "tags": [
+    "box2d",
+    "alchemy",
+    "solid",
+    "earth"
+   ],
+   "burnable": "0",
+   "density": "8",
+   "temperature_of_fire": "50",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "1"
+  },
+  {
+   "name": "sulphur_box2d",
+   "ui_name": "$mat_sulphur",
+   "cell_type": "solid",
+   "tags": [
+    "box2d",
+    "solid",
+    "sunbaby_ignore_list"
+   ],
+   "burnable": "0",
+   "density": "8",
+   "temperature_of_fire": "50",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "1"
+  },
+  {
+   "name": "meteorite_test",
+   "ui_name": "$mat_meteorite",
+   "cell_type": "solid",
+   "tags": [
+    "box2d",
+    "alchemy",
+    "solid",
+    "earth"
+   ],
+   "burnable": "0",
+   "density": "8",
+   "temperature_of_fire": "50",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0"
+  },
+  {
+   "name": "meteorite_crackable",
+   "ui_name": "$mat_meteorite_crackable",
+   "cell_type": "solid",
+   "density": "4",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0"
+  },
+  {
+   "name": "meteorite_green",
+   "ui_name": "$mat_meteorite_green",
+   "cell_type": "solid",
+   "tags": [
+    "box2d",
+    "alchemy",
+    "solid",
+    "earth"
+   ],
+   "burnable": "0",
+   "density": "8",
+   "temperature_of_fire": "50",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0"
+  },
+  {
+   "name": "steel",
+   "ui_name": "$mat_steel",
+   "cell_type": "solid",
+   "tags": [
+    "box2d",
+    "rust_box2d",
+    "alchemy",
+    "meltable_metal",
+    "solid",
+    "earth"
+   ],
+   "burnable": "0",
+   "density": "8",
+   "temperature_of_fire": "50",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0"
+  },
+  {
+   "name": "steel_rust",
+   "ui_name": "$mat_steel_rust",
+   "cell_type": "solid",
+   "tags": [
+    "box2d",
+    "alchemy",
+    "meltable_metal",
+    "solid",
+    "earth"
+   ],
+   "burnable": "0",
+   "density": "8",
+   "temperature_of_fire": "50",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0"
+  },
+  {
+   "name": "metal_rust_rust",
+   "ui_name": "$mat_metal_rust_rust",
+   "cell_type": "solid",
+   "tags": [
+    "box2d",
+    "alchemy",
+    "corrodible",
+    "solid",
+    "meltable_metal_generic",
+    "earth"
+   ],
+   "burnable": "0",
+   "density": "8",
+   "temperature_of_fire": "50",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0"
+  },
+  {
+   "name": "metal_rust_barrel_rust",
+   "ui_name": "$mat_metal_rust_barrel_rust",
+   "cell_type": "solid",
+   "tags": [
+    "box2d",
+    "alchemy",
+    "corrodible",
+    "solid",
+    "meltable_metal_generic",
+    "earth"
+   ],
+   "burnable": "0",
+   "density": "8",
+   "temperature_of_fire": "50",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0"
+  },
+  {
+   "name": "plastic",
+   "ui_name": "$mat_plastic",
+   "cell_type": "solid",
+   "tags": [
+    "box2d",
+    "corrodible",
+    "meltable_plastic",
+    "alchemy",
+    "solid",
+    "earth"
+   ],
+   "burnable": "0",
+   "density": "8",
+   "temperature_of_fire": "50",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0"
+  },
+  {
+   "name": "plastic_prop",
+   "ui_name": "$mat_plastic"
+  },
+  {
+   "name": "aluminium",
+   "ui_name": "$mat_aluminium",
+   "cell_type": "solid",
+   "tags": [
+    "box2d",
+    "corrodible",
+    "rust_oxide",
+    "alchemy",
+    "meltable_metal",
+    "solid",
+    "earth"
+   ],
+   "burnable": "0",
+   "density": "8",
+   "temperature_of_fire": "50",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0"
+  },
+  {
+   "name": "aluminium_robot",
+   "ui_name": "$mat_aluminium"
+  },
+  {
+   "name": "metal_prop",
+   "ui_name": "$mat_metal_prop",
+   "tags": [
+    "box2d",
+    "corrodible",
+    "alchemy",
+    "meltable_metal",
+    "solid",
+    "earth"
+   ],
+   "burnable": "0"
+  },
+  {
+   "name": "metal_prop_low_restitution",
+   "ui_name": "$mat_metal_prop",
+   "tags": [
+    "box2d",
+    "corrodible",
+    "alchemy",
+    "meltable_metal_generic",
+    "solid",
+    "earth"
+   ],
+   "burnable": "0"
+  },
+  {
+   "name": "metal_prop_loose",
+   "ui_name": "$mat_metal_prop",
+   "tags": [
+    "box2d",
+    "corrodible",
+    "alchemy",
+    "meltable_metal_generic",
+    "solid",
+    "earth"
+   ],
+   "burnable": "0"
+  },
+  {
+   "name": "metal",
+   "ui_name": "$mat_metal"
+  },
+  {
+   "name": "metal_hard",
+   "ui_name": "$mat_metal"
+  },
+  {
+   "name": "rock_box2d",
+   "ui_name": "$mat_rock_box2d"
+  },
+  {
+   "name": "templebrick_box2d_edgetiles",
+   "ui_name": "$mat_templebrick_box2d"
+  },
+  {
+   "name": "rock_box2d_hard",
+   "ui_name": "$mat_rock_box2d_hard"
+  },
+  {
+   "name": "poop_box2d_hard",
+   "ui_name": "$mat_rock_box2d_hard"
+  },
+  {
+   "name": "rock_box2d_nohit",
+   "ui_name": "$mat_rock_box2d_nohit"
+  },
+  {
+   "name": "rock_box2d_nohit_heavy",
+   "ui_name": "$mat_rock_box2d_nohit"
+  },
+  {
+   "name": "rock_box2d_nohit_hard",
+   "ui_name": "$mat_rock_box2d_nohit_hard"
+  },
+  {
+   "name": "rock_static_box2d",
+   "ui_name": "$mat_rock_static_box2d",
+   "cell_type": "solid",
+   "tags": [
+    "box2d",
+    "static",
+    "alchemy",
+    "solid",
+    "earth"
+   ],
+   "burnable": "0",
+   "density": "6",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0"
+  },
+  {
+   "name": "rock_box2d",
+   "ui_name": "$mat_rock_box2d",
+   "cell_type": "solid",
+   "tags": [
+    "box2d",
+    "static",
+    "alchemy",
+    "solid",
+    "earth"
+   ],
+   "burnable": "0",
+   "density": "6",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0"
+  },
+  {
+   "name": "item_box2d",
+   "ui_name": "$mat_item_box2d"
+  },
+  {
+   "name": "item_box2d_glass",
+   "ui_name": "$mat_item_box2d"
+  },
+  {
+   "name": "item_box2d_meat",
+   "ui_name": "$mat_meat"
+  },
+  {
+   "name": "gem_box2d",
+   "ui_name": "$mat_gem_box2d"
+  },
+  {
+   "name": "potion_glass_box2d",
+   "ui_name": "$mat_potion_glass_box2d"
+  },
+  {
+   "name": "glass_box2d",
+   "ui_name": "$mat_glass_box2d"
+  },
+  {
+   "name": "gem_box2d_yellow_sun",
+   "ui_name": "$mat_gem_box2d_red"
+  },
+  {
+   "name": "gem_box2d_red_float",
+   "ui_name": "$mat_gem_box2d_red"
+  },
+  {
+   "name": "gem_box2d_yellow_sun_gravity",
+   "ui_name": "$mat_gem_box2d_red"
+  },
+  {
+   "name": "gem_box2d_darksun",
+   "ui_name": "$mat_gem_box2d_red"
+  },
+  {
+   "name": "gem_box2d_pink",
+   "ui_name": "$mat_gem_box2d_pink"
+  },
+  {
+   "name": "gem_box2d_red",
+   "ui_name": "$mat_gem_box2d_red"
+  },
+  {
+   "name": "gem_box2d_turquoise",
+   "ui_name": "$mat_gem_box2d_turquoise"
+  },
+  {
+   "name": "gem_box2d_opal",
+   "ui_name": "$mat_gem_box2d_turquoise"
+  },
+  {
+   "name": "gem_box2d_white",
+   "ui_name": "$mat_gem_box2d_white"
+  },
+  {
+   "name": "gem_box2d_green",
+   "ui_name": "$mat_gem_box2d_green"
+  },
+  {
+   "name": "gem_box2d_orange",
+   "ui_name": "$mat_gem_box2d_orange"
+  },
+  {
+   "name": "gold_box2d",
+   "ui_name": "$mat_gold_box2d"
+  },
+  {
+   "name": "bloodgold_box2d",
+   "ui_name": "$mat_bloodgold_box2d"
+  },
+  {
+   "name": "metal_nohit",
+   "ui_name": "$mat_metal_nohit"
+  },
+  {
+   "name": "metal_chain_nohit",
+   "ui_name": "$mat_metal_nohit"
+  },
+  {
+   "name": "metal_wire_nohit",
+   "ui_name": "$mat_metal_nohit"
+  },
+  {
+   "name": "metal_rust",
+   "ui_name": "$mat_metal_rust"
+  },
+  {
+   "name": "metal_rust_barrel",
+   "ui_name": "$mat_metal_rust_barrel"
+  },
+  {
+   "name": "bone_box2d",
+   "ui_name": "$mat_bone_box2d"
+  },
+  {
+   "name": "crystal",
+   "ui_name": "$mat_crystal",
+   "cell_type": "solid",
+   "tags": [
+    "box2d",
+    "alchemy"
+   ],
+   "burnable": "0",
+   "density": "8",
+   "temperature_of_fire": "50",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0"
+  },
+  {
+   "name": "magic_crystal",
+   "ui_name": "$mat_magic_crystal",
+   "cell_type": "solid",
+   "tags": [
+    "box2d",
+    "alchemy"
+   ],
+   "burnable": "0",
+   "density": "8",
+   "temperature_of_fire": "50",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0"
+  },
+  {
+   "name": "magic_crystal_green",
+   "ui_name": "$mat_magic_crystal"
+  },
+  {
+   "name": "gold_b2",
+   "ui_name": "$mat_gold_b2",
+   "tags": [
+    "box2d",
+    "gold",
+    "alchemy",
+    "solid",
+    "earth"
+   ]
+  },
+  {
+   "name": "crystal_purple",
+   "ui_name": "$mat_crystal_purple"
+  },
+  {
+   "name": "crystal_solid",
+   "ui_name": "$mat_crystal"
+  },
+  {
+   "name": "crystal_magic",
+   "ui_name": "$mat_crystal_magic",
+   "cell_type": "solid",
+   "tags": [
+    "box2d",
+    "alchemy"
+   ],
+   "burnable": "0",
+   "density": "8",
+   "temperature_of_fire": "50",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0"
+  },
+  {
+   "name": "aluminium_oxide",
+   "ui_name": "$mat_aluminium_oxide",
+   "cell_type": "solid",
+   "tags": [
+    "box2d",
+    "corrodible",
+    "alchemy",
+    "meltable_metal",
+    "solid",
+    "earth"
+   ],
+   "burnable": "0",
+   "density": "8",
+   "temperature_of_fire": "50",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0"
+  },
+  {
+   "name": "meat",
+   "ui_name": "$mat_meat",
+   "cell_type": "solid",
+   "tags": [
+    "box2d",
+    "corrodible",
+    "alchemy",
+    "meat",
+    "solid",
+    "earth",
+    "food"
+   ],
+   "burnable": "1",
+   "density": "6",
+   "temperature_of_fire": "30",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0"
+  },
+  {
+   "name": "meat_fruit",
+   "ui_name": "$mat_meat_fruit"
+  },
+  {
+   "name": "meat_pumpkin",
+   "ui_name": "$mat_meat_fruit"
+  },
+  {
+   "name": "meat_warm",
+   "ui_name": "$mat_meat_warm"
+  },
+  {
+   "name": "meat_hot",
+   "ui_name": "$mat_meat_hot"
+  },
+  {
+   "name": "meat_done",
+   "ui_name": "$mat_meat_done"
+  },
+  {
+   "name": "meat_burned",
+   "ui_name": "$mat_meat_burned"
+  },
+  {
+   "name": "meat_pumpkin",
+   "ui_name": "$mat_meat_fruit"
+  },
+  {
+   "name": "meat_slime",
+   "ui_name": "$mat_meat_slime",
+   "cell_type": "solid",
+   "tags": [
+    "box2d",
+    "corrodible",
+    "meltable_to_lava",
+    "alchemy",
+    "meat",
+    "solid",
+    "earth",
+    "food"
+   ],
+   "burnable": "1",
+   "density": "3",
+   "temperature_of_fire": "30",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0"
+  },
+  {
+   "name": "urine",
+   "ui_name": "$mat_urine",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid",
+    "corrodible",
+    "soluble",
+    "liquid_common"
+   ],
+   "burnable": "0",
+   "density": "3",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "0.9",
+   "liquid_sand": "0",
+   "liquid_stains": "1"
+  },
+  {
+   "name": "poo",
+   "ui_name": "$mat_poo",
+   "cell_type": "liquid",
+   "tags": [
+    "sand_other",
+    "corrodible",
+    "soluble"
+   ],
+   "burnable": "0",
+   "density": "6",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "0.9",
+   "liquid_sand": "1",
+   "liquid_stains": "2"
+  },
+  {
+   "name": "mammi",
+   "ui_name": "$mat_mammi",
+   "cell_type": "liquid",
+   "tags": [
+    "sand_other",
+    "corrodible",
+    "soluble"
+   ],
+   "burnable": "0",
+   "density": "6",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "0.9",
+   "liquid_sand": "1",
+   "liquid_stains": "1"
+  },
+  {
+   "name": "physics_throw_material_part2",
+   "ui_name": "$mat_physics_throw_material_part2",
+   "cell_type": "solid",
+   "tags": [
+    "box2d",
+    "alchemy"
+   ],
+   "burnable": "0",
+   "density": "6",
+   "temperature_of_fire": "100",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0"
+  },
+  {
+   "name": "rocket_particles",
+   "ui_name": "$mat_rocket_particles",
+   "cell_type": "liquid",
+   "tags": [
+    "liquid"
+   ],
+   "burnable": "0",
+   "density": "3",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "0.2",
+   "liquid_sand": "0"
+  },
+  {
+   "name": "ice_melting_perf_killer",
+   "ui_name": "$mat_ice_melting_perf_killer",
+   "cell_type": "solid",
+   "tags": [
+    "box2d",
+    "hax",
+    "meltable_to_water",
+    "ice"
+   ],
+   "burnable": "0",
+   "density": "6",
+   "temperature_of_fire": "100",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0"
+  },
+  {
+   "name": "ice_b2",
+   "ui_name": "$mat_ice_b2",
+   "cell_type": "solid",
+   "tags": [
+    "box2d",
+    "alchemy",
+    "solid"
+   ],
+   "burnable": "0",
+   "density": "6",
+   "temperature_of_fire": "100",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0"
+  },
+  {
+   "name": "glass_liquidcave",
+   "ui_name": "$mat_glass_liquidcave",
+   "cell_type": "solid",
+   "tags": [
+    "box2d",
+    "alchemy",
+    "solid",
+    "earth"
+   ],
+   "burnable": "0",
+   "density": "6",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0"
+  },
+  {
+   "name": "glass",
+   "ui_name": "$mat_glass",
+   "cell_type": "solid",
+   "tags": [
+    "static",
+    "meltable_metal",
+    "alchemy",
+    "solid",
+    "earth"
+   ],
+   "burnable": "0",
+   "density": "6",
+   "temperature_of_fire": "100",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0"
+  },
+  {
+   "name": "glass_broken",
+   "ui_name": "$mat_glass",
+   "cell_type": "liquid",
+   "tags": [
+    "sand_other",
+    "meltable_metal",
+    "alchemy",
+    "solid",
+    "earth"
+   ],
+   "burnable": "0",
+   "density": "6",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "1.1",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "neon_tube_purple",
+   "ui_name": "$mat_neon_tube_purple",
+   "cell_type": "solid",
+   "tags": [
+    "static",
+    "corrodible",
+    "box2d",
+    "alchemy",
+    "solid",
+    "earth"
+   ],
+   "burnable": "0",
+   "density": "6",
+   "temperature_of_fire": "100",
+   "generates_smoke": "0",
+   "requires_oxygen": "0",
+   "on_fire": "0"
+  },
+  {
+   "name": "neon_tube_cyan",
+   "ui_name": "$mat_neon_tube_cyan"
+  },
+  {
+   "name": "neon_tube_blood_red",
+   "ui_name": "$mat_neon_tube_blood_red"
+  },
+  {
+   "name": "blood_thick",
+   "ui_name": "$mat_blood_thick",
+   "cell_type": "liquid",
+   "tags": [
+    "static",
+    "corrodible",
+    "blood",
+    "food",
+    "chaotic_transmutation"
+   ],
+   "burnable": "0",
+   "density": "10",
+   "temperature_of_fire": "10",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "on_fire": "0",
+   "liquid_gravity": "0.4",
+   "liquid_sand": "1"
+  },
+  {
+   "name": "snow_b2",
+   "ui_name": "$mat_snow_b2",
+   "cell_type": "solid",
+   "tags": [
+    "box2d",
+    "corrodible",
+    "alchemy",
+    "meltable_to_water",
+    "solid"
+   ],
+   "burnable": "0",
+   "density": "50",
+   "temperature_of_fire": "30",
+   "generates_smoke": "0",
+   "requires_oxygen": "1",
+   "warmth_melts_to_material": "water",
+   "on_fire": "0"
+  },
+  {
+   "name": "fungal_shift_particle_fx"
+  }
+ ]
+}

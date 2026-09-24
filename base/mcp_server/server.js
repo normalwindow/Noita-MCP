@@ -2025,6 +2025,57 @@ const TOOLS = [
     inputSchema: { type: 'object', properties: {} },
     handler: () => rpc('seed_verify'),
   },
+  // ---- perception ---------------------------------------------------------
+  // Chunked, not pixel-level. An agent needs to know roughly what the terrain around it is made
+  // of and how far away that is; a grid is uniform in space and says nothing about reach. These
+  // sample in rings, classified by raycast behaviour, because the engine cannot report a cell's
+  // material at all.
+  {
+    name: 'noita_percept_surroundings',
+    description: 'What is around the player, as composition per distance band. For each band ' +
+      '(near to far) it reports the fraction of directions where the densest thing found was ' +
+      'standable / solid / liquid / gas_or_fire / open. This is the "roughly what is it made of, ' +
+      'and how far is it" call — use it for situational awareness where a full grid would be too ' +
+      'much data. Classes, never material names: the engine has no GetMaterial or GetCell. Casts ' +
+      '4 raycast variants x `directions` x `bands`; the default is 192 raycasts.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        directions: { type: 'integer', description: 'rays per ring, 4-32, default 12' },
+        bands: { type: 'integer', description: 'distance rings, 1-10, default 4' },
+        reach: { type: 'integer', description: 'outermost distance in pixels, default 200' },
+        offset_degrees: { type: 'number', description: 'rotate the ring, e.g. 15 to avoid axis alignment' },
+      },
+    },
+    handler: (args) => rpc('percept_surroundings', args || {}),
+  },
+  {
+    name: 'noita_percept_chunk',
+    description: 'The rough composition of a rectangular region, for "what is this area made of" ' +
+      'rather than "what is around me". Samples a lattice inside the rectangle and reports the ' +
+      'fraction of standable / solid / liquid / gas_or_fire / open. Defaults to a 200x200 box ' +
+      'centred on the player. Classes, not material names.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        x: { type: 'number', description: 'centre; defaults to the player' },
+        y: { type: 'number' },
+        width: { type: 'integer', description: '16-1000, default 200' },
+        height: { type: 'integer', description: '16-1000, default 200' },
+        step: { type: 'integer', description: 'sampling spacing, 8-200, default 24' },
+      },
+    },
+    handler: (args) => rpc('percept_chunk', args || {}),
+  },
+  {
+    name: 'noita_percept_vocabulary',
+    description: 'What each perceived class means, and how it maps onto the game\'s own material ' +
+      'cell_types (solid / liquid / gas / fire). Read this once to know how to interpret ' +
+      'noita_percept_surroundings, noita_percept_chunk and noita_terrain_grid, and how to look a ' +
+      'class up in the material catalogue.',
+    inputSchema: { type: 'object', properties: {} },
+    handler: () => rpc('percept_vocabulary'),
+  },
   {
     name: 'noita_raw_rpc',
     description: 'Escape hatch: call a game-side bridge method directly with raw params. Methods: ' +

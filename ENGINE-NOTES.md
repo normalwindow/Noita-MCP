@@ -302,6 +302,42 @@ game instead of trusting that a key was pushed.
 The field is `Kick`, not `Throw`. Both were watched together; a physical kick moves only the
 first, and `mButtonDownAction`/`mButtonFrameAction` do not exist on this component at all.
 
+## Operating on someone's run
+
+### Set invincibility before teleporting
+
+Moving the player is not a read-only act. Teleporting into an unexplored area drops them among
+enemies with no protection, and a run ended that way during terrain reconnaissance.
+
+**Do:** `noita_set_player` with `hp`, `max_hp` and `invincibility_frames` **first**, then move.
+The three together; large `hp` alone still lets a hit land, and `invincibility_frames` without
+health still shows a death if the frames lapse.
+
+This is cheap and reversible, and the alternative is losing the run the user was playing.
+
+## Raycasting: what a return value means
+
+A raytrace returns `(did_it_stop, x, y)`. **`true` means it STOPPED** — it found something — not
+"the path was clear". Reading it the other way round classified a solid rock face as
+"standable 100%" at every distance.
+
+Measured, to settle it:
+
+| probe position | the same downward ray |
+| --- | --- |
+| open air (227,-79) | all four variants `hit=false` |
+| solid rock (0,3000) | all four variants `hit=true`, stopped at the ray's own start |
+
+### The limit this exposes
+
+From inside solid matter **all four variants stop at the ray's own start and are
+indistinguishable**, so a solid cell's material cannot be recovered by raycasting. What the
+variants distinguish is a **boundary inside the span**: a ray that ends in open air separates the
+classes that stop before it.
+
+So perception reports `solid_or_liquid` — occupied, not identifiable — rather than guessing between
+rock and sand. There is no signal to guess from, and `GetMaterial`/`GetCell` do not exist.
+
 ## Things that are NOT possible, verified
 
 - **Driving the player through control fields.** They mirror input; the engine overwrites them.

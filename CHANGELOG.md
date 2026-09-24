@@ -13,9 +13,90 @@ copy of the folder is always accepted by the game.
 
 ---
 
+## [2.2.0] — 2026-09-24
+
+Chunked material perception, and the material catalogue from the unpacked game data. 87 tools.
+
+### Added — perception by chunk, which is the shape this needed
+
+An agent does not need a pixel map. It needs to know, per region, roughly what the terrain is made
+of and how far away that stuff is. So `noita_percept_surroundings` samples in **rings**: a set of
+directions at each of several distances, reporting for every band the fraction that is open air
+versus matter.
+
+A grid is uniform in space and says nothing about reach. Rings answer "what is near me, what is at
+arm's length, what is far" directly, at a cost that scales with the number of rings rather than the
+area — 4 raytrace variants x 12 directions x 4 bands is 192 raycasts for four depth layers that each
+mean something.
+
+- `noita_percept_surroundings` — what is around the player, per distance band
+- `noita_percept_chunk` — the rough composition of a rectangle
+- `noita_percept_vocabulary` — what each class means, and what cannot be known
+
+### Two mistakes, both caught by measuring
+
+**The raytrace return value was read backwards.** A raytrace returns `(did_it_stop, x, y)`; `true`
+means IT STOPPED. The first version read `true` as "the path was clear" and therefore reported a
+solid rock face as **"standable 100%"** at every distance. Firing the four variants by hand showed
+all four returning true, which is what exposed it.
+
+**That measurement then revealed a real limit, not just a bug.** From inside solid matter all four
+variants stop at the ray's own start and are indistinguishable:
+
+| position | the same downward probe |
+| --- | --- |
+| open air (227,-79) | all four variants `hit=false` |
+| solid rock (0,3000) | all four variants `hit=true`, stopped at the start |
+
+A solid cell's material therefore cannot be recovered by raycasting, and the honest output is
+`solid_or_liquid` — occupied, not identifiable — rather than a guess between rock and sand that the
+engine gives no signal for. The tool says so in its own result: a caller reading "standable 100%"
+inside a rock face would be badly misled.
+
+### Added — the material catalogue, from the unpacked game data
+
+`tools/extract_materials.js` reads the game's own `materials.xml` and produces
+`materials_full.json`: **469 materials** with their class and properties.
+
+| cell_type | count |
+| --- | --- |
+| liquid | 155 |
+| solid | 42 |
+| gas | 21 |
+| fire | 4 |
+
+Dangerous ones are flagged: 22 by fire, 6 by radiation, 1 by poison. The file is parsed line-by-line
+because it is **not** a tree of elements — each material is a run of `key="value"` lines inside one
+wrapper, which is why a tag-level scan found zero definitions in a file that plainly contained them.
+
+This is the other half of perception: the catalogue says what a named material MEANS, the perception
+layer says WHERE matter is and roughly what kind. Neither can name the material of one particular
+cell.
+
+### Recorded — a rule that cost a run to learn
+
+**Set invincibility before teleporting.** Exploring for terrain moved the player into enemies without
+protection and ended the run the user was playing. Teleporting is not a read-only act.
+
+The procedure is now in `ENGINE-NOTES.md`: `noita_set_player` with `hp`, `max_hp` and
+`invincibility_frames` **first**, then move. All three — large `hp` alone still lets a hit land, and
+frames without health still end in a death if they lapse.
+
+### Verified at this release
+
+| Check | Result |
+| --- | --- |
+| Perception, live | 4 bands, 192 raycasts, composition per band |
+| Raycast semantics | measured both ways — open air vs solid rock |
+| Material catalogue | 469 materials from materials.xml, 106 KB |
+| Lua syntax / mock / MCP end to end | 23/23, 80/81, 15/15 |
+| Encoding | no BOMs, no mojibake |
+
+---
+
 ## [2.1.0] — 2026-09-24
 
-Three gaps found in a review of what the bridge can see. 84 tools.
+Three gaps found in a review of what the bridge can see. 87 tools.
 
 ### Added — the world seed, read out of memory
 
@@ -199,7 +280,7 @@ Every one of these was invisible from inside the repository, where the developme
 ## [2.0.0] — 2026-09-24
 
 **Time scaling works.** Slow motion and fast forward, verified in a live game in both
-directions. 84 tools.
+directions. 87 tools.
 
 This replaces the 1.4.1 conclusion that it was not feasible. That conclusion was wrong, and the
 reason is worth recording: the search was for Noita's own time variable, and **there is no such
